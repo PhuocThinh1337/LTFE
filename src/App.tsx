@@ -4,6 +4,7 @@ import './App.css';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import ContactPage from './pages/ContactPage';
+import PaintEstimatorPage from './pages/PaintEstimatorPage';
 
 function App(): React.JSX.Element {
   return (
@@ -12,6 +13,7 @@ function App(): React.JSX.Element {
         <Route path="/" element={<HomePage />} />
         <Route path="/san-pham" element={<ProductsPage />} />
         <Route path="/lien-he" element={<ContactPage />} />
+          <Route path="/tinh-toan-luong-son" element={<PaintEstimatorPage />} />
       </Routes>
     </Router>
   );
