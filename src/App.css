@@ -1813,3 +1813,172 @@ html {
   background: #e3000f;
   color: white;
 }
+.cs-wrapper {
+  padding-bottom: 80px;
+}
+
+.cs-header {
+  margin: 40px 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cs-title {
+  color: #0046ad; /* Màu xanh chủ đạo của Nippon */
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.cs-desc {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.text-red { color: #e3000f; }
+
+/* Form Container */
+.cs-form-container {
+  background: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  max-width: 900px;
+  margin: 0 auto;
+  border-top: 4px solid #e3000f; /* Viền đỏ trên cùng tạo điểm nhấn */
+}
+
+.cs-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.cs-input-group {
+  margin-bottom: 20px;
+}
+
+.cs-input-group label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.cs-input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 15px;
+  transition: all 0.3s;
+  background: #f9f9f9;
+}
+
+.cs-input-group input:focus {
+  border-color: #0046ad;
+  background: #fff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 70, 173, 0.1);
+}
+
+/* Upload Section */
+.cs-upload-section {
+  margin-bottom: 30px;
+}
+
+.cs-upload-box {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  background: #fdfdfd;
+  transition: 0.3s;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.cs-upload-box:hover {
+  border-color: #0046ad;
+  background: #f0f7ff;
+}
+
+.cs-upload-label {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 20px;
+}
+
+.cs-placeholder-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #777;
+}
+
+.cs-upload-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+/* Preview Image */
+.cs-preview-area {
+  text-align: center;
+}
+
+.cs-preview-area img {
+  max-height: 200px;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.cs-reupload-btn {
+  font-size: 13px;
+  color: #0046ad;
+  text-decoration: underline;
+}
+
+/* Button */
+.cs-action {
+  text-align: center;
+}
+
+.cs-btn-submit {
+  background: #e3000f;
+  color: white;
+  border: none;
+  padding: 14px 50px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 30px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: 0.3s;
+  box-shadow: 0 4px 12px rgba(227, 0, 15, 0.3);
+}
+
+.cs-btn-submit:hover {
+  background: #c1000c;
+  transform: translateY(-2px);
+}
+
+
+@media (max-width: 768px) {
+  .cs-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

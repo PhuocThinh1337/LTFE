@@ -5,7 +5,7 @@ import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import ContactPage from './pages/ContactPage';
 import PaintEstimatorPage from './pages/PaintEstimatorPage';
-
+import ColorSupportPage from './pages/ColorSupportPage';
 function App(): React.JSX.Element {
   return (
     <Router>
@@ -14,6 +14,7 @@ function App(): React.JSX.Element {
         <Route path="/san-pham" element={<ProductsPage />} />
         <Route path="/lien-he" element={<ContactPage />} />
           <Route path="/tinh-toan-luong-son" element={<PaintEstimatorPage />} />
+          <Route path="/ho-tro-phoi-mau" element={<ColorSupportPage />} />
       </Routes>
     </Router>
   );
