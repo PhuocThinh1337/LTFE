@@ -1525,4 +1525,460 @@ html {
   .np-hotline-number {
     font-size: 24px;
   }
+
+}
+/* --- BẮT ĐẦU CSS PAINT ESTIMATOR --- */
+
+/* 1. Căn giữa và giới hạn chiều rộng trang */
+.pe-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 15px;
+  font-family: sans-serif;
+}
+
+/* 2. Style Tiêu đề */
+.pe-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+.pe-subtitle {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+}
+
+/* 3. Style Thanh Tiến Trình (Tròn Đỏ) */
+.pe-steps-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  background-color: #f2f2f2; /* Nền xám nhạt bao quanh giống mẫu */
+  padding: 15px 0;
+}
+
+.pe-step {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #ddd;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.pe-step.active {
+  background: #e3000f; /* Màu đỏ Nippon */
+  border-color: #e3000f;
+  color: white;
+  box-shadow: 0 0 0 3px rgba(227, 0, 15, 0.2);
+}
+
+.pe-step-line {
+  width: 100px;
+  height: 2px;
+  background: #ddd;
+  margin: 0 15px;
+}
+
+/* 4. CHIA CỘT (Quan trọng: Biến nó thành 2 ô ngang) */
+.pe-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Chia đều 2 cột */
+  gap: 30px; /* Khoảng cách giữa 2 thẻ */
+  margin-bottom: 40px;
+}
+
+/* 5. Style Thẻ Card (Trắng, Đổ bóng) */
+.pe-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Đổ bóng nhẹ */
+  display: flex; /* Xếp ảnh và chữ nằm ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  padding: 20px;
+  border: 1px solid #eee;
+}
+
+/* Ảnh bên trái chiếm 50% */
+.pe-card-image {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.pe-card-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Nội dung bên phải chiếm 50% */
+.pe-card-content {
+  flex: 1;
+  text-align: right; /* Chữ căn phải giống mẫu */
+}
+
+.pe-card-content label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+/* Ô nhập liệu số to */
+.pe-input-group {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end; /* Căn phải */
+}
+
+.pe-input-group input {
+  font-size: 36px; /* Số cực to */
+  font-weight: bold;
+  color: #333;
+  border: none;
+  outline: none;
+  text-align: right;
+  width: 100px;
+  background: transparent;
+}
+
+.pe-input-group input::placeholder {
+  color: #e0e0e0;
+}
+
+.pe-unit {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-left: 5px;
+}
+
+.pe-note {
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+  margin-top: 5px;
+}
+
+/* 6. Footer và Nút */
+.pe-footer {
+  text-align: right;
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.pe-disclaimer {
+  text-align: left;
+  font-size: 13px;
+  color: #666;
+  background: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.pe-btn-submit {
+  background-color: white;
+  color: #e3000f;
+  border: 1px solid #e3000f;
+  padding: 10px 30px;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.pe-btn-submit:hover {
+  background-color: #e3000f;
+  color: white;
+}
+
+/* Responsive: Trên điện thoại thì xếp dọc */
+@media (max-width: 768px) {
+  .pe-grid-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pe-card {
+    flex-direction: column; /* Trên đt thì ảnh nằm trên, chữ nằm dưới */
+    text-align: center;
+  }
+
+  .pe-card-content {
+    text-align: center;
+    margin-top: 15px;
+  }
+
+  .pe-input-group {
+    justify-content: center;
+  }
+
+  .pe-input-group input {
+    text-align: center;
+  }
+}
+/* --- CSS CHO BƯỚC 2 (KẾT QUẢ) --- */
+
+/* Đánh dấu bước đã hoàn thành (màu đỏ, có dấu tích) */
+.pe-step.completed {
+  background: #e3000f;
+  border-color: #e3000f;
+  color: white;
+}
+.pe-step-line.active {
+  background: #e3000f;
+}
+
+/* Thẻ kết quả */
+.pe-result-content {
+  text-align: left !important; /* Bước 2 cần căn trái */
+  width: 100%;
+}
+
+.pe-result-title {
+  font-size: 20px;
+  color: #0046ad; /* Màu xanh Nippon */
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.pe-result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.pe-result-row span {
+  font-size: 13px;
+  color: #666;
+}
+
+.pe-result-row strong {
+  font-size: 16px;
+  color: #333;
+}
+
+.pe-result-row.highlight {
+  border-bottom: none;
+  margin-top: 15px;
+}
+
+.pe-result-row .big-text {
+  font-size: 24px;
+  color: #333;
+}
+
+/* Các nút bấm ở cuối trang kết quả */
+.pe-footer-actions-v2 {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.pe-btn-outline {
+  display: inline-block;
+  padding: 10px 25px;
+  border: 1px solid #e3000f;
+  color: #e3000f;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  background: white;
+  transition: 0.3s;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.pe-btn-outline:hover {
+  background: #e3000f;
+  color: white;
+}
+.cs-wrapper {
+  padding-bottom: 80px;
+}
+
+.cs-header {
+  margin: 40px 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cs-title {
+  color: #0046ad; /* Màu xanh chủ đạo của Nippon */
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.cs-desc {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.text-red { color: #e3000f; }
+
+/* Form Container */
+.cs-form-container {
+  background: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  max-width: 900px;
+  margin: 0 auto;
+  border-top: 4px solid #e3000f; /* Viền đỏ trên cùng tạo điểm nhấn */
+}
+
+.cs-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.cs-input-group {
+  margin-bottom: 20px;
+}
+
+.cs-input-group label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.cs-input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 15px;
+  transition: all 0.3s;
+  background: #f9f9f9;
+}
+
+.cs-input-group input:focus {
+  border-color: #0046ad;
+  background: #fff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 70, 173, 0.1);
+}
+
+/* Upload Section */
+.cs-upload-section {
+  margin-bottom: 30px;
+}
+
+.cs-upload-box {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  background: #fdfdfd;
+  transition: 0.3s;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.cs-upload-box:hover {
+  border-color: #0046ad;
+  background: #f0f7ff;
+}
+
+.cs-upload-label {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 20px;
+}
+
+.cs-placeholder-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #777;
+}
+
+.cs-upload-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+/* Preview Image */
+.cs-preview-area {
+  text-align: center;
+}
+
+.cs-preview-area img {
+  max-height: 200px;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.cs-reupload-btn {
+  font-size: 13px;
+  color: #0046ad;
+  text-decoration: underline;
+}
+
+/* Button */
+.cs-action {
+  text-align: center;
+}
+
+.cs-btn-submit {
+  background: #e3000f;
+  color: white;
+  border: none;
+  padding: 14px 50px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 30px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: 0.3s;
+  box-shadow: 0 4px 12px rgba(227, 0, 15, 0.3);
+}
+
+.cs-btn-submit:hover {
+  background: #c1000c;
+  transform: translateY(-2px);
+}
+
+
+@media (max-width: 768px) {
+  .cs-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 }
