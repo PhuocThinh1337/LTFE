@@ -12,7 +12,7 @@ interface BreadcrumbProps {
 
 function Breadcrumb({ items }: BreadcrumbProps): React.JSX.Element {
   return (
-    <section className="np-breadcrumb">
+    <section className="np-breadcrumb" data-aos="fade-down">
       <div className="np-container">
         {items.map((item, index) => (
           <React.Fragment key={index}>

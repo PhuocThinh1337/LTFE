@@ -54,6 +54,11 @@ function Header(): React.JSX.Element {
               Liên hệ
             </Link>
           </nav>
+          <div className="np-header-actions">
+            <Link to="/login" className="np-login-btn">
+              Đăng nhập
+            </Link>
+          </div>
         </div>
       </div>
     </header>
