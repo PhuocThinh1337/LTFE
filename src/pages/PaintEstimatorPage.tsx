@@ -137,7 +137,7 @@ function PaintEstimatorPage(): React.JSX.Element {
                         <img src="https://nipponpaint.com.vn/themes/wosh_sub/assets/images/empty-room-interior-with-large-windows-wooden-parquet-floor-white-background-3d-rendering2.png" alt="Tường" />
                       </div>
                       <div className="pe-card-content pe-result-content">
-                        <h3 className="pe-result-title" style={{color: '#d32f2f'}}>Tường cần sơn</h3>
+                        <h3 className="pe-result-title" style={{color: '#b71010'}}>Tường cần sơn</h3>
 
                         <div className="pe-result-row">
                           <span>Diện tích</span>
