@@ -195,6 +195,48 @@ body {
   background: rgba(255, 255, 255, 0.05);
 }
 
+/* Mega Menu Trigger Styles */
+.np-nav-item-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.np-nav-trigger {
+  color: #e6ecff;
+  text-decoration: none;
+  padding: 14px 20px;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.np-nav-trigger:hover,
+.np-nav-trigger.active-link {
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.np-nav-trigger.active-link {
+  border-bottom-color: #ffd200;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.np-nav-arrow {
+  font-size: 10px;
+  transition: transform 0.3s ease;
+}
+
+.np-nav-arrow.open {
+  transform: rotate(180deg);
+}
+
 /* Breadcrumb & title */
 .np-breadcrumb {
   background: #f0f1f5;
@@ -509,8 +551,15 @@ body {
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .np-form-intro {
@@ -542,6 +591,7 @@ body {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -674,9 +724,19 @@ body {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  75% { transform: translateX(8px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-8px);
+  }
+
+  75% {
+    transform: translateX(8px);
+  }
 }
 
 .np-field-error .np-input-border {
@@ -704,6 +764,7 @@ body {
     opacity: 0;
     transform: translateY(-4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -763,9 +824,11 @@ body {
     transform: scale(0);
     opacity: 0;
   }
+
   50% {
     transform: scale(1.2);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -787,10 +850,13 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.1);
@@ -895,7 +961,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .np-btn-check {
@@ -916,9 +984,11 @@ body {
   0% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1.2);
   }
+
   100% {
     transform: scale(1);
   }
@@ -1356,7 +1426,7 @@ body {
     grid-template-columns: minmax(0, 1fr);
     gap: 30px;
   }
-  
+
   .np-contact-form-wrapper {
     transform: translateX(0);
   }
@@ -1527,6 +1597,7 @@ html {
   }
 
 }
+
 /* --- BẮT ĐẦU CSS PAINT ESTIMATOR --- */
 
 /* 1. Căn giữa và giới hạn chiều rộng trang */
@@ -1562,7 +1633,8 @@ html {
   justify-content: center;
   align-items: center;
   margin-bottom: 40px;
-  background-color: #f2f2f2; /* Nền xám nhạt bao quanh giống mẫu */
+  background-color: #f2f2f2;
+  /* Nền xám nhạt bao quanh giống mẫu */
   padding: 15px 0;
 }
 
@@ -1580,7 +1652,8 @@ html {
 }
 
 .pe-step.active {
-  background: #e3000f; /* Màu đỏ Nippon */
+  background: #e3000f;
+  /* Màu đỏ Nippon */
   border-color: #e3000f;
   color: white;
   box-shadow: 0 0 0 3px rgba(227, 0, 15, 0.2);
@@ -1596,8 +1669,10 @@ html {
 /* 4. CHIA CỘT (Quan trọng: Biến nó thành 2 ô ngang) */
 .pe-grid-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Chia đều 2 cột */
-  gap: 30px; /* Khoảng cách giữa 2 thẻ */
+  grid-template-columns: 1fr 1fr;
+  /* Chia đều 2 cột */
+  gap: 30px;
+  /* Khoảng cách giữa 2 thẻ */
   margin-bottom: 40px;
 }
 
@@ -1605,9 +1680,12 @@ html {
 .pe-card {
   background: white;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Đổ bóng nhẹ */
-  display: flex; /* Xếp ảnh và chữ nằm ngang */
-  align-items: center; /* Căn giữa theo chiều dọc */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  /* Đổ bóng nhẹ */
+  display: flex;
+  /* Xếp ảnh và chữ nằm ngang */
+  align-items: center;
+  /* Căn giữa theo chiều dọc */
   padding: 20px;
   border: 1px solid #eee;
 }
@@ -1627,7 +1705,8 @@ html {
 /* Nội dung bên phải chiếm 50% */
 .pe-card-content {
   flex: 1;
-  text-align: right; /* Chữ căn phải giống mẫu */
+  text-align: right;
+  /* Chữ căn phải giống mẫu */
 }
 
 .pe-card-content label {
@@ -1641,11 +1720,13 @@ html {
 .pe-input-group {
   display: flex;
   align-items: baseline;
-  justify-content: flex-end; /* Căn phải */
+  justify-content: flex-end;
+  /* Căn phải */
 }
 
 .pe-input-group input {
-  font-size: 36px; /* Số cực to */
+  font-size: 36px;
+  /* Số cực to */
   font-weight: bold;
   color: #333;
   border: none;
@@ -1713,7 +1794,8 @@ html {
   }
 
   .pe-card {
-    flex-direction: column; /* Trên đt thì ảnh nằm trên, chữ nằm dưới */
+    flex-direction: column;
+    /* Trên đt thì ảnh nằm trên, chữ nằm dưới */
     text-align: center;
   }
 
@@ -1730,6 +1812,7 @@ html {
     text-align: center;
   }
 }
+
 /* --- CSS CHO BƯỚC 2 (KẾT QUẢ) --- */
 
 /* Đánh dấu bước đã hoàn thành (màu đỏ, có dấu tích) */
@@ -1738,19 +1821,22 @@ html {
   border-color: #e3000f;
   color: white;
 }
+
 .pe-step-line.active {
   background: #e3000f;
 }
 
 /* Thẻ kết quả */
 .pe-result-content {
-  text-align: left !important; /* Bước 2 cần căn trái */
+  text-align: left !important;
+  /* Bước 2 cần căn trái */
   width: 100%;
 }
 
 .pe-result-title {
   font-size: 20px;
-  color: #0046ad; /* Màu xanh Nippon */
+  color: #0046ad;
+  /* Màu xanh Nippon */
   margin-bottom: 20px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1813,6 +1899,7 @@ html {
   background: #e3000f;
   color: white;
 }
+
 .cs-wrapper {
   padding-bottom: 80px;
 }
@@ -1825,7 +1912,8 @@ html {
 }
 
 .cs-title {
-  color: #0046ad; /* Màu xanh chủ đạo của Nippon */
+  color: #0046ad;
+  /* Màu xanh chủ đạo của Nippon */
   font-size: 32px;
   font-weight: 800;
   margin-bottom: 15px;
@@ -1838,17 +1926,20 @@ html {
   line-height: 1.6;
 }
 
-.text-red { color: #e3000f; }
+.text-red {
+  color: #e3000f;
+}
 
 /* Form Container */
 .cs-form-container {
   background: #fff;
   padding: 40px;
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   max-width: 900px;
   margin: 0 auto;
-  border-top: 4px solid #e3000f; /* Viền đỏ trên cùng tạo điểm nhấn */
+  border-top: 4px solid #e3000f;
+  /* Viền đỏ trên cùng tạo điểm nhấn */
 }
 
 .cs-form-grid {
@@ -1940,7 +2031,7 @@ html {
 .cs-preview-area img {
   max-height: 200px;
   border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: block;
   margin: 0 auto 10px;
 }

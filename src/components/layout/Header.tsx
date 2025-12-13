@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import MegaMenu from './MegaMenu';
 
 function Header(): React.JSX.Element {
   const location = useLocation();
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
 
   const isActive = (path: string): string => {
     return location.pathname === path ? 'active-link' : '';
@@ -45,9 +47,20 @@ function Header(): React.JSX.Element {
               Trang chủ
             </Link>
             <a href="#colors">Màu sắc</a>
-            <Link to="/san-pham" className={isActive('/san-pham')}>
-              Sản phẩm
-            </Link>
+
+            {/* Mega Menu Trigger */}
+            <div
+              className="np-nav-item-wrapper"
+              onMouseEnter={() => setIsMegaMenuOpen(true)}
+              onMouseLeave={() => setIsMegaMenuOpen(false)}
+            >
+              <div className={`np-nav-trigger ${location.pathname.includes('/san-pham') || isMegaMenuOpen ? 'active-link' : ''}`}>
+                Sản phẩm
+                <span className={`np-nav-arrow ${isMegaMenuOpen ? 'open' : ''}`}>▼</span>
+              </div>
+              <MegaMenu isOpen={isMegaMenuOpen} onClose={() => setIsMegaMenuOpen(false)} />
+            </div>
+
             <a href="#business">Lĩnh vực kinh doanh</a>
             <a href="#support">Hỗ trợ</a>
             <Link to="/lien-he" className={isActive('/lien-he')}>
