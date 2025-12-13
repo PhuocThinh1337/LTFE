@@ -1,8 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useCart } from '../../contexts/CartContext';
+
 
 function Header(): React.JSX.Element {
   const location = useLocation();
+  const { getTotalItems } = useCart(); 
+  
+  const totalItems = getTotalItems(); 
 
   const isActive = (path: string): string => {
     return location.pathname === path ? 'active-link' : '';
@@ -54,6 +59,20 @@ function Header(): React.JSX.Element {
               Liên hệ
             </Link>
           </nav>
+          <div className="np-header-actions">
+            <Link to="/gio-hang" className="np-cart-btn">
+              <i className="fas fa-shopping-cart np-cart-icon"></i>
+              {totalItems > 0 && totalItems < 100 && (
+                <span className="np-cart-count">{totalItems}</span>
+              )}
+              {totalItems >= 100 && (
+                <span className="np-cart-count">99+</span>
+              )}
+            </Link>
+            <Link to="/login" className="np-login-btn">
+              Đăng nhập
+            </Link>
+          </div>
         </div>
       </div>
     </header>
