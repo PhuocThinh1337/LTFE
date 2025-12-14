@@ -208,7 +208,7 @@
 
 .np-btn-full {
   width: 100%;
-  margin-bottom: 12px;
+  margin: 12px 0 8px;
 }
 
 .np-btn-full:last-child {
@@ -301,4 +301,27 @@
   .np-empty-cart-content p {
     font-size: 15px;
   }
+}
+
+/* Shipping Note Styles */
+.np-shipping-note {
+  font-size: 13px;
+  color: #666;
+  font-style: italic;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid #e74c3c;
+}
+
+.np-shipping-free {
+  color: #27ae60;
+  background: #d4edda;
+  border-left-color: #27ae60;
+}
+
+/* Adjust spacing for shipping row */
+.np-summary-row:has(+ .np-shipping-note) {
+  margin-bottom: 8px;
 }
