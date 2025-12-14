@@ -3,14 +3,22 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Breadcrumb from '../components/common/Breadcrumb';
 import { PRODUCTS, Product } from '../data/products';
+import { useCart } from '../contexts/CartContext';
+import Toast from '../components/common/Toast';
 import '../components/layout/FilterBar.css';
 
 interface ProductsPageProps {
   category?: string;
 }
 
-const ProductCard = ({ product, wishlistIds, toggleWishlist }: { product: Product, wishlistIds: number[], toggleWishlist: (id: number) => void }) => {
+const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart }: { 
+  product: Product, 
+  wishlistIds: number[], 
+  toggleWishlist: (id: number) => void,
+  onAddToCart: (message: string, type?: 'success' | 'error') => void
+}) => {
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
 
   return (
     <div className="np-product-card" style={{
@@ -93,7 +101,7 @@ const ProductCard = ({ product, wishlistIds, toggleWishlist }: { product: Produc
             {product.price?.toLocaleString('vi-VN')} ₫
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="quantity" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ddd', borderRadius: '4px', background: '#fff' }}>
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -105,7 +113,16 @@ const ProductCard = ({ product, wishlistIds, toggleWishlist }: { product: Produc
                 style={{ border: 'none', background: 'transparent', padding: '4px 8px', cursor: 'pointer', color: '#666' }}
               >+</button>
             </div>
-            <button
+            <button className="add-cart"
+              onClick={async () => {
+                try {
+                  await addToCart(product.id, quantity);
+                  onAddToCart(`Đã thêm ${quantity} ${product.name} vào giỏ hàng!`, 'success');
+                } catch (error) {
+                  console.error('Lỗi khi thêm vào giỏ hàng:', error);
+                  onAddToCart('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng', 'error');
+                }
+              }}
               style={{
                 background: '#e60012',
                 color: 'white',
@@ -117,9 +134,10 @@ const ProductCard = ({ product, wishlistIds, toggleWishlist }: { product: Produc
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(230, 0, 18, 0.2)'
+                boxShadow: '0 2px 4px rgba(230, 0, 18, 0.2)',
+                transition: 'all 0.2s ease'
               }}
-              title="Thêm vào giỏ"
+              title={`Thêm ${quantity} sản phẩm vào giỏ`}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /></svg>
             </button>
@@ -140,6 +158,9 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   // State for wishlist
   const [wishlistIds, setWishlistIds] = React.useState<number[]>([]);
 
+  // State for toast notifications
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
   React.useEffect(() => {
     const stored = localStorage.getItem('wishlist');
     if (stored) {
@@ -148,14 +169,19 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   }, []);
 
   const toggleWishlist = (id: number) => {
-    let newIds;
-    if (wishlistIds.includes(id)) {
-      newIds = wishlistIds.filter(wid => wid !== id);
-    } else {
-      newIds = [...wishlistIds, id];
-    }
-    setWishlistIds(newIds);
-    localStorage.setItem('wishlist', JSON.stringify(newIds));
+    const newWishlist = wishlistIds.includes(id) 
+      ? wishlistIds.filter(wId => wId !== id) 
+      : [...wishlistIds, id];
+    setWishlistIds(newWishlist);
+    localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+  };
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+  };
+
+  const closeToast = () => {
+    setToast(null);
   };
 
   useEffect(() => {
@@ -262,6 +288,7 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
                     product={product}
                     wishlistIds={wishlistIds}
                     toggleWishlist={toggleWishlist}
+                    onAddToCart={showToast}
                   />
                 ))
               ) : (
@@ -272,6 +299,15 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
             </div>
           </div>
         </section>
+
+        {/* Toast Notification */}
+        {toast && (
+          <Toast 
+            message={toast.message} 
+            type={toast.type} 
+            onClose={closeToast} 
+          />
+        )}
       </main>
 
       <Footer />

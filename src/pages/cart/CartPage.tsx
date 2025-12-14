@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import Breadcrumb from '../../components/common/Breadcrumb';
@@ -11,6 +12,7 @@ function CartPage(): React.JSX.Element {
     updateQuantity, 
     removeItem 
   } = useCart();
+  const navigate = useNavigate();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -170,7 +172,10 @@ function CartPage(): React.JSX.Element {
                       Tiến hành thanh toán
                     </button>
                     
-                    <button className="np-btn-outline np-btn-full">
+                    <button 
+                      className="np-btn-outline np-btn-full"
+                      onClick={() => navigate('/san-pham')}
+                    >
                       Tiếp tục mua sắm
                     </button>
                   </div>
