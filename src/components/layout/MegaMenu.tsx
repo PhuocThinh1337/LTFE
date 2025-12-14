@@ -1,81 +1,85 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PRODUCTS } from '../../data/products';
 import './MegaMenu.css';
 
 interface MegaMenuProps {
-    isOpen: boolean;
+    active: boolean;
     onClose: () => void;
 }
 
-const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onClose }) => {
-    const [activeCategory, setActiveCategory] = useState<string>('son-noi-that');
+const MegaMenu: React.FC<MegaMenuProps> = ({ active, onClose }) => {
+    const [activeCategory, setActiveCategory] = useState<string>('Sơn Nội Thất');
 
-    // Filter products based on active category
-    // We take the first 3 products of the category to display
-    const filteredProducts = PRODUCTS
-        .filter(p => p.category === activeCategory)
-        .slice(0, 3);
+    const filteredProducts = PRODUCTS.filter(p => {
+        // Normalization helper
+        const normalize = (str: string) => str.toLowerCase().trim();
+        const active = normalize(activeCategory);
+        const pCat = normalize(p.category);
 
-    // Reset category when menu opens/closes? Optional.
-    useEffect(() => {
-        if (isOpen) {
-            setActiveCategory('son-noi-that'); // Default to first category
+        // Exact match
+        if (pCat === active) return true;
+
+        // Group mapping logic if needed
+        if (active === 'sơn kiến trúc') {
+            return pCat === 'sơn nội thất' || pCat === 'sơn ngoại thất';
         }
-    }, [isOpen]);
+
+        return false;
+    }).slice(0, 3);
+
+    if (!active) return null;
 
     return (
-        <div className={`np-mega-menu-overlay ${isOpen ? 'active' : ''}`} onMouseLeave={onClose}>
+        <div className={`np-mega-menu-overlay ${active ? 'active' : ''}`} onMouseLeave={onClose}>
             <div className="np-container">
                 <div className="np-mega-menu">
-                    <div className="np-mega-menu-inner">
-                        {/* Sidebar */}
+                    <div className="np-container np-mega-menu-inner">
+                        {/* Categories Sidebar */}
                         <div className="np-mega-menu-sidebar">
                             <div className="np-menu-group">
-                                <div className="np-menu-group-title">
-                                    Sơn kiến trúc
-                                    <span>^</span>
-                                </div>
+                                <div className="np-menu-group-title">Sơn kiến trúc <span style={{ float: 'right' }}>^</span></div>
                                 <div className="np-menu-group-items">
-                                    <div
-                                        className={`np-mega-menu-category ${activeCategory === 'son-noi-that' ? 'active' : ''}`}
-                                        onMouseEnter={() => setActiveCategory('son-noi-that')}
+                                    <Link
+                                        to="/son-noi-that"
+                                        className={`np-mega-menu-category ${activeCategory === 'Sơn Nội Thất' ? 'active' : ''}`}
+                                        onMouseEnter={() => setActiveCategory('Sơn Nội Thất')}
+                                        onClick={onClose}
                                     >
-                                        <Link to="/son-noi-that" onClick={onClose} style={{ color: 'inherit', textDecoration: 'none', display: 'block', width: '100%' }}>
-                                            Sơn nội thất
-                                        </Link>
-                                    </div>
-                                    <div
-                                        className={`np-mega-menu-category ${activeCategory === 'son-ngoai-that' ? 'active' : ''}`}
-                                        onMouseEnter={() => setActiveCategory('son-ngoai-that')}
+                                        Sơn nội thất
+                                    </Link>
+                                    <Link
+                                        to="/son-ngoai-that"
+                                        className={`np-mega-menu-category ${activeCategory === 'Sơn Ngoại Thất' ? 'active' : ''}`}
+                                        onMouseEnter={() => setActiveCategory('Sơn Ngoại Thất')}
+                                        onClick={onClose}
                                     >
-                                        <Link to="/son-ngoai-that" onClick={onClose} style={{ color: 'inherit', textDecoration: 'none', display: 'block', width: '100%' }}>
-                                            Sơn ngoại thất
-                                        </Link>
-                                    </div>
+                                        Sơn ngoại thất
+                                    </Link>
                                 </div>
                             </div>
 
-                            <div
-                                className={`np-mega-menu-category ${activeCategory === 'son-dan-dung' ? 'active' : ''}`}
-                                onMouseEnter={() => setActiveCategory('son-dan-dung')}
+                            <Link
+                                to="/son-dan-dung"
+                                className={`np-mega-menu-category ${activeCategory === 'Sơn dân dụng' ? 'active' : ''}`}
+                                onMouseEnter={() => setActiveCategory('Sơn dân dụng')}
+                                onClick={onClose}
                             >
-                                <Link to="/son-dan-dung" onClick={onClose} style={{ color: 'inherit', textDecoration: 'none', display: 'block', width: '100%' }}>
-                                    Sơn dân dụng
-                                </Link>
-                            </div>
+                                Sơn dân dụng
+                            </Link>
 
-                            <div
-                                className={`np-mega-menu-category ${activeCategory === 'son-va-chat-phu-cong-nghiep' ? 'active' : ''}`}
-                                onMouseEnter={() => setActiveCategory('son-va-chat-phu-cong-nghiep')}
+                            <Link
+                                to="/son-va-chat-phu-cong-nghiep"
+                                className={`np-mega-menu-category ${activeCategory === 'Sơn và chất phủ công nghiệp' ? 'active' : ''}`}
+                                onMouseEnter={() => setActiveCategory('Sơn và chất phủ công nghiệp')}
+                                onClick={onClose}
                             >
-                                <Link to="/son-va-chat-phu-cong-nghiep" onClick={onClose} style={{ color: 'inherit', textDecoration: 'none', display: 'block', width: '100%' }}>
-                                    Sơn và chất phủ công nghiệp
-                                </Link>
-                            </div>
+                                Sơn và chất phủ công nghiệp
+                            </Link>
+
                         </div>
 
-                        {/* Content */}
+                        {/* Products Grid */}
                         <div className="np-mega-menu-content">
                             <div className="np-mega-menu-products">
                                 {filteredProducts.map((product) => (
@@ -88,7 +92,6 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen, onClose }) => {
                                         <div className="np-mm-product-info">
                                             <h3 className="np-mm-product-name">{product.name}</h3>
                                             <p className="np-mm-product-desc">{product.description}</p>
-                                            {/* Price is hidden via CSS but we keep structure if needed later */}
                                             <div className="np-mm-product-price">
                                                 {product.price?.toLocaleString('vi-VN')} ₫
                                             </div>
