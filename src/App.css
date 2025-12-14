@@ -248,6 +248,36 @@ body {
   color: #777;
 }
 
+/* Header Actions */
+.np-header-nav {
+  position: relative;
+  /* Context for absolute positioning */
+}
+
+.np-header-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.np-action-icon {
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.np-action-icon:hover {
+  opacity: 1;
+}
+
 .np-breadcrumb-separator {
   margin: 0 6px;
   color: #999;
