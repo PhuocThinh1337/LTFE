@@ -141,6 +141,11 @@ body {
   white-space: nowrap;
 }
 
+.np-hotline svg {
+  color: #b71010;
+  flex-shrink: 0;
+}
+
 .np-hotline span {
   color: #6b7280;
   font-size: 13px;
@@ -196,50 +201,63 @@ body {
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* --- XUNG ĐỘT 1: HEADER ACTIONS (HỢP NHẤT) --- */
-/* Mega Menu Trigger Styles (Từ npt) */
-.np-nav-item-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
+@media (max-width: 1024px) {
+  .np-mobile-menu-toggle {
+    display: block;
+  }
+
+  .np-main-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #0046ad;
+    flex-direction: column;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .np-main-nav.mobile-open {
+    max-height: 500px;
+  }
+
+  .np-main-nav a {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 3px solid transparent;
+  }
+
+  .np-main-nav a:hover,
+  .np-main-nav .active-link {
+    border-left-color: #ffd200;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
-.np-nav-trigger {
-  color: #e6ecff;
-  text-decoration: none;
-  padding: 14px 20px;
-  border-bottom: 3px solid transparent;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 500;
-}
-
-.np-nav-trigger:hover,
-.np-nav-trigger.active-link {
-  background: rgba(255, 255, 255, 0.1);
-  border-bottom-color: rgba(255, 255, 255, 0.3);
-}
-
-.np-nav-trigger.active-link {
-  border-bottom-color: #ffd200;
+.np-mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
 }
 
-.np-nav-arrow {
-  font-size: 10px;
-  transition: transform 0.3s ease;
+.np-mobile-menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.np-nav-arrow.open {
-  transform: rotate(180deg);
+.np-mobile-menu-toggle svg {
+  width: 24px;
+  height: 24px;
 }
 
-/* np-header-actions và np-login-btn (Từ main) */
 .np-header-actions {
   display: flex;
   align-items: center;
@@ -256,8 +274,48 @@ body {
   gap: 20px;
 }
 
+.np-cart-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.np-cart-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.np-cart-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.np-cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #b71010;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 .np-login-btn {
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 8px;
   border: 1px solid #ffffff;
   color: #ffffff;
@@ -265,6 +323,15 @@ body {
   font-weight: 600;
   font-size: 13px;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.np-login-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .np-login-btn:hover {
@@ -274,6 +341,10 @@ body {
 }
 /* --- KẾT THÚC XUNG ĐỘT 1 --- */
 
+
+.np-login-btn:hover svg {
+  stroke: #0046ad;
+}
 
 /* Breadcrumb & title */
 .np-breadcrumb {
@@ -1563,17 +1634,117 @@ body {
 }
 
 .np-footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   position: relative;
   padding-bottom: 20px;
 }
 
-.np-footer-left {
+.np-footer-main {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.np-footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.np-footer-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.np-footer-description {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.np-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.np-footer-links li {
+  margin: 0;
+}
+
+.np-footer-links a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.np-footer-links a:hover {
+  color: #ffd200;
+  transform: translateX(4px);
+}
+
+.np-footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.np-footer-hotline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.np-footer-hotline svg {
+  color: #ffd200;
+  flex-shrink: 0;
+}
+
+.np-footer-hotline > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.np-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.np-footer-legal {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.np-footer-legal a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.np-footer-legal a:hover {
+  color: #ffd200;
 }
 
 .footer-logo {
@@ -1618,40 +1789,33 @@ body {
   gap: 16px;
 }
 
-.np-footer-hotline {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
 .np-footer-hotline-label {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
 }
 
 .np-footer-hotline-number {
-  font-size: 36px;
+  font-size: 20px;
   font-weight: 700;
   color: #ffffff;
   text-decoration: none;
-  letter-spacing: 2px;
-  transition: transform 0.2s ease, color 0.2s ease;
-  line-height: 1;
+  letter-spacing: 1px;
+  transition: color 0.2s ease;
+  line-height: 1.2;
 }
 
 .np-footer-hotline-number:hover {
-  transform: scale(1.05);
   color: #ffd200;
 }
 
 .np-footer-contact-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 10px 20px;
-  border-radius: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
   border: 2px solid #ffffff;
   background: transparent;
   color: #ffffff;
@@ -1659,8 +1823,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-decoration: none;
 }
 
 .np-footer-contact-btn:hover {
@@ -1677,8 +1840,9 @@ body {
 
 .np-footer-social {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
+  margin-top: 8px;
 }
 
 .np-social-icon {
@@ -1734,6 +1898,48 @@ body {
 .np-scroll-to-top svg {
   width: 20px;
   height: 20px;
+}
+
+/* Footer Responsive */
+@media (max-width: 1024px) {
+  .np-footer-main {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .np-footer-main {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .np-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .np-footer-legal {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .np-footer-hotline-number {
+    font-size: 18px;
+  }
+
+  .np-quick-links {
+    display: none;
+  }
+
+  .np-lang-hotline {
+    gap: 12px;
+  }
+
+  .np-lang-switcher {
+    display: none;
+  }
 }
 
 /* Hero Section */
@@ -2214,6 +2420,25 @@ html {
   font-weight: 500;
 }
 
+.np-auth-error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: #b71010;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.np-auth-error-message::before {
+  content: '⚠';
+  font-size: 18px;
+}
+
 .np-auth-success {
   color: #059669;
   font-size: 13px;
@@ -2381,6 +2606,111 @@ html {
 .np-auth-success-card .np-auth-btn {
   margin-top: 12px;
   max-width: 280px;
+}
+
+/* New Auth Page Layout with Header/Footer */
+.np-auth-page {
+  background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);
+  padding: 60px 0 80px;
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+}
+
+.np-auth-wrapper-new {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.np-auth-card-new {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  padding: 48px 40px;
+  max-width: 500px;
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.np-auth-card-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.np-auth-card-header h1 {
+  font-size: 32px;
+  color: #1f2937;
+  margin: 24px 0 12px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.np-auth-card-header p {
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.np-auth-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  animation: scaleIn 0.5s ease-out 0.2s both;
+}
+
+.np-auth-icon-circle-new {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 10px 30px rgba(30, 64, 175, 0.3);
+  transition: all 0.3s ease;
+}
+
+.np-auth-icon-circle-new:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(30, 64, 175, 0.4);
+}
+
+.np-auth-icon-circle-new.register {
+  background: linear-gradient(135deg, #b71010 0%, #d32f2f 100%);
+  box-shadow: 0 10px 30px rgba(183, 16, 16, 0.3);
+}
+
+.np-auth-icon-circle-new.register:hover {
+  box-shadow: 0 15px 40px rgba(183, 16, 16, 0.4);
+}
+
+.np-auth-icon-circle-new.forgot {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  box-shadow: 0 10px 30px rgba(5, 150, 105, 0.3);
+}
+
+.np-auth-icon-circle-new.forgot:hover {
+  box-shadow: 0 15px 40px rgba(5, 150, 105, 0.4);
+}
+
+@media (max-width: 768px) {
+  .np-auth-page {
+    padding: 40px 0 60px;
+  }
+
+  .np-auth-card-new {
+    padding: 32px 24px;
+    max-width: 100%;
+    margin: 0 16px;
+  }
+
+  .np-auth-card-header h1 {
+    font-size: 28px;
+  }
 }
 
 /* Fullscreen Auth Layout */
