@@ -231,151 +231,211 @@ body {
 
 .np-nav-item-wrapper.open .np-nav-arrow {
   transform: rotate(180deg);
+}
 
-  @media (max-width: 1024px) {
-    .np-mobile-menu-toggle {
-      display: block;
-    }
+.np-mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
 
-    .np-main-nav {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #0046ad;
-      flex-direction: column;
-      padding: 0;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-    }
+.np-mobile-menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
 
-    .np-main-nav.mobile-open {
-      max-height: 500px;
-    }
+.np-mobile-menu-toggle svg {
+  width: 24px;
+  height: 24px;
+}
 
-    .np-main-nav a {
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      border-left: 3px solid transparent;
-    }
+.np-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+}
 
-    .np-main-nav a:hover,
-    .np-main-nav .active-link {
-      border-left-color: #ffd200;
-      border-bottom-color: rgba(255, 255, 255, 0.1);
-    }
-  }
+.np-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+}
 
+.np-action-icon:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.np-action-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.np-cart-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.np-cart-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.np-cart-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.np-cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #b71010;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.np-login-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #ffffff;
+  color: #ffffff !important;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  background: transparent;
+}
+
+.np-login-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.np-login-btn:hover {
+  background: #ffffff;
+  color: #0046ad !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.np-login-btn:hover svg {
+  stroke: #0046ad;
+}
+
+/* Header Responsive */
+@media (max-width: 1024px) {
   .np-mobile-menu-toggle {
-    display: none;
-    background: transparent;
-    border: none;
-    color: #ffffff;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 6px;
-    transition: background 0.2s ease;
+    display: block;
   }
 
-  .np-mobile-menu-toggle:hover {
-    background: rgba(255, 255, 255, 0.1);
+  .np-main-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #0046ad;
+    flex-direction: column;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
   }
 
-  .np-mobile-menu-toggle svg {
-    width: 24px;
-    height: 24px;
+  .np-main-nav.mobile-open {
+    max-height: 500px;
+  }
+
+  .np-main-nav a,
+  .np-nav-trigger {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 3px solid transparent;
+  }
+
+  .np-main-nav a:hover,
+  .np-main-nav .active-link,
+  .np-nav-trigger:hover {
+    border-left-color: #ffd200;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
   }
 
   .np-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    /* Giữ lại style này từ main cho hành động */
-
-    /* Đưa các action ra ngoài (TỪ XUNG ĐỘT PHÍA DƯỚI) */
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    gap: 20px;
+    gap: 8px;
   }
 
-  .np-cart-btn {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .np-cart-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-  }
-
-  .np-cart-btn svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .np-cart-count {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #b71010;
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 10px;
-    min-width: 18px;
-    text-align: center;
-    line-height: 1.4;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  .np-login-btn span {
+    display: none;
   }
 
   .np-login-btn {
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid #ffffff;
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 13px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .np-header-actions {
     gap: 6px;
   }
 
-  .np-login-btn svg {
+  .np-action-icon,
+  .np-cart-btn {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+
+  .np-action-icon svg,
+  .np-cart-btn svg {
     width: 18px;
     height: 18px;
-    flex-shrink: 0;
-  }
-
-  .np-login-btn:hover {
-    background: #ffffff;
-    color: #0046ad;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  }
-
-  /* --- KẾT THÚC XUNG ĐỘT 1 --- */
-
-
-  .np-login-btn:hover svg {
-    stroke: #0046ad;
   }
 }
 
@@ -426,36 +486,6 @@ body {
   width: 100%;
 }
 
-/* Header Actions */
-/* Đã hợp nhất vào phần trên:
-.np-header-nav {
-  position: relative;
-}
-
-.np-header-actions {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-*/
-
-.np-action-icon {
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-}
-
-.np-action-icon:hover {
-  opacity: 1;
-}
 
 .np-breadcrumb-separator {
   margin: 0 6px;
@@ -1029,7 +1059,7 @@ body {
   opacity: 0;
   transform: translateX(-30px);
   transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   will-change: opacity, transform;
 }
@@ -2308,7 +2338,7 @@ body {
 /* Animation utilities */
 [data-aos] {
   transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: opacity, transform;
 }
 
@@ -3876,7 +3906,7 @@ select {
 /* Animation utilities */
 [data-aos] {
   transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: opacity, transform;
 }
 
