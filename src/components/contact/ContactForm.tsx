@@ -71,7 +71,7 @@ function ContactForm(): React.JSX.Element {
 
     if (!formData.phone.trim()) {
       newErrors.phone = 'Vui lòng nhập số điện thoại';
-    } else if (!/^[0-9\s\-\+\(\)]+$/.test(formData.phone)) {
+    } else if (!/^[0-9\s\-+()]+$/.test(formData.phone)) {
       newErrors.phone = 'Số điện thoại không hợp lệ';
     }
 

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PRODUCTS, Product } from '../../data/products';
+import { PRODUCTS } from '../../data/products';
 import './MegaMenu.css';
 
 interface MegaMenuProps {
@@ -10,27 +10,6 @@ interface MegaMenuProps {
 
 const MegaMenu: React.FC<MegaMenuProps> = ({ active, onClose }) => {
     const [activeCategory, setActiveCategory] = useState<string>('Sơn Nội Thất');
-
-    // Define menu structure explicitly
-    const menuStructure = [
-        {
-            title: "Sơn kiến trúc",
-            items: [
-                { name: "Sơn Nội Thất", link: "/son-noi-that" },
-                { name: "Sơn Ngoại Thất", link: "/son-ngoai-that" }
-            ]
-        },
-        {
-            title: "Sơn dân dụng",
-            link: "/son-dan-dung",
-            items: []
-        },
-        {
-            title: "Sơn và chất phủ công nghiệp",
-            link: "/son-va-chat-phu-cong-nghiep",
-            items: []
-        }
-    ];
 
     const filteredProducts = PRODUCTS.filter(p => {
         // Normalization helper
@@ -116,7 +95,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ active, onClose }) => {
                                             <div className="np-mm-product-price">
                                                 {product.price?.toLocaleString('vi-VN')} ₫
                                             </div>
-                                            <Link to={`/san-pham`} className="np-mm-product-btn">
+                                            <Link to={`/san-pham`} className="np-mm-product-btn" onClick={onClose}>
                                                 XEM NGAY
                                                 <span className="np-btn-icon">→</span>
                                             </Link>

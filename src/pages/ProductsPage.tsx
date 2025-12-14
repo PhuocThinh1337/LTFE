@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Breadcrumb from '../components/common/Breadcrumb';
@@ -11,9 +10,30 @@ interface ProductsPageProps {
 }
 
 function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
-  // const { category } = useParams<{ category: string }>(); // Removed useParams
+  // State for filtering and display
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
   const [pageTitle, setPageTitle] = useState('Sản phẩm Nippon Paint');
+
+  // State for wishlist
+  const [wishlistIds, setWishlistIds] = React.useState<number[]>([]);
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem('wishlist');
+    if (stored) {
+      setWishlistIds(JSON.parse(stored));
+    }
+  }, []);
+
+  const toggleWishlist = (id: number) => {
+    let newIds;
+    if (wishlistIds.includes(id)) {
+      newIds = wishlistIds.filter(wid => wid !== id);
+    } else {
+      newIds = [...wishlistIds, id];
+    }
+    setWishlistIds(newIds);
+    localStorage.setItem('wishlist', JSON.stringify(newIds));
+  };
 
   useEffect(() => {
     let filtered = PRODUCTS;
@@ -38,7 +58,9 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
           title = 'Sơn và Chất Phủ Công Nghiệp';
           break;
         default:
-          // Try to match somewhat loosely or show all
+          // Try simple match if not in switch
+          filtered = PRODUCTS.filter(p => p.category === category);
+          title = category.toUpperCase().replace(/-/g, ' ');
           break;
       }
     }
@@ -52,11 +74,18 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
       <Header />
 
       <main className="np-main">
+        {/* Dynamic Breadcrumb based on category */}
+        <Breadcrumb items={[
+          { label: 'Trang chủ', link: '/' },
+          { label: 'Sản phẩm', link: '/san-pham' },
+          ...(category ? [{ label: pageTitle }] : [])
+        ]} />
+
         <section className="np-page-title">
           <div className="np-container">
             <h1>{pageTitle.toUpperCase()}</h1>
             <p className="np-page-subtitle">
-              Tìm hiểu thông tin chi tiết về các sản phẩm của chúng tôi.
+              Kiến tạo giá trị bền vững thông qua sản phẩm Nippon chất lượng cao
             </p>
           </div>
         </section>
@@ -105,8 +134,64 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
             <div className="np-products-grid">
               {displayedProducts.length > 0 ? (
                 displayedProducts.map((product) => (
-                  <div key={product.id} className="np-product-card">
-                    <div className="np-card-image">
+                  <div key={product.id} className="np-product-card" style={{
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}>
+                    {/* Card Actions (Compare & Wishlist) */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '16px',
+                      left: '16px',
+                      right: '16px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      zIndex: 2,
+                      pointerEvents: 'none' /* Allow clicks to pass through spacer */
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: '#e5e7eb',
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '11px',
+                        fontWeight: '700',
+                        color: '#4b5563',
+                        textTransform: 'uppercase',
+                        cursor: 'pointer',
+                        pointerEvents: 'auto'
+                      }}>
+                        <span style={{
+                          width: '14px',
+                          height: '14px',
+                          border: '1px solid currentColor',
+                          borderRadius: '50%',
+                          display: 'block'
+                        }}></span>
+                        SO SÁNH
+                      </div>
+                      <div
+                        onClick={() => toggleWishlist(product.id)}
+                        style={{
+                          cursor: 'pointer',
+                          color: wishlistIds.includes(product.id) ? '#e60012' : '#374151',
+                          pointerEvents: 'auto',
+                          transition: 'color 0.2s, transform 0.2s',
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                      >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill={wishlistIds.includes(product.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div className="np-card-image" style={{ position: 'relative' }}>
                       <img src={product.image} alt={product.name} />
                       {product.isNew && <span className="np-badge-new">Mới</span>}
                     </div>
@@ -114,11 +199,16 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
                       <span className="np-category">{product.category}</span>
                       <h3>{product.name}</h3>
                       <p>{product.description}</p>
-                      <ul className="np-features-list">
-                        {product.features.slice(0, 2).map((feature, idx) => (
-                          <li key={idx}>• {feature}</li>
-                        ))}
-                      </ul>
+
+                      {/* Features List (Optional, from card design) */}
+                      {product.features && (
+                        <ul className="np-features-list">
+                          {product.features.slice(0, 2).map((feature, idx) => (
+                            <li key={idx}>• {feature}</li>
+                          ))}
+                        </ul>
+                      )}
+
                       <div className="np-product-price" style={{ color: '#e60012', fontWeight: 'bold', margin: '10px 0' }}>
                         {product.price?.toLocaleString('vi-VN')} ₫
                       </div>
@@ -127,7 +217,9 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
                   </div>
                 ))
               ) : (
-                <p>Không tìm thấy sản phẩm nào trong danh mục này.</p>
+                <div style={{ textAlign: 'center', padding: '40px', color: '#666', gridColumn: 'span 3' }}>
+                  <p>Không tìm thấy sản phẩm nào trong danh mục này.</p>
+                </div>
               )}
             </div>
           </div>
