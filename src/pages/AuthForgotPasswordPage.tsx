@@ -1,18 +1,23 @@
 import React, { useState, FormEvent, useEffect } from 'react';
+import { api } from '../services/api';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 
 function AuthForgotPasswordPage(): React.JSX.Element {
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     document.title = 'Quên mật khẩu - Nippon Paint';
   }, []);
 
-  const handleSubmit = (e: FormEvent): void => {
+  const handleSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
     setSuccess('');
     setError('');
+    
     if (!email.trim()) {
       setError('Vui lòng nhập email');
       return;
@@ -21,95 +26,25 @@ function AuthForgotPasswordPage(): React.JSX.Element {
       setError('Email không hợp lệ');
       return;
     }
-    // eslint-disable-next-line no-console
-    console.log('Forgot password submit', email);
-    setSuccess('Liên kết đặt lại mật khẩu đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư.');
+    
+    setIsLoading(true);
+    try {
+      const result = await api.forgotPassword(email);
+      setSuccess(result.message);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Có lỗi xảy ra. Vui lòng thử lại.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="np-auth-fullscreen">
-      <div className="np-auth-fullscreen-left">
-        <div className="np-auth-fullscreen-brand">
-          <div className="np-auth-fullscreen-logo">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <rect width="48" height="48" rx="12" fill="#b71010"/>
-              <text x="24" y="32" fontSize="24" fontWeight="bold" fill="white" textAnchor="middle">NP</text>
-            </svg>
-            <div>
-              <h2>NIPPON PAINT</h2>
-              <p>Việt Nam</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="np-auth-fullscreen-content">
-          <h1>Đặt lại mật khẩu dễ dàng</h1>
-          <p>Chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu đến email của bạn</p>
-          
-          <div className="np-auth-fullscreen-features">
-            <div className="np-auth-feature-item">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-              <span>Quy trình đơn giản và nhanh chóng</span>
-            </div>
-            <div className="np-auth-feature-item">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-              <span>Bảo mật thông tin tuyệt đối</span>
-            </div>
-            <div className="np-auth-feature-item">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-              <span>Hỗ trợ 24/7 nếu cần giúp đỡ</span>
-            </div>
-            <div className="np-auth-feature-item">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-              <span>Link đặt lại có hiệu lực 24 giờ</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="np-auth-fullscreen-footer">
-          <p>© 2024 Nippon Paint. All Rights Reserved.</p>
-          <div className="np-auth-fullscreen-links">
-            <a href="/">Về chúng tôi</a>
-            <a href="/">Điều khoản</a>
-            <a href="/">Bảo mật</a>
-            <a href="/">Liên hệ</a>
-          </div>
-        </div>
-      </div>
-
-      <div className="np-auth-fullscreen-right">
-        <div className="np-auth-fullscreen-card">
-          <div className="np-auth-fullscreen-back">
-            <a href="/">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/>
-              </svg>
-              Về trang chủ
-            </a>
-          </div>
-
-          <div className="np-auth-fullscreen-icon">
-            <div className="np-auth-icon-circle forgot">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-              </svg>
-            </div>
-          </div>
-          
-          <div className="np-auth-fullscreen-header">
-            <h1>Quên mật khẩu?</h1>
-            <p>Nhập email của bạn để nhận hướng dẫn đặt lại mật khẩu</p>
-          </div>
-
+    <>
+      <Header />
+      <div className="np-auth-page">
+        <div className="np-container">
+          <div className="np-auth-wrapper-new">
+            <div className="np-auth-card-new">
               {success ? (
                 <div className="np-auth-success-card">
                   <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -127,7 +62,20 @@ function AuthForgotPasswordPage(): React.JSX.Element {
                   </a>
                 </div>
               ) : (
-                <form className="np-auth-form" onSubmit={handleSubmit} noValidate>
+                <>
+                  <div className="np-auth-card-header">
+                    <div className="np-auth-icon-wrapper">
+                      <div className="np-auth-icon-circle-new forgot">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                          <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <h1>Quên mật khẩu?</h1>
+                    <p>Nhập email của bạn để nhận hướng dẫn đặt lại mật khẩu</p>
+                  </div>
+                  <form className="np-auth-form" onSubmit={handleSubmit} noValidate>
                   <div className={`np-auth-field ${error ? 'has-error' : ''}`}>
                     <label htmlFor="email">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -150,12 +98,14 @@ function AuthForgotPasswordPage(): React.JSX.Element {
                     {error && <span className="np-auth-error">{error}</span>}
                   </div>
 
-                  <button type="submit" className="np-auth-btn primary">
-                    <span>Gửi yêu cầu</span>
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                    </svg>
+                  <button type="submit" className="np-auth-btn primary" disabled={isLoading}>
+                    <span>{isLoading ? 'Đang gửi...' : 'Gửi yêu cầu'}</span>
+                    {!isLoading && (
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                      </svg>
+                    )}
                   </button>
 
                   <div className="np-auth-divider">
@@ -170,11 +120,15 @@ function AuthForgotPasswordPage(): React.JSX.Element {
                       Quay lại đăng nhập
                     </a>
                   </div>
-                </form>
+                  </form>
+                </>
               )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
 

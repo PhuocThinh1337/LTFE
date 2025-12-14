@@ -1,4 +1,8 @@
 import React, { useState, FormEvent, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { api } from '../services/api';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 
 interface AuthState {
   email: string;
@@ -7,6 +11,7 @@ interface AuthState {
 }
 
 function AuthLoginPage(): React.JSX.Element {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<AuthState>({
     email: '',
     password: '',
@@ -14,6 +19,7 @@ function AuthLoginPage(): React.JSX.Element {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     document.title = 'Đăng nhập - Nippon Paint';
@@ -36,9 +42,10 @@ function AuthLoginPage(): React.JSX.Element {
     }
   };
 
-  const handleSubmit = (e: FormEvent): void => {
+  const handleSubmit = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
+    
     if (!formData.email.trim()) {
       newErrors.email = 'Vui lòng nhập email';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -47,100 +54,47 @@ function AuthLoginPage(): React.JSX.Element {
     if (!formData.password.trim()) {
       newErrors.password = 'Vui lòng nhập mật khẩu';
     }
+    
     setErrors(newErrors);
+    
     if (Object.keys(newErrors).length === 0) {
-      // Placeholder submit
-      // eslint-disable-next-line no-console
-      console.log('Login submit', formData);
-      alert('Đăng nhập thành công!');
+      setIsLoading(true);
+      try {
+        await api.login(formData.email, formData.password);
+        // Login successful
+        navigate('/');
+        window.location.reload(); // Reload to update auth state
+      } catch (error) {
+        setErrors({
+          submit: error instanceof Error ? error.message : 'Đăng nhập thất bại. Vui lòng thử lại.'
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
   return (
-    <div className="np-auth-fullscreen">
-      <div className="np-auth-fullscreen-left">
-        <div className="np-auth-fullscreen-brand">
-          <div className="np-auth-fullscreen-logo">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <rect width="48" height="48" rx="12" fill="#b71010"/>
-              <text x="24" y="32" fontSize="24" fontWeight="bold" fill="white" textAnchor="middle">NP</text>
-            </svg>
-            <div>
-              <h2>NIPPON PAINT</h2>
-              <p>Việt Nam</p>
-            </div>
-          </div>
-        </div>
+    <>
+      <Header />
+      <div className="np-auth-page">
+        <div className="np-container">
+          <div className="np-auth-wrapper-new">
+            <div className="np-auth-card-new">
+              <div className="np-auth-card-header">
+                <div className="np-auth-icon-wrapper">
+                  <div className="np-auth-icon-circle-new">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </div>
+                </div>
+                <h1>Đăng nhập</h1>
+                <p>Nhập thông tin tài khoản của bạn để tiếp tục</p>
+              </div>
 
-        <div className="np-auth-fullscreen-content">
-          <h1>Chào mừng đến với Nippon Paint</h1>
-          <p>Hệ thống quản lý và hỗ trợ khách hàng toàn diện</p>
-          
-          <div className="np-auth-fullscreen-features">
-            <div className="np-auth-feature-item">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-              <span>Tính toán lượng sơn chính xác</span>
-            </div>
-            <div className="np-auth-feature-item">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-              <span>Hỗ trợ phối màu chuyên nghiệp</span>
-            </div>
-            <div className="np-auth-feature-item">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-              <span>Quản lý đơn hàng dễ dàng</span>
-            </div>
-            <div className="np-auth-feature-item">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-              <span>Hỗ trợ 24/7 từ chuyên gia</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="np-auth-fullscreen-footer">
-          <p>© 2024 Nippon Paint. All Rights Reserved.</p>
-          <div className="np-auth-fullscreen-links">
-            <a href="/">Về chúng tôi</a>
-            <a href="/">Điều khoản</a>
-            <a href="/">Bảo mật</a>
-            <a href="/">Liên hệ</a>
-          </div>
-        </div>
-      </div>
-
-      <div className="np-auth-fullscreen-right">
-        <div className="np-auth-fullscreen-card">
-          <div className="np-auth-fullscreen-back">
-            <a href="/">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/>
-              </svg>
-              Về trang chủ
-            </a>
-          </div>
-
-          <div className="np-auth-fullscreen-icon">
-            <div className="np-auth-icon-circle">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-          </div>
-          
-          <div className="np-auth-fullscreen-header">
-            <h1>Đăng nhập</h1>
-            <p>Nhập thông tin tài khoản của bạn để tiếp tục</p>
-          </div>
-
-          <form className="np-auth-form" onSubmit={handleSubmit} noValidate>
+              <form className="np-auth-form" onSubmit={handleSubmit} noValidate>
             <div className={`np-auth-field ${errors.email ? 'has-error' : ''}`}>
               <label htmlFor="email">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -197,6 +151,12 @@ function AuthLoginPage(): React.JSX.Element {
               {errors.password && <span className="np-auth-error">{errors.password}</span>}
             </div>
 
+            {errors.submit && (
+              <div className="np-auth-error-message">
+                <span>{errors.submit}</span>
+              </div>
+            )}
+
             <div className="np-auth-row">
               <label className="np-auth-checkbox">
                 <input
@@ -212,11 +172,13 @@ function AuthLoginPage(): React.JSX.Element {
               </a>
             </div>
 
-            <button type="submit" className="np-auth-btn primary">
-              <span>Đăng nhập</span>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
-              </svg>
+            <button type="submit" className="np-auth-btn primary" disabled={isLoading}>
+              <span>{isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}</span>
+              {!isLoading && (
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+                </svg>
+              )}
             </button>
 
             <div className="np-auth-divider">
@@ -230,9 +192,12 @@ function AuthLoginPage(): React.JSX.Element {
               </a>
             </div>
           </form>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
 
