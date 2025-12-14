@@ -6,11 +6,9 @@ import { useCart } from '../../contexts/CartContext';
 function Header(): React.JSX.Element {
   const location = useLocation();
 
-  const { getTotalItems } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const totalItems = getTotalItems();
-
+  const { state } = useCart();
+  const itemCount = state.items.length;
   const isActive = (path: string): string => {
     return location.pathname === path ? 'active-link' : '';
   };
@@ -90,10 +88,11 @@ function Header(): React.JSX.Element {
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
               </svg>
-              {totalItems > 0 && (
-                <span className="np-cart-count">
-                  {totalItems < 100 ? totalItems : '99+'}
-                </span>
+              {itemCount > 0 && itemCount < 100 && (
+                <span className="np-cart-count">{itemCount}</span>
+              )}
+              {itemCount >= 100 && (
+                <span className="np-cart-count">99+</span>
               )}
             </Link>
             

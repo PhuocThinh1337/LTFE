@@ -44,7 +44,7 @@ function CartPage(): React.JSX.Element {
   }
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = subtotal > 1000000 ? 0 : 50000; // Miễn phí ship cho đơn > 1 triệu
+  const shipping = subtotal > 3000000 ? 0 : 100000; // Miễn phí ship cho đơn > 3 triệu, còn lại 100k
   const total = subtotal + shipping;
 
   const handleUpdateQuantity = async (id: number, newQuantity: number) => {
@@ -145,6 +145,19 @@ function CartPage(): React.JSX.Element {
                       <span>Phí vận chuyển:</span>
                       <span>{shipping === 0 ? 'Miễn phí' : formatPrice(shipping)}</span>
                     </div>
+                    
+                    {/* Note về chính sách vận chuyển */}
+                    {subtotal < 3000000 && (
+                      <div className="np-shipping-note">
+                        Mua thêm {formatPrice(3000000 - subtotal)} để được miễn phí vận chuyển
+                      </div>
+                    )}
+                    
+                    {subtotal >= 3000000 && (
+                      <div className="np-shipping-note np-shipping-free">
+                        🎉 Đơn hàng của bạn đã được miễn phí vận chuyển!
+                      </div>
+                    )}
                     
                     <div className="np-summary-divider"></div>
                     
