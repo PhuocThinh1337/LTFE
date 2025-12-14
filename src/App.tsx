@@ -11,7 +11,7 @@ import WishlistPage from './pages/WishlistPage';
 import AuthLoginPage from './pages/AuthLoginPage';
 import AuthRegisterPage from './pages/AuthRegisterPage';
 import AuthForgotPasswordPage from './pages/AuthForgotPasswordPage';
-import CartPage from './pages/cart/CartPage'; 
+import CartPage from './pages/cart/CartPage';
 
 function App(): React.JSX.Element {
   return (
@@ -21,7 +21,7 @@ function App(): React.JSX.Element {
           <Route path="/" element={<HomePage />} />
           <Route path="/san-pham" element={<ProductsPage />} />
           <Route path="/lien-he" element={<ContactPage />} />
-          
+
           <Route path="/tinh-toan-luong-son" element={<PaintEstimatorPage />} />
           <Route path="/ho-tro-phoi-mau" element={<ColorSupportPage />} />
 

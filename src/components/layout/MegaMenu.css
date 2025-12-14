@@ -6,6 +6,7 @@
     width: 100%;
     height: auto;
     background-color: transparent;
+    /* No dark overlay */
     z-index: 999;
     opacity: 0;
     visibility: hidden;
@@ -72,44 +73,15 @@
     padding-left: 8px;
 }
 
-.np-mega-menu-category {
-    display: block;
-    padding: 10px 16px;
-    font-weight: 500;
+/* Sidebar text fix */
+.np-mega-menu .np-mega-menu-category {
     color: #374151 !important;
-    /* Fixed color */
-    text-decoration: none;
-    transition: all 0.2s;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-bottom: 2px;
-    position: relative;
+    font-weight: 500;
 }
 
-.np-mega-menu-category:hover {
-    color: #e60012;
-    background-color: #fef2f2;
-    padding-left: 20px;
-}
-
-.np-mega-menu-category.active {
+.np-mega-menu .np-mega-menu-category:hover,
+.np-mega-menu .np-mega-menu-category.active {
     color: #e60012 !important;
-    background-color: #fef2f2;
-    font-weight: 700;
-    padding-left: 20px;
-}
-
-.np-mega-menu-category.active::before {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 20px;
-    background-color: #e60012;
-    border-radius: 2px;
 }
 
 /* Content - Products */
@@ -129,6 +101,7 @@
     background: transparent;
     border: none;
     border-radius: 4px;
+    /* Ensure radius is applied to children */
     overflow: hidden;
     transition: all 0.3s ease;
     display: flex;
@@ -148,23 +121,19 @@
     justify-content: center;
     height: 220px;
     border-top-left-radius: 4px;
+    /* Explicit radius */
     border-top-right-radius: 4px;
-}
-
-.np-mm-product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
 }
 
 /* Bottom half: Grey with info */
 .np-mm-product-info {
     padding: 24px 20px;
+    /* Adjusted padding */
     flex: 1;
     display: flex;
     flex-direction: column;
     background: #eaeaea;
-    /* Darker grey */
+    /* Darker grey to match reference */
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
 }
@@ -185,6 +154,7 @@
 
 .np-mm-product-desc {
     font-size: 13px;
+    /* Slightly larger/clearer */
     color: #666;
     margin-bottom: 24px;
     display: -webkit-box;
@@ -196,21 +166,24 @@
     line-height: 1.6;
 }
 
+/* Hide price as per reference image */
 .np-mm-product-price {
     display: none;
-    /* Hide price */
 }
 
-/* Button matches reference */
+/* Button matches reference: Pill shape, red border, transparent bg, red arrow circle */
 .np-mm-product-btn {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 6px 6px 6px 16px;
     background-color: transparent;
+    /* Transparent on grey bg */
     color: #c41230 !important;
+    /* Slightly darker/richer red */
     border: 1px solid #c41230;
     border-radius: 24px;
+    /* More rounded */
     text-decoration: none;
     font-weight: 700;
     transition: all 0.25s ease;
@@ -220,7 +193,9 @@
     letter-spacing: 0.5px;
     margin-top: auto;
     white-space: nowrap;
+    /* Prevent wrapping */
     overflow: hidden;
+    /* Ensure overflow doesn't break layout */
 }
 
 .np-mm-product-btn:hover {
@@ -229,6 +204,7 @@
 
 .np-btn-icon {
     width: 28px;
+    /* Slightly larger again */
     height: 28px;
     background-color: #c41230;
     border-radius: 50%;
@@ -242,6 +218,14 @@
     margin-left: 8px;
 }
 
+/* Image fallback styling */
+.np-mm-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* New Badge - Circular/Pill as per reference (Top Right on Image) */
 .np-badge-new {
     position: absolute;
     top: 15px;
@@ -250,6 +234,7 @@
     color: white;
     font-size: 10px;
     padding: 6px 8px;
+    /* Rounder */
     border-radius: 20px;
     font-weight: 700;
     z-index: 2;
