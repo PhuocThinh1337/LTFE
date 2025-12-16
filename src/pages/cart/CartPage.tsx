@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
@@ -14,11 +14,57 @@ function CartPage(): React.JSX.Element {
   } = useCart();
   const navigate = useNavigate();
 
+  // State để track sản phẩm được chọn
+  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+
+  // Khởi tạo tất cả sản phẩm được chọn khi load
+  useEffect(() => {
+    const allIds = new Set(cartItems.map(item => item.id));
+    setSelectedItems(allIds);
+  }, [cartItems]);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
       currency: 'VND'
     }).format(price);
+  };
+
+  // Tính toán chỉ cho sản phẩm được chọn
+  const selectedCartItems = cartItems.filter(item => selectedItems.has(item.id));
+  const subtotal = selectedCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = selectedItems.size === 0 ? 0 : (subtotal > 3000000 ? 0 : 100000); // Miễn phí ship cho đơn > 3 triệu, còn lại 100k. Nếu không chọn sản phẩm nào thì ship = 0
+  const total = subtotal + shipping;
+
+  // Toggle chọn/bỏ chọn sản phẩm
+  const toggleItemSelection = (itemId: number) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(itemId)) {
+      newSelected.delete(itemId);
+    } else {
+      newSelected.add(itemId);
+    }
+    setSelectedItems(newSelected);
+  };
+
+  // Chọn tất cả
+  const selectAllItems = () => {
+    const allIds = new Set(cartItems.map(item => item.id));
+    setSelectedItems(allIds);
+  };
+
+  // Bỏ chọn tất cả
+  const deselectAllItems = () => {
+    setSelectedItems(new Set());
+  };
+
+  const handleUpdateQuantity = async (id: number, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    await updateQuantity(id, newQuantity);
+  };
+
+  const handleRemoveItem = async (id: number) => {
+    await removeItem(id);
   };
 
   if (loading) {
@@ -44,19 +90,6 @@ function CartPage(): React.JSX.Element {
       </div>
     );
   }
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = subtotal > 3000000 ? 0 : 100000; // Miễn phí ship cho đơn > 3 triệu, còn lại 100k
-  const total = subtotal + shipping;
-
-  const handleUpdateQuantity = async (id: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    await updateQuantity(id, newQuantity);
-  };
-
-  const handleRemoveItem = async (id: number) => {
-    await removeItem(id);
-  };
 
   return (
     <div className="np-app">
@@ -88,8 +121,37 @@ function CartPage(): React.JSX.Element {
               <div className="np-cart-content">
                 {/* Danh sách sản phẩm */}
                 <div className="np-cart-items">
+                  {/* Header với checkbox select all */}
+                  <div className="np-cart-header">
+                    <div className="np-select-all">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.size === cartItems.length && cartItems.length > 0}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            selectAllItems();
+                          } else {
+                            deselectAllItems();
+                          }
+                        }}
+                        className="np-checkbox"
+                      />
+                      <span>Chọn tất cả ({cartItems.length})</span>
+                    </div>
+                  </div>
+
                   {cartItems.map(item => (
                     <div key={item.id} className="np-cart-item">
+                      {/* Checkbox cho từng item */}
+                      <div className="np-item-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.has(item.id)}
+                          onChange={() => toggleItemSelection(item.id)}
+                          className="np-checkbox"
+                        />
+                      </div>
+                      
                       <div className="np-cart-item-image">
                         <img src={item.image} alt={item.name} />
                       </div>
@@ -145,31 +207,51 @@ function CartPage(): React.JSX.Element {
                     
                     <div className="np-summary-row">
                       <span>Phí vận chuyển:</span>
-                      <span>{shipping === 0 ? 'Miễn phí' : formatPrice(shipping)}</span>
+                      <span>
+                        {selectedItems.size === 0 
+                          ? '0 VND' 
+                          : (shipping === 0 
+                            ? 'Miễn phí (đơn > 3 triệu)' 
+                            : formatPrice(shipping) + ' (đơn < 3 triệu)'
+                          )
+                        }
+                      </span>
                     </div>
                     
                     {/* Note về chính sách vận chuyển */}
-                    {subtotal < 3000000 && (
+                    {subtotal < 3000000 && selectedItems.size > 0 && (
                       <div className="np-shipping-note">
                         Mua thêm {formatPrice(3000000 - subtotal)} để được miễn phí vận chuyển
                       </div>
                     )}
                     
-                    {subtotal >= 3000000 && (
+                    {subtotal >= 3000000 && selectedItems.size > 0 && (
                       <div className="np-shipping-note np-shipping-free">
-                        🎉 Đơn hàng của bạn đã được miễn phí vận chuyển!
+                        Đơn hàng của bạn đã được miễn phí vận chuyển!
                       </div>
                     )}
                     
                     <div className="np-summary-divider"></div>
                     
                     <div className="np-summary-row np-summary-total">
-                      <span>Tổng cộng:</span>
+                      <span>Tổng cộng ({selectedItems.size} sản phẩm):</span>
                       <span>{formatPrice(total)}</span>
                     </div>
                     
-                    <button className="np-btn-primary np-btn-full">
-                      Tiến hành thanh toán
+                    <button 
+                      className="np-btn-primary np-btn-full"
+                      disabled={selectedItems.size === 0}
+                      onClick={() => {
+                        if (selectedItems.size > 0) {
+                          // TODO: Navigate to checkout với selected items
+                          console.log('Thanh toán với sản phẩm:', selectedCartItems);
+                        }
+                      }}
+                    >
+                      {selectedItems.size === 0 
+                        ? 'Vui lòng chọn sản phẩm' 
+                        : `Thanh toán (${selectedItems.size} sản phẩm)`
+                      }
                     </button>
                     
                     <button 
@@ -187,7 +269,13 @@ function CartPage(): React.JSX.Element {
           <section className="np-empty-cart">
             <div className="np-container">
               <div className="np-empty-cart-content">
-                <div className="np-empty-cart-icon">🛒</div>
+                <div className="np-empty-cart-icon">
+                  <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                  </svg>
+                </div>
                 <h2>Giỏ hàng trống</h2>
                 <p>Hãy khám phá các sản phẩm của chúng tôi và thêm vào giỏ hàng!</p>
                 <a href="/san-pham" className="np-btn-primary">
