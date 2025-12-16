@@ -1,6 +1,6 @@
 import React, { useState, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 
@@ -12,6 +12,7 @@ interface AuthState {
 
 function AuthLoginPage(): React.JSX.Element {
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState<AuthState>({
     email: '',
     password: '',
@@ -20,6 +21,13 @@ function AuthLoginPage(): React.JSX.Element {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     document.title = 'Đăng nhập - Nippon Paint';
@@ -60,10 +68,9 @@ function AuthLoginPage(): React.JSX.Element {
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
       try {
-        await api.login(formData.email, formData.password);
-        // Login successful
+        await login(formData.email, formData.password);
+        // Login successful - navigate to home
         navigate('/');
-        window.location.reload(); // Reload to update auth state
       } catch (error) {
         setErrors({
           submit: error instanceof Error ? error.message : 'Đăng nhập thất bại. Vui lòng thử lại.'
@@ -84,17 +91,17 @@ function AuthLoginPage(): React.JSX.Element {
               <div className="np-auth-card-header">
                 <div className="np-auth-icon-wrapper">
                   <div className="np-auth-icon-circle-new">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                      <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                  </div>
-                </div>
-                <h1>Đăng nhập</h1>
-                <p>Nhập thông tin tài khoản của bạn để tiếp tục</p>
-              </div>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+          </div>
+            <h1>Đăng nhập</h1>
+            <p>Nhập thông tin tài khoản của bạn để tiếp tục</p>
+          </div>
 
-              <form className="np-auth-form" onSubmit={handleSubmit} noValidate>
+          <form className="np-auth-form" onSubmit={handleSubmit} noValidate>
             <div className={`np-auth-field ${errors.email ? 'has-error' : ''}`}>
               <label htmlFor="email">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -175,9 +182,9 @@ function AuthLoginPage(): React.JSX.Element {
             <button type="submit" className="np-auth-btn primary" disabled={isLoading}>
               <span>{isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}</span>
               {!isLoading && (
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
-                </svg>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+              </svg>
               )}
             </button>
 
@@ -192,9 +199,9 @@ function AuthLoginPage(): React.JSX.Element {
               </a>
             </div>
           </form>
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
       </div>
       <Footer />
     </>

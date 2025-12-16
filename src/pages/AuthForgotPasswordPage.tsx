@@ -75,7 +75,7 @@ function AuthForgotPasswordPage(): React.JSX.Element {
                     <h1>Quên mật khẩu?</h1>
                     <p>Nhập email của bạn để nhận hướng dẫn đặt lại mật khẩu</p>
                   </div>
-                  <form className="np-auth-form" onSubmit={handleSubmit} noValidate>
+                <form className="np-auth-form" onSubmit={handleSubmit} noValidate>
                   <div className={`np-auth-field ${error ? 'has-error' : ''}`}>
                     <label htmlFor="email">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -101,10 +101,10 @@ function AuthForgotPasswordPage(): React.JSX.Element {
                   <button type="submit" className="np-auth-btn primary" disabled={isLoading}>
                     <span>{isLoading ? 'Đang gửi...' : 'Gửi yêu cầu'}</span>
                     {!isLoading && (
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                      </svg>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                    </svg>
                     )}
                   </button>
 
@@ -120,12 +120,12 @@ function AuthForgotPasswordPage(): React.JSX.Element {
                       Quay lại đăng nhập
                     </a>
                   </div>
-                  </form>
+                </form>
                 </>
               )}
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
       </div>
       <Footer />
     </>
