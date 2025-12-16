@@ -301,6 +301,86 @@ export const api = {
     await delay(200);
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
+  },
+
+  // User - Update Profile
+  updateProfile: async (userData: { name?: string; phone?: string; email?: string }): Promise<User> => {
+    await delay(600);
+    
+    const token = localStorage.getItem('auth_token');
+    const currentUserStr = localStorage.getItem('user');
+    
+    if (!token || !currentUserStr) {
+      throw new Error('Bạn cần đăng nhập để cập nhật thông tin');
+    }
+    
+    const currentUser: User = JSON.parse(currentUserStr);
+    const users = getUsers();
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
+    
+    if (userIndex === -1) {
+      throw new Error('Không tìm thấy người dùng');
+    }
+    
+    // Check if email is being changed and if it's already taken
+    if (userData.email && userData.email.toLowerCase() !== currentUser.email.toLowerCase()) {
+      const emailExists = users.some(
+        u => u.id !== currentUser.id && u.email.toLowerCase() === userData.email!.toLowerCase()
+      );
+      
+      if (emailExists) {
+        throw new Error('Email này đã được sử dụng. Vui lòng sử dụng email khác.');
+      }
+    }
+    
+    // Update user data
+    const updatedUser: UserWithPassword = {
+      ...users[userIndex],
+      ...userData,
+      id: currentUser.id // Keep original ID
+    };
+    
+    users[userIndex] = updatedUser;
+    saveUsers(users);
+    
+    // Remove password from returned user
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    
+    // Update localStorage
+    localStorage.setItem('user', JSON.stringify(userWithoutPassword));
+    
+    return userWithoutPassword;
+  },
+
+  // User - Change Password
+  changePassword: async (currentPassword: string, newPassword: string): Promise<{ message: string }> => {
+    await delay(600);
+    
+    const token = localStorage.getItem('auth_token');
+    const currentUserStr = localStorage.getItem('user');
+    
+    if (!token || !currentUserStr) {
+      throw new Error('Bạn cần đăng nhập để đổi mật khẩu');
+    }
+    
+    const currentUser: User = JSON.parse(currentUserStr);
+    const users = getUsers();
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
+    
+    if (userIndex === -1) {
+      throw new Error('Không tìm thấy người dùng');
+    }
+    
+    // Verify current password
+    if (users[userIndex].password !== currentPassword) {
+      throw new Error('Mật khẩu hiện tại không đúng');
+    }
+    
+    // Update password
+    users[userIndex].password = newPassword;
+    saveUsers(users);
+    
+    return { message: 'Đổi mật khẩu thành công' };
   }
 };
 

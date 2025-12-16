@@ -15,6 +15,7 @@ import AuthForgotPasswordPage from './pages/AuthForgotPasswordPage';
 import CartPage from './pages/cart/CartPage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
+import ProfilePage from './pages/ProfilePage';
 
 
 function App(): React.JSX.Element {
@@ -41,6 +42,7 @@ function App(): React.JSX.Element {
           <Route path="/gio-hang" element={<CartPage />} />
           <Route path="/lich-su-mua-hang" element={<OrderHistoryPage />} />
           <Route path="/thanh-toan" element={<CheckoutPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<AuthLoginPage />} />
           <Route path="/register" element={<AuthRegisterPage />} />
           <Route path="/forgot-password" element={<AuthForgotPasswordPage />} />
