@@ -35,8 +35,6 @@ interface UsersData {
   }>;
 }
 
-// Mock data - sử dụng data từ data/products.ts thay vì mockProducts
-// const mockProducts: Product[] = [...]; // Loại bỏ mockProducts
 
 // Simulate API delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
