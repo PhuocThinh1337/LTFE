@@ -1,29 +1,18 @@
-/* Cart Button Styles */
-.np-cart-btn {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px;
-    background: #ffffff;
-    border: 2px solid #e2e4ea;
-    border-radius: 8px;
-    color: #333;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    margin-right: 12px;
-    min-width: 50px;
-    height: 50px;
+/* Cart Button Styles - Override App.css for header */
+.np-header-actions .np-cart-btn {
+    margin-right: 0;
+    min-width: 40px;
+    height: 40px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
   }
   
-  .np-cart-btn:hover {
-    border-color: #e74c3c;
-    color: #e74c3c;
+  .np-header-actions .np-cart-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.15);
-    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    border-color: rgba(255, 255, 255, 0.3);
   }
   
   .np-cart-icon {
@@ -36,24 +25,18 @@
     transform: scale(1.1);
   }
   
-  .np-cart-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-    color: white;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1;
-    border: 3px solid #ffffff;
-    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
-    animation: cartBadgePulse 2s infinite;
+  .np-header-actions .np-cart-count {
+    top: -4px;
+    right: -4px;
+    background: #b71010;
+    border: 2px solid #0046ad;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    border-radius: 10px;
+    padding: 2px 6px;
+    min-width: 18px;
+    animation: none;
   }
   
   .np-cart-count:empty {
@@ -82,45 +65,28 @@
     box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
   }
   
-  /* Responsive Design */
+  /* Responsive Design for Cart */
   @media (max-width: 768px) {
-    .np-cart-btn {
-      padding: 10px;
-      margin-right: 8px;
-      min-width: 44px;
-      height: 44px;
+    .np-header-actions .np-cart-btn {
+      width: 36px;
+      height: 36px;
+      padding: 6px;
     }
     
-    .np-cart-icon {
-        font-size: 20px;
-        color: inherit;
-        transition: all 0.3s ease;
-    }
-
-    .np-cart-btn:hover .np-cart-icon {
-        transform: scale(1.1);
-        color: #e74c3c;
-    }
-    
-    .np-cart-count {
-      width: 20px;
-      height: 20px;
-      font-size: 11px;
-      top: -6px;
-      right: -6px;
-      border-width: 2px;
+    .np-header-actions .np-cart-count {
+      width: 16px;
+      height: 16px;
+      font-size: 10px;
+      top: -3px;
+      right: -3px;
     }
   }
   
   @media (max-width: 480px) {
-    .np-cart-btn {
-      min-width: 40px;
-      height: 40px;
-      padding: 8px;
-    }
-    
-    .np-cart-icon {
-      font-size: 16px;
+    .np-header-actions .np-cart-btn {
+      width: 36px;
+      height: 36px;
+      padding: 6px;
     }
   }
   /* Font Awesome Icon Fix */
@@ -144,3 +110,295 @@
     transform: scale(1.1);
     color: #e74c3c;
   }
+
+/* Header Actions Container - Ensure proper spacing */
+.np-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.np-header-actions > * {
+  flex-shrink: 0;
+}
+
+/* User Menu Styles */
+.np-user-menu-wrapper {
+  position: relative;
+  margin-left: 0;
+  z-index: 1001;
+  flex-shrink: 0;
+}
+
+/* Smooth dropdown visibility */
+.np-user-dropdown {
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.np-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  background: #ffffff;
+  border: 1px solid #e2e4ea;
+  border-radius: 8px;
+  color: #0046ad;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 13px;
+  white-space: nowrap;
+  height: 40px;
+  position: relative;
+}
+
+.np-user-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(0, 70, 173, 0.1) 0%, rgba(0, 70, 173, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.np-user-btn:hover {
+  border-color: #0046ad;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 70, 173, 0.2);
+}
+
+.np-user-btn:hover::after {
+  opacity: 1;
+}
+
+.np-user-btn:hover .np-user-avatar-circle {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 70, 173, 0.3);
+}
+
+.np-user-btn:hover svg {
+  stroke: #0046ad;
+  transform: rotate(180deg);
+}
+
+.np-user-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 70, 173, 0.15);
+}
+
+.np-user-btn svg {
+  stroke: #0046ad;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.np-user-avatar-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0046ad 0%, #0066cc 100%);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 70, 173, 0.2);
+}
+
+.np-user-btn svg:last-child {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.np-user-dropdown-bridge {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 100%;
+  height: 12px;
+  z-index: 1001;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.np-user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #ffffff;
+  border: 2px solid #e2e4ea;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 240px;
+  z-index: 1002;
+  overflow: hidden;
+  transform-origin: top right;
+}
+
+.np-user-info {
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-bottom: 1px solid #e2e4ea;
+  transition: background 0.3s ease;
+}
+
+.np-user-info:hover {
+  background: linear-gradient(135deg, #f0f4f8 0%, #f8f9fa 100%);
+}
+
+.np-user-info-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+  font-size: 15px;
+  transition: color 0.2s ease;
+}
+
+.np-user-info:hover .np-user-info-name {
+  color: #0046ad;
+}
+
+.np-user-info-email {
+  font-size: 13px;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.np-user-info:hover .np-user-info-email {
+  color: #555;
+}
+
+.np-user-divider {
+  height: 1px;
+  background: #e2e4ea;
+  margin: 8px 0;
+}
+
+.np-user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.np-user-menu-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #0046ad;
+  transform: scaleY(0);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: bottom;
+}
+
+.np-user-menu-item:hover {
+  background: linear-gradient(90deg, #f8f9fa 0%, #f0f4f8 100%);
+  color: #0046ad;
+  padding-left: 20px;
+  transform: translateX(2px);
+}
+
+.np-user-menu-item:hover::before {
+  transform: scaleY(1);
+  transform-origin: top;
+}
+
+.np-user-menu-item:hover svg {
+  transform: scale(1.1);
+  stroke: #0046ad;
+}
+
+.np-user-menu-item:active {
+  transform: translateX(1px);
+  background: #e8edf2;
+}
+
+.np-user-menu-item svg {
+  flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  stroke: currentColor;
+}
+
+/* Login Button Styles - Override App.css for consistency */
+.np-header-actions .np-login-btn {
+  margin-left: 0;
+  padding: 8px 16px;
+  height: 40px;
+}
+
+/* Responsive Design for User Menu */
+@media (max-width: 1024px) {
+  .np-user-btn {
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+  }
+
+  .np-user-name {
+    display: none;
+  }
+
+  .np-user-btn svg:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .np-user-btn {
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .np-user-dropdown {
+    right: 0;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .np-user-btn {
+    padding: 6px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .np-user-dropdown {
+    min-width: 180px;
+  }
+}

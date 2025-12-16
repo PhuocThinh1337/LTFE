@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import MegaMenu from './MegaMenu';
 import SupportMegaMenu from './SupportMegaMenu';
+import './header.css';
 
 import { useCart } from '../../contexts/CartContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 
 function Header(): React.JSX.Element {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isProductsMenuOpen, setIsProductsMenuOpen] = useState(false);
   const [isSupportMenuOpen, setIsSupportMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { state } = useCart();
+  const { user, logout, isAuthenticated } = useAuth();
   const itemCount = state.items.length;
   const isActive = (path: string): string => {
     return location.pathname === path ? 'active-link' : '';
@@ -20,6 +25,16 @@ function Header(): React.JSX.Element {
 
   const toggleMobileMenu = (): void => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleLogout = async (): Promise<void> => {
+    await logout();
+    setIsUserMenuOpen(false);
+    navigate('/');
+  };
+
+  const getInitial = (name: string): string => {
+    return name.charAt(0).toUpperCase();
   };
 
   return (
@@ -127,13 +142,65 @@ function Header(): React.JSX.Element {
               )}
             </Link>
 
-            <Link to="/login" className="np-login-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-              <span>Đăng nhập</span>
-            </Link>
+            {isAuthenticated && user ? (
+              <div 
+                className="np-user-menu-wrapper"
+                onMouseEnter={() => setIsUserMenuOpen(true)}
+                onMouseLeave={() => setIsUserMenuOpen(false)}
+              >
+                <button className="np-user-btn">
+                  <div className="np-user-avatar-circle">
+                    {getInitial(user.name)}
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                {isUserMenuOpen && (
+                  <>
+                    <div className="np-user-dropdown-bridge"></div>
+                    <div className="np-user-dropdown" onMouseEnter={() => setIsUserMenuOpen(true)}>
+                      <div className="np-user-info">
+                        <div className="np-user-info-name">{user.name}</div>
+                        <div className="np-user-info-email">{user.email}</div>
+                      </div>
+                      <div className="np-user-divider"></div>
+                      <Link to="/profile" className="np-user-menu-item" onClick={() => setIsUserMenuOpen(false)}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <span>Thông tin tài khoản</span>
+                      </Link>
+                      <Link to="/lich-su-mua-hang" className="np-user-menu-item" onClick={() => setIsUserMenuOpen(false)}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                          <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                          <path d="M9 14l2 2 4-4" />
+                        </svg>
+                        <span>Lịch sử mua hàng</span>
+                      </Link>
+                      <button className="np-user-menu-item" onClick={handleLogout}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                          <polyline points="16 17 21 12 16 7" />
+                          <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        <span>Đăng xuất</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="np-login-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <span>Đăng nhập</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>

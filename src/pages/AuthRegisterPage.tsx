@@ -106,17 +106,17 @@ function AuthRegisterPage(): React.JSX.Element {
               <div className="np-auth-card-header">
                 <div className="np-auth-icon-wrapper">
                   <div className="np-auth-icon-circle-new register">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="8.5" cy="7" r="4"/>
-                      <line x1="20" y1="8" x2="20" y2="14"/>
-                      <line x1="23" y1="11" x2="17" y2="11"/>
-                    </svg>
-                  </div>
-                </div>
-                <h1>Tạo tài khoản mới</h1>
-                <p>Đăng ký để nhận ưu đãi và hỗ trợ từ Nippon Paint</p>
-              </div>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="20" y1="8" x2="20" y2="14"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+              </svg>
+            </div>
+          </div>
+            <h1>Tạo tài khoản mới</h1>
+            <p>Đăng ký để nhận ưu đãi và hỗ trợ từ Nippon Paint</p>
+          </div>
 
               <form className="np-auth-form" onSubmit={handleSubmit} noValidate>
                 <div className={`np-auth-field ${errors.fullName ? 'has-error' : ''}`}>
@@ -257,9 +257,9 @@ function AuthRegisterPage(): React.JSX.Element {
                 <button type="submit" className="np-auth-btn primary" disabled={isLoading}>
                   <span>{isLoading ? 'Đang đăng ký...' : 'Đăng ký'}</span>
                   {!isLoading && (
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M10 3a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H4a1 1 0 1 1 0-2h5V4a1 1 0 0 1 1-1z"/>
-                    </svg>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 3a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H4a1 1 0 1 1 0-2h5V4a1 1 0 0 1 1-1z"/>
+                  </svg>
                   )}
                 </button>
 
@@ -274,9 +274,9 @@ function AuthRegisterPage(): React.JSX.Element {
                   </a>
                 </div>
               </form>
-            </div>
-          </div>
         </div>
+      </div>
+    </div>
       </div>
       <Footer />
     </>
