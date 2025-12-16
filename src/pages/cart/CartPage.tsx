@@ -239,18 +239,25 @@ function CartPage(): React.JSX.Element {
                     </div>
                     
                     <button 
-                      className="np-btn-primary np-btn-full"
+                      className="git np-btn-primary np-btn-full"
                       disabled={selectedItems.size === 0}
                       onClick={() => {
                         if (selectedItems.size > 0) {
                           // TODO: Navigate to checkout với selected items
-                          console.log('Thanh toán với sản phẩm:', selectedCartItems);
+                          navigate('/thanh-toan', {
+                            state: {
+                              selectedItems: selectedCartItems,
+                              subtotal,
+                              shipping,
+                              total
+                            }
+                          });
                         }
                       }}
                     >
                       {selectedItems.size === 0 
                         ? 'Vui lòng chọn sản phẩm' 
-                        : `Thanh toán (${selectedItems.size} sản phẩm)`
+                        : `Thanh toán `
                       }
                     </button>
                     
