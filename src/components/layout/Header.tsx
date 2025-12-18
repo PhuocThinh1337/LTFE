@@ -93,11 +93,11 @@ function Header(): React.JSX.Element {
             <a href="#colors" onClick={() => setMobileMenuOpen(false)}>Màu sắc</a>
             <div
               className={`np-nav-item-wrapper ${isProductsMenuOpen ? 'open' : ''}`}
-              onMouseEnter={() => setIsProductsMenuOpen(true)}
-              onMouseLeave={() => setIsProductsMenuOpen(false)}
             >
               <div
                 className={`np-nav-trigger ${isActive('/san-pham')}`}
+                onClick={() => setIsProductsMenuOpen(!isProductsMenuOpen)}
+                style={{ cursor: 'pointer' }}
               >
                 Sản phẩm <span className="np-nav-arrow">▼</span>
               </div>
@@ -106,12 +106,11 @@ function Header(): React.JSX.Element {
             <a href="#business" onClick={() => setMobileMenuOpen(false)}>Lĩnh vực kinh doanh</a>
             <div
               className={`np-nav-item-wrapper ${isSupportMenuOpen ? 'open' : ''}`}
-              onMouseEnter={() => setIsSupportMenuOpen(true)}
-              onMouseLeave={() => setIsSupportMenuOpen(false)}
             >
               <div
                 className={`np-nav-trigger ${isActive('/tinh-toan-luong-son') || isActive('/ho-tro-phoi-mau') ? 'active-link' : ''}`}
                 style={{ cursor: 'pointer' }}
+                onClick={() => setIsSupportMenuOpen(!isSupportMenuOpen)}
               >
                 Hỗ trợ <span className="np-nav-arrow">▼</span>
               </div>
@@ -143,7 +142,7 @@ function Header(): React.JSX.Element {
             </Link>
 
             {isAuthenticated && user ? (
-              <div 
+              <div
                 className="np-user-menu-wrapper"
                 onMouseEnter={() => setIsUserMenuOpen(true)}
                 onMouseLeave={() => setIsUserMenuOpen(false)}

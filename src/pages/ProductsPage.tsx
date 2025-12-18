@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Breadcrumb from '../components/common/Breadcrumb';
@@ -11,9 +12,9 @@ interface ProductsPageProps {
   category?: string;
 }
 
-const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart }: { 
-  product: Product, 
-  wishlistIds: number[], 
+const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart }: {
+  product: Product,
+  wishlistIds: number[],
   toggleWishlist: (id: number) => void,
   onAddToCart: (message: string, type?: 'success' | 'error') => void
 }) => {
@@ -144,7 +145,7 @@ const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart }: {
           </div>
         </div>
 
-        <button className="np-btn-outline" style={{ width: '100%' }}>Xem chi tiết</button>
+        <Link to={`/san-pham/${product.slug}`} className="np-btn-outline" style={{ width: '100%', display: 'block', textAlign: 'center', textDecoration: 'none' }}>Xem chi tiết</Link>
       </div>
     </div>
   );
@@ -169,8 +170,8 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   }, []);
 
   const toggleWishlist = (id: number) => {
-    const newWishlist = wishlistIds.includes(id) 
-      ? wishlistIds.filter(wId => wId !== id) 
+    const newWishlist = wishlistIds.includes(id)
+      ? wishlistIds.filter(wId => wId !== id)
       : [...wishlistIds, id];
     setWishlistIds(newWishlist);
     localStorage.setItem('wishlist', JSON.stringify(newWishlist));
@@ -302,10 +303,10 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
 
         {/* Toast Notification */}
         {toast && (
-          <Toast 
-            message={toast.message} 
-            type={toast.type} 
-            onClose={closeToast} 
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={closeToast}
           />
         )}
       </main>
