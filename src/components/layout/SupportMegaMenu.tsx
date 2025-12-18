@@ -13,9 +13,9 @@ const SupportMegaMenu: React.FC<SupportMegaMenuProps> = ({ active, onClose }) =>
     if (!active) return null;
 
     return (
-        <div className={`np-mega-menu-overlay ${active ? 'active' : ''}`} onMouseLeave={onClose}>
+        <div className={`np-mega-menu-overlay ${active ? 'active' : ''}`} onClick={onClose}>
             <div className="np-container">
-                <div className="np-mega-menu">
+                <div className="np-mega-menu" onClick={(e) => e.stopPropagation()}>
                     <div className="np-container np-mega-menu-inner">
                         {/* Sidebar */}
                         <div className="np-mega-menu-sidebar">

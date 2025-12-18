@@ -16,6 +16,7 @@ import CartPage from './pages/cart/CartPage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
 import ProfilePage from './pages/ProfilePage';
+import ProductDetailPage from './pages/ProductDetailPage';
 
 
 function App(): React.JSX.Element {
@@ -26,6 +27,7 @@ function App(): React.JSX.Element {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/san-pham" element={<ProductsPage />} />
+            <Route path="/san-pham/:slug" element={<ProductDetailPage />} />
             <Route path="/lien-he" element={<ContactPage />} />
 
             <Route path="/tinh-toan-luong-son" element={<PaintEstimatorPage />} />
@@ -38,18 +40,18 @@ function App(): React.JSX.Element {
 
 
 
-          <Route path="/yeu-thich" element={<WishlistPage />} />
-          <Route path="/gio-hang" element={<CartPage />} />
-          <Route path="/lich-su-mua-hang" element={<OrderHistoryPage />} />
-          <Route path="/thanh-toan" element={<CheckoutPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/login" element={<AuthLoginPage />} />
-          <Route path="/register" element={<AuthRegisterPage />} />
-          <Route path="/forgot-password" element={<AuthForgotPasswordPage />} />
-        </Routes>
-      </Router>
-    </CartProvider>
-   </AuthProvider>
+            <Route path="/yeu-thich" element={<WishlistPage />} />
+            <Route path="/gio-hang" element={<CartPage />} />
+            <Route path="/lich-su-mua-hang" element={<OrderHistoryPage />} />
+            <Route path="/thanh-toan" element={<CheckoutPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/login" element={<AuthLoginPage />} />
+            <Route path="/register" element={<AuthRegisterPage />} />
+            <Route path="/forgot-password" element={<AuthForgotPasswordPage />} />
+          </Routes>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
 
   );
 }
