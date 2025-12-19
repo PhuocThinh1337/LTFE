@@ -13,7 +13,7 @@ import AuthLoginPage from './pages/AuthLoginPage';
 import AuthRegisterPage from './pages/AuthRegisterPage';
 import AuthForgotPasswordPage from './pages/AuthForgotPasswordPage';
 import CartPage from './pages/cart/CartPage';
-import OrderHistoryPage from './pages/OrderHistoryPage';
+import OrderHistoryPage from './pages/order-history/OrderHistoryPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
 import ProfilePage from './pages/ProfilePage';
 import ProductDetailPage from './pages/ProductDetailPage';

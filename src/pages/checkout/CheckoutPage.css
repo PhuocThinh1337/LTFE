@@ -624,4 +624,148 @@
   margin-bottom: 4px;
 }
 
+/* Order Success Modal */
+.np-order-success-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.np-order-success-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.np-order-success-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e2e4ea;
+  background: #f8f9fa;
+}
+
+.np-order-success-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #222;
+}
+
+.np-order-success-modal-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.np-success-icon-large {
+  font-size: 48px;
+  font-weight: bold;
+  color: #28a745;
+  margin-bottom: 16px;
+}
+
+.np-order-success-modal-content h4 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  color: #222;
+}
+
+.np-order-success-modal-content p {
+  margin: 8px 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.np-order-details-summary {
+  margin: 24px 0;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.np-order-details-summary h5 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
+}
+
+.np-order-summary-items {
+  margin-bottom: 16px;
+}
+
+.np-order-summary-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e4ea;
+}
+
+.np-order-summary-item:last-child {
+  border-bottom: none;
+}
+
+.np-order-summary-item-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f0f0f0;
+  flex-shrink: 0;
+}
+
+.np-order-summary-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.np-order-summary-item-info strong {
+  display: block;
+  font-size: 14px;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.np-order-summary-item-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.np-order-summary-totals {
+  border-top: 2px solid #e74c3c;
+  padding-top: 12px;
+}
+
+.np-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #555;
+}
+
+.np-summary-row.total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 0;
+}
+
 

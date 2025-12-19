@@ -402,3 +402,105 @@
     min-width: 180px;
   }
 }
+
+/* Order Success Modal */
+.np-order-success-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.np-order-success-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.np-order-success-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e2e4ea;
+  background: #f8f9fa;
+}
+
+.np-order-success-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #222;
+}
+
+.np-order-success-modal-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.np-success-icon-large {
+  font-size: 48px;
+  font-weight: bold;
+  color: #28a745;
+  margin-bottom: 16px;
+}
+
+.np-order-success-modal-content h4 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  color: #222;
+}
+
+.np-order-success-modal-content p {
+  margin: 8px 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.np-order-details-summary {
+  margin: 24px 0;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.np-order-details-summary h5 {
+  /* User Menu */
+  .np-user-menu {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border: 1px solid #e2e4ea;
+    border-radius: 6px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-right: 8px;
+  }
+
+  .np-user-menu:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    color: #e74c3c;
+  }
+
+  .np-user-menu i {
+    font-size: 16px;
+  }
+}

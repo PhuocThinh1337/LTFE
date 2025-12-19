@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import Breadcrumb from '../../components/common/Breadcrumb';
+import { useCart } from '../../contexts/CartContext';
 import './CheckoutPage.css';
 
 interface CheckoutItem {
@@ -32,6 +33,7 @@ interface PaymentMethod {
 function CheckoutPage(): React.JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
+  const { addOrderToHistory, removeItems } = useCart();
   
   // Lấy dữ liệu từ navigation state (từ cart page)
   const selectedItems = location.state?.selectedItems as CheckoutItem[] || [];
@@ -58,6 +60,7 @@ function CheckoutPage(): React.JSX.Element {
   const [showQR, setShowQR] = useState(false);
   const [qrConfirmed, setQrConfirmed] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<Partial<CustomerInfo>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -143,26 +146,27 @@ function CheckoutPage(): React.JSX.Element {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Create order data
+      // Create order data: chuyển selectedItems sang đúng kiểu CartItem (cần có productId)
       const orderData = {
+        id: `order-${Date.now()}`,
         customerInfo,
         paymentMethod,
-        items: selectedItems,
+        items: selectedItems.map(item => ({
+          ...item,
+          productId: item.id,  // Đảm bảo có field productId cho mỗi item
+        })),
         subtotal,
         shipping,
         total,
         orderDate: new Date().toISOString(),
-        orderId: 'NP' + Date.now()
+        orderId: 'NP' + Date.now(),
+        status: 'pending' as const
       };
 
-      console.log('Đơn hàng đã được tạo:', orderData);
+      await addOrderToHistory(orderData); // Lưu đơn hàng vào lịch sử
+      await removeItems(selectedItems.map(item => item.id)); // Xóa sản phẩm khỏi giỏ
 
-      // Show success message and redirect
-      alert(`Đặt hàng thành công! Mã đơn hàng: ${orderData.orderId}`);
-      navigate('/');
+      setOrderId(orderData.orderId); // Lưu Order ID để hiển thị trong modal
       
     } catch (error) {
       console.error('Lỗi khi đặt hàng:', error);
@@ -500,6 +504,73 @@ function CheckoutPage(): React.JSX.Element {
                 
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order Success Modal */}
+      {orderId && (
+        <div className="np-order-success-modal-overlay" onClick={() => navigate('/')}>
+          <div className="np-order-success-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="np-order-success-modal-header">
+              <h3>Đặt hàng thành công!</h3>
+              <button
+                className="np-modal-close"
+                onClick={() => navigate('/')}
+              >
+                ×
+              </button>
+            </div>
+            <div className="np-order-success-modal-content">
+              <div className="np-success-icon-large">✓</div>
+              <h4>Cảm ơn bạn đã đặt hàng!</h4>
+              <p>Mã đơn hàng của bạn là: <strong>{orderId}</strong></p>
+              <p>Đơn hàng sẽ được giao đến bạn trong thời gian sớm nhất.</p>
+
+              <div className="np-order-details-summary">
+                <h5>Chi tiết đơn hàng</h5>
+                <div className="np-order-summary-items">
+                  {selectedItems.map(item => (
+                    <div key={item.id} className="np-order-summary-item">
+                      <div className="np-order-summary-item-image">
+                        <img src={item.image} alt={item.name} />
+                      </div>
+                      <div className="np-order-summary-item-info">
+                        <strong>{item.name}</strong>
+                        <p>{item.quantity} x {formatPrice(item.price)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="np-order-summary-totals">
+                  <div className="np-summary-row">
+                    <span>Tạm tính:</span>
+                    <span>{formatPrice(subtotal)}</span>
+                  </div>
+                  <div className="np-summary-row">
+                    <span>Phí vận chuyển:</span>
+                    <span>{shipping === 0 ? 'Miễn phí' : formatPrice(shipping)}</span>
+                  </div>
+                  <div className="np-summary-row total">
+                    <span>Tổng cộng:</span>
+                    <span>{formatPrice(total)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                className="np-btn-primary np-btn-full"
+                onClick={() => navigate('/lich-su-mua-hang')}
+              >
+                Xem lịch sử mua hàng
+              </button>
+              <button
+                className="np-btn-outline np-btn-full"
+                onClick={() => navigate('/')}
+              >
+                Tiếp tục mua sắm
+              </button>
             </div>
           </div>
         </div>
