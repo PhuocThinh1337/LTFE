@@ -1,6 +1,31 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { CartItem, api } from '../services/api';
 
+// Interfaces for Order History
+interface Order {
+  id: string;
+  customerInfo: {
+    fullName: string;
+    phone: string;
+    address: string;
+    ward: string;
+    district: string;
+    city: string;
+    note?: string;
+  };
+  paymentMethod: {
+    type: 'cod' | 'qr';
+    name: string;
+  };
+  items: CartItem[];
+  subtotal: number;
+  shipping: number;
+  total: number;
+  orderDate: string;
+  orderId: string;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+}
+
 interface CartState {
   items: CartItem[];
   loading: boolean;
@@ -17,38 +42,11 @@ type CartAction =
   | { type: 'SET_ERROR'; payload: string };
 
 const initialState: CartState = {
-  items: [
-    {
-      id: 1,
-      productId: 1,
-      name: 'Sơn Nippon Spot-less Plus',
-      price: 450000,
-      quantity: 2,
-      color: 'Trắng ngọc trai',
-      image: '/images/products/spot-less-plus.jpg'
-    },
-    {
-      id: 2,
-      productId: 4,
-      name: 'Sơn Nippon Super Strong',
-      price: 680000,
-      quantity: 1,
-      color: 'Đen',
-      image: '/images/products/super-strong.jpg'
-    },
-    {
-      id: 3,
-      productId: 7,
-      name: 'Sơn Nippon Metallic',
-      price: 890000,
-      quantity: 1,
-      color: 'Bạc',
-      image: '/images/products/metallic.jpg'
-    }
-  ],
+  items: [],
   loading: false,
   error: null
 };
+
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'SET_LOADING':
@@ -85,7 +83,10 @@ interface CartContextType {
   addToCart: (productId: number, quantity?: number, color?: string) => Promise<void>;
   updateQuantity: (itemId: number, quantity: number) => Promise<void>;
   removeItem: (itemId: number) => Promise<void>;
+  removeItems: (itemIds: number[]) => Promise<void>;
   clearCart: () => Promise<void>;
+  addOrderToHistory: (order: Order) => Promise<void>;
+  getOrderHistory: () => Order[];
   getTotalItems: () => number;
   getTotalPrice: () => number;
 }
@@ -117,17 +118,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       dispatch({ type: 'SET_LOADING', payload: true });
       const items = await api.getCart();
       
-      // If no items in localStorage, use initial demo items and save them
       if (items.length === 0) {
-        localStorage.setItem('cart', JSON.stringify(initialState.items));
-        dispatch({ type: 'SET_ITEMS', payload: initialState.items });
+        dispatch({ type: 'SET_ITEMS', payload: [] }); // Start with an empty cart
       } else {
         dispatch({ type: 'SET_ITEMS', payload: items });
       }
     } catch (error) {
       console.error('Error loading cart:', error);
-      // Fallback to initial items if API fails
-      dispatch({ type: 'SET_ITEMS', payload: initialState.items });
+      dispatch({ type: 'SET_ERROR', payload: 'Không thể tải giỏ hàng' });
     }
   };
 
@@ -163,6 +161,38 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   };
 
+  const removeItems = async (itemIds: number[]) => {
+    try {
+      const updatedCart = await api.getCart();
+      const filteredCart = updatedCart.filter(item => !itemIds.includes(item.id));
+      localStorage.setItem('cart', JSON.stringify(filteredCart));
+      dispatch({ type: 'SET_ITEMS', payload: filteredCart });
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', payload: 'Không thể xóa sản phẩm khỏi giỏ hàng' });
+    }
+  };
+
+  
+const addOrderToHistory = async (order: Order) => {
+  try {
+    const existingHistory = localStorage.getItem('order_history');
+    const orderHistory: Order[] = existingHistory ? JSON.parse(existingHistory) : [];
+    orderHistory.unshift(order);
+    localStorage.setItem('order_history', JSON.stringify(orderHistory));
+  } catch (error) {
+    throw error;
+  }
+};
+  const getOrderHistory = (): Order[] => {
+    try {
+      const history = localStorage.getItem('order_history');
+      return history ? JSON.parse(history) : [];
+    } catch (error) {
+      console.error('Error loading order history:', error);
+      return [];
+    }
+  };
+
   const clearCart = async () => {
     try {
       await api.clearCart();
@@ -185,7 +215,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     addToCart,
     updateQuantity,
     removeItem,
+    removeItems,
     clearCart,
+    addOrderToHistory,
+    getOrderHistory,
     getTotalItems,
     getTotalPrice
   };
