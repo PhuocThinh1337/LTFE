@@ -1,0 +1,234 @@
+.google-oauth-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.google-oauth-modal {
+  background: #ffffff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.google-oauth-modal-header {
+  padding: 24px 24px 16px;
+  text-align: center;
+  border-bottom: 1px solid #e8eaed;
+}
+
+.google-oauth-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.google-oauth-modal-header h2 {
+  font-size: 24px;
+  font-weight: 400;
+  color: #202124;
+  margin: 0 0 8px 0;
+  font-family: 'Google Sans', 'Roboto', sans-serif;
+}
+
+.google-oauth-modal-header p {
+  font-size: 14px;
+  color: #5f6368;
+  margin: 0;
+}
+
+.google-oauth-accounts {
+  padding: 8px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.google-oauth-button-container {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.google-oauth-button-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Style cho Google button container */
+.google-oauth-button-wrapper > div {
+  width: 100% !important;
+  max-width: 400px;
+}
+
+.google-oauth-button-wrapper iframe {
+  width: 100% !important;
+  max-width: 400px;
+}
+
+.google-oauth-account {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: left;
+}
+
+.google-oauth-account:hover {
+  background: #f8f9fa;
+}
+
+.google-oauth-account.selected {
+  background: #e8f0fe;
+}
+
+.google-oauth-account-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.google-oauth-account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.google-oauth-account-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.google-oauth-account-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #202124;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.google-oauth-account-email {
+  font-size: 13px;
+  color: #5f6368;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.google-oauth-account-check {
+  width: 24px;
+  height: 24px;
+  color: #1a73e8;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.google-oauth-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid #e8eaed;
+}
+
+.google-oauth-btn {
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: 'Roboto', sans-serif;
+}
+
+.google-oauth-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.google-oauth-btn-secondary {
+  background: transparent;
+  color: #1a73e8;
+}
+
+.google-oauth-btn-secondary:hover:not(:disabled) {
+  background: #f8f9fa;
+}
+
+.google-oauth-btn-primary {
+  background: #1a73e8;
+  color: #ffffff;
+}
+
+.google-oauth-btn-primary:hover:not(:disabled) {
+  background: #1557b0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 480px) {
+  .google-oauth-modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    max-height: 100vh;
+  }
+
+  .google-oauth-modal-header {
+    padding: 20px 16px 12px;
+  }
+
+  .google-oauth-account {
+    padding: 12px 16px;
+  }
+
+  .google-oauth-modal-footer {
+    padding: 12px 16px;
+  }
+}
+

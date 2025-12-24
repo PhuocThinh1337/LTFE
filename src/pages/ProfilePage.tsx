@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../services/api';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Breadcrumb from '../components/common/Breadcrumb';
+import Avatar from '../components/common/Avatar';
 
 function ProfilePage(): React.JSX.Element {
   const { user, isAuthenticated, refreshUser } = useAuth();
@@ -30,6 +31,8 @@ function ProfilePage(): React.JSX.Element {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -43,6 +46,7 @@ function ProfilePage(): React.JSX.Element {
         email: user.email || '',
         phone: user.phone || ''
       });
+      setAvatarPreview(user.avatar || null);
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -181,8 +185,56 @@ function ProfilePage(): React.JSX.Element {
     }
   };
 
-  const getInitial = (name: string): string => {
-    return name.charAt(0).toUpperCase();
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setErrorMessage('Vui lòng chọn file ảnh');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMessage('Kích thước ảnh không được vượt quá 5MB');
+      return;
+    }
+
+    // Read file as data URL for preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      setAvatarPreview(result);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload avatar (convert to base64 và lưu vào localStorage)
+    try {
+      setSaving(true);
+      setErrorMessage(null);
+      
+      // Convert to base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      await api.updateAvatar(base64);
+      setSuccessMessage('Cập nhật avatar thành công!');
+      await refreshUser();
+    } catch (error: any) {
+      setErrorMessage(error.message || 'Có lỗi xảy ra khi cập nhật avatar');
+      setAvatarPreview(user?.avatar || null); // Revert preview
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!isAuthenticated || !user) {
@@ -203,9 +255,28 @@ function ProfilePage(): React.JSX.Element {
         <div className="np-container">
           <div className="np-profile-header">
             <div className="np-profile-avatar">
-              <div className="np-profile-avatar-circle">
-                {getInitial(user.name)}
+              <div className="np-profile-avatar-wrapper" onClick={handleAvatarClick}>
+                <Avatar 
+                  name={user.name} 
+                  avatar={avatarPreview || user.avatar} 
+                  size="large"
+                  className="np-profile-avatar-circle"
+                />
+                <div className="np-profile-avatar-overlay">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
+                  <span>Đổi ảnh</span>
+                </div>
               </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                style={{ display: 'none' }}
+              />
             </div>
             <div className="np-profile-info">
               <h1 className="np-profile-name">{user.name}</h1>

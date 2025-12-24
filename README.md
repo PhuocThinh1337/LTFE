@@ -1,6 +1,33 @@
-# Getting Started with Create React App
+# Nippon Paint - Frontend Project
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Google OAuth Setup
+
+Để sử dụng Google Sign-In (OAuth thật), xem hướng dẫn chi tiết trong file **[ENV_SETUP.md](./ENV_SETUP.md)**
+
+### Tóm tắt nhanh:
+
+1. **Tạo file `.env`** trong thư mục root:
+   - Copy file `.env.example` thành `.env`: `cp .env.example .env`
+   - Hoặc tạo file `.env` mới với nội dung:
+     ```env
+     REACT_APP_GOOGLE_CLIENT_ID=your-google-client-id-here
+     ```
+
+2. **Lấy Google Client ID** từ [Google Cloud Console](https://console.cloud.google.com/)
+
+3. **Điền Client ID vào file `.env`**
+
+4. **Restart development server** sau khi tạo file `.env` (QUAN TRỌNG!)
+
+📖 **Xem hướng dẫn chi tiết:** [ENV_SETUP.md](./ENV_SETUP.md)
+
+🚀 **Chưa có OAuth Client ID?** Xem [CREATE_OAUTH_CLIENT.md](./CREATE_OAUTH_CLIENT.md)
+
+⚠️ **Lỗi "origin_mismatch"?** Xem phần "Fix lỗi" trong [ENV_SETUP.md](./ENV_SETUP.md)
+
+## Getting Started with Create React App
 
 ## Available Scripts
 

@@ -1,0 +1,73 @@
+.np-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.np-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.np-avatar-fallback-initial {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0046ad 0%, #0066cc 100%);
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.np-avatar-fallback .np-avatar-fallback-initial {
+  display: flex;
+}
+
+.np-avatar-initial {
+  background: linear-gradient(135deg, #0046ad 0%, #0066cc 100%);
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 70, 173, 0.2);
+}
+
+/* Sizes */
+.np-avatar-small {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+}
+
+.np-avatar-medium {
+  width: 80px;
+  height: 80px;
+  font-size: 32px;
+}
+
+.np-avatar-large {
+  width: 120px;
+  height: 120px;
+  font-size: 48px;
+}
+
+/* Profile page specific */
+.np-profile-avatar .np-avatar {
+  box-shadow: 0 4px 12px rgba(0, 70, 173, 0.3);
+}
+
+/* Header specific */
+.np-user-avatar-circle.np-avatar {
+  box-shadow: 0 2px 4px rgba(0, 70, 173, 0.2);
+}
+
