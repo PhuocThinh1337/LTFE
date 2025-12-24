@@ -4614,8 +4614,47 @@ html {
 }
 
 .np-auth-btn.secondary:hover {
-  background: #e5e7eb;
+background: #e5e7eb;
   border-color: #d1d5db;
+}
+
+.np-auth-btn-google {
+  width: 100%;
+  padding: 14px 24px;
+  border: 1px solid #dadce0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-family: inherit;
+  background: #ffffff;
+  color: #3c4043;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.np-auth-btn-google:hover:not(:disabled) {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  background: #f8f9fa;
+  border-color: #c4c7c5;
+}
+
+.np-auth-btn-google:active:not(:disabled) {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: #f1f3f4;
+}
+
+.np-auth-btn-google:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.np-auth-btn-google svg {
+  flex-shrink: 0;
 }
 
 .np-auth-divider {
@@ -5612,17 +5651,49 @@ html {
   flex-shrink: 0;
 }
 
+.np-profile-avatar-wrapper {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.np-profile-avatar-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.np-profile-avatar-wrapper:hover .np-profile-avatar-overlay {
+  opacity: 1;
+}
+
+.np-profile-avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-size: 12px;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.np-profile-avatar-overlay svg {
+  width: 24px;
+  height: 24px;
+}
+
 .np-profile-avatar-circle {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0046ad 0%, #0066cc 100%);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: 700;
   box-shadow: 0 4px 12px rgba(0, 70, 173, 0.3);
 }
 

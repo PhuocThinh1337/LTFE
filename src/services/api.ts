@@ -20,6 +20,7 @@ export interface User {
   name: string;
   email: string;
   phone?: string;
+  avatar?: string; // URL của avatar (từ Google hoặc upload)
 }
 
 interface UserWithPassword extends User {
@@ -382,6 +383,72 @@ export const api = {
     saveUsers(users);
     
     return { message: 'Đổi mật khẩu thành công' };
+  },
+
+  // User - Google Login (OAuth)
+  loginWithGoogle: async (googleData: { email: string; name: string; picture?: string }): Promise<{ user: User; token: string }> => {
+    await delay(600);
+    
+    const users = getUsers();
+    let userWithPassword = users.find(
+      u => u.email.toLowerCase() === googleData.email.toLowerCase()
+    );
+    
+    // If user doesn't exist, create a new one from Google OAuth
+    if (!userWithPassword) {
+      const newUser: UserWithPassword = {
+        id: Date.now(),
+        name: googleData.name,
+        email: googleData.email,
+        password: 'google-oauth-' + Date.now(), // OAuth users don't need password
+        createdAt: new Date().toISOString()
+      };
+      
+      users.push(newUser);
+      saveUsers(users);
+      userWithPassword = newUser;
+    }
+    
+    // Remove password from user object before returning
+    const { password: _, ...user } = userWithPassword;
+    const token = 'jwt-token-google-' + Date.now();
+    
+    localStorage.setItem('auth_token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    
+    return { user, token };
+  },
+
+  // User - Update Avatar
+  updateAvatar: async (avatarUrl: string): Promise<User> => {
+    await delay(600);
+    
+    const token = localStorage.getItem('auth_token');
+    const currentUserStr = localStorage.getItem('user');
+    
+    if (!token || !currentUserStr) {
+      throw new Error('Bạn cần đăng nhập để cập nhật avatar');
+    }
+    
+    const currentUser: User = JSON.parse(currentUserStr);
+    const users = getUsers();
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
+    
+    if (userIndex === -1) {
+      throw new Error('Không tìm thấy người dùng');
+    }
+    
+    // Update avatar
+    users[userIndex].avatar = avatarUrl;
+    saveUsers(users);
+    
+    // Remove password from returned user
+    const { password: _, ...userWithoutPassword } = users[userIndex];
+    
+    // Update localStorage
+    localStorage.setItem('user', JSON.stringify(userWithoutPassword));
+    
+    return userWithoutPassword;
   }
 };
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import MegaMenu from './MegaMenu';
 import SupportMegaMenu from './SupportMegaMenu';
+import Avatar from '../common/Avatar';
 import './header.css';
 
 import { useCart } from '../../contexts/CartContext';
@@ -31,10 +32,6 @@ function Header(): React.JSX.Element {
     await logout();
     setIsUserMenuOpen(false);
     navigate('/');
-  };
-
-  const getInitial = (name: string): string => {
-    return name.charAt(0).toUpperCase();
   };
 
   return (
@@ -148,9 +145,12 @@ function Header(): React.JSX.Element {
                 onMouseLeave={() => setIsUserMenuOpen(false)}
               >
                 <button className="np-user-btn">
-                  <div className="np-user-avatar-circle">
-                    {getInitial(user.name)}
-                  </div>
+                  <Avatar 
+                    name={user.name} 
+                    avatar={user.avatar} 
+                    size="small"
+                    className="np-user-avatar-circle"
+                  />
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M6 9l6 6 6-6" />
                   </svg>
