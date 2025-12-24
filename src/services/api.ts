@@ -2,6 +2,7 @@
 import { Product, PRODUCTS } from '../data/products';
 
 // Mock API service for development
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const API_BASE_URL = 'https://jsonplaceholder.typicode.com'; // hoặc sử dụng local JSON server
 
 export interface CartItem {

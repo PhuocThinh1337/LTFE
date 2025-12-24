@@ -6,6 +6,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -62,11 +63,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const currentUser = await api.getCurrentUser();
+      setUser(currentUser);
+    } catch (error) {
+      console.error('Error refreshing user:', error);
+      setUser(null);
+    }
+  };
+
   const value: AuthContextType = {
     user,
     loading,
     login,
     logout,
+    refreshUser,
     isAuthenticated: !!user
   };
 
