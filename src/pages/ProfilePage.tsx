@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { api, User } from '../services/api';
+import { api } from '../services/api';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Breadcrumb from '../components/common/Breadcrumb';
 
 function ProfilePage(): React.JSX.Element {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, refreshUser } = useAuth();
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -94,7 +93,7 @@ function ProfilePage(): React.JSX.Element {
       newErrors.email = 'Email không hợp lệ';
     }
 
-    if (profileData.phone && !/^[0-9\s\-\+\(\)]+$/.test(profileData.phone)) {
+    if (profileData.phone && !/^[0-9\s\-+()]+$/.test(profileData.phone)) {
       newErrors.phone = 'Số điện thoại không hợp lệ';
     }
 
@@ -136,7 +135,7 @@ function ProfilePage(): React.JSX.Element {
 
     setSaving(true);
     try {
-      const updatedUser = await api.updateProfile({
+      await api.updateProfile({
         name: profileData.name.trim(),
         email: profileData.email.trim(),
         phone: profileData.phone.trim() || undefined
@@ -144,10 +143,8 @@ function ProfilePage(): React.JSX.Element {
 
       setSuccessMessage('Cập nhật thông tin thành công!');
       
-      // Reload page to update user context
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+      // Refresh user context to update UI
+      await refreshUser();
     } catch (error: any) {
       setErrorMessage(error.message || 'Có lỗi xảy ra khi cập nhật thông tin');
     } finally {
