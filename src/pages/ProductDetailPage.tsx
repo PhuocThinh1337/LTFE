@@ -6,7 +6,49 @@ import Breadcrumb from '../components/common/Breadcrumb';
 import { PRODUCTS, Product } from '../data/products';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useCompare } from '../contexts/CompareContext';
 import './ProductDetailPage.css';
+
+interface SuggestionCardProps {
+    product: Product;
+    onPrev: () => void;
+    onNext: () => void;
+}
+
+const SuggestionCard: React.FC<SuggestionCardProps> = ({ product, onPrev, onNext }) => {
+    const { addToCompare, removeFromCompare, isInCompare } = useCompare();
+    const isCompared = isInCompare(product.id);
+
+    return (
+        <div className="np-suggestion-card">
+            <div className="np-s-card-header">
+                <div
+                    className="np-s-compare"
+                    onClick={() => isCompared ? removeFromCompare(product.id) : addToCompare(product)}
+                    style={{ cursor: 'pointer', background: isCompared ? '#e60012' : '#f5f5f5', color: isCompared ? '#fff' : '#666' }}
+                >
+                    <span className="np-s-radio" style={{ background: isCompared ? '#fff' : '#fff', borderColor: isCompared ? '#fff' : '#ccc' }}>
+                        {isCompared && <span style={{ display: 'block', width: '8px', height: '8px', background: '#e60012', borderRadius: '50%', margin: '2px' }}></span>}
+                    </span> SO SÁNH
+                </div>
+                <div className="np-s-wishlist">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div className="np-s-card-body">
+                <img src={product.image} alt={product.name} />
+                <div className="np-s-nav-arrow left" onClick={onPrev}>‹</div>
+                <div className="np-s-nav-arrow right" onClick={onNext}>›</div>
+            </div>
+            <div className="np-s-card-footer">
+                <div className="np-s-cat">{product.category.toUpperCase()}</div>
+                <Link to={`/san-pham/${product.slug}`} className="np-s-name">{product.name}</Link>
+            </div>
+        </div>
+    );
+};
 
 interface Review {
     id: number;
@@ -330,27 +372,12 @@ const ProductDetailPage: React.FC = () => {
                                     <h2 className="np-suggestion-title">SẢN PHẨM GỢI Ý</h2>
                                     <div className="np-suggestion-cards">
                                         {displayedSuggestions.map(p => (
-                                            <div key={p.id} className="np-suggestion-card">
-                                                <div className="np-s-card-header">
-                                                    <div className="np-s-compare">
-                                                        <span className="np-s-radio"></span> SO SÁNH
-                                                    </div>
-                                                    <div className="np-s-wishlist">
-                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                                <div className="np-s-card-body">
-                                                    <img src={p.image} alt={p.name} />
-                                                    <div className="np-s-nav-arrow left" onClick={prevSuggestions}>‹</div>
-                                                    <div className="np-s-nav-arrow right" onClick={nextSuggestions}>›</div>
-                                                </div>
-                                                <div className="np-s-card-footer">
-                                                    <div className="np-s-cat">{p.category.toUpperCase()}</div>
-                                                    <Link to={`/san-pham/${p.slug}`} className="np-s-name">{p.name}</Link>
-                                                </div>
-                                            </div>
+                                            <SuggestionCard
+                                                key={p.id}
+                                                product={p}
+                                                onPrev={prevSuggestions}
+                                                onNext={nextSuggestions}
+                                            />
                                         ))}
                                     </div>
                                 </div>

@@ -1,0 +1,164 @@
+/* ComparePage.css */
+.np-compare-page {
+    padding: 60px 0;
+    min-height: 60vh;
+}
+
+.np-page-title-center {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 60px;
+    color: #333;
+    font-weight: 700;
+}
+
+.np-empty-compare {
+    text-align: center;
+    padding: 60px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.np-empty-compare p {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+/* Table Layout */
+.np-compare-table-wrapper {
+    overflow-x: auto;
+}
+
+.np-compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.np-compare-table th {
+    vertical-align: top;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #eee;
+    text-align: center;
+    position: relative;
+    width: 25%;
+    /* 4 columns: 1 criteria + 3 products */
+}
+
+.np-col-criteria {
+    vertical-align: middle !important;
+}
+
+.np-criteria-header {
+    font-size: 24px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.np-compare-product-header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.np-compare-close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    background: #e60012;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.np-compare-product-header img {
+    height: 180px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+.np-compare-prod-cat {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.np-compare-prod-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* Table Body */
+.np-compare-table td {
+    padding: 20px;
+    border: 1px solid #eee;
+    vertical-align: top;
+    margin-top: -1px;
+    /* collapse border visual */
+    margin-left: -1px;
+}
+
+.np-cell-label {
+    background: #f0f0f0;
+    font-weight: 700;
+    color: #333;
+    font-size: 14px;
+}
+
+.np-cell-data {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.np-compare-list-bullet {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.np-compare-list-bullet li {
+    margin-bottom: 6px;
+}
+
+/* Alternating row colors for main content rows (simulated via nth-child if needed, 
+   but design shows alternating gray/white rows) 
+*/
+.np-compare-table tbody tr:nth-child(even) td {
+    background-color: #fcfcfc;
+}
+
+.np-compare-table tbody tr:nth-child(odd) td {
+    background-color: #fff;
+}
+
+.np-compare-table tbody tr:nth-child(odd) .np-cell-label {
+    background-color: #eee;
+}
+
+.np-compare-table tbody tr:nth-child(even) .np-cell-label {
+    background-color: #e5e5e5;
+}
+
+@media (max-width: 900px) {
+    .np-compare-table {
+        min-width: 800px;
+        /* Force scroll on mobile */
+    }
+}
