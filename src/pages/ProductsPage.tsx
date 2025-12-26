@@ -5,6 +5,7 @@ import Footer from '../components/layout/Footer';
 import Breadcrumb from '../components/common/Breadcrumb';
 import { PRODUCTS, Product } from '../data/products';
 import { useCart } from '../contexts/CartContext';
+import { useCompare } from '../contexts/CompareContext';
 import Toast from '../components/common/Toast';
 import '../components/layout/FilterBar.css';
 
@@ -20,6 +21,16 @@ const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart }: {
 }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const { addToCompare, removeFromCompare, isInCompare } = useCompare();
+  const isCompared = isInCompare(product.id);
+
+  const handleCompareClick = () => {
+    if (isCompared) {
+      removeFromCompare(product.id);
+    } else {
+      addToCompare(product);
+    }
+  };
 
   return (
     <div className="np-product-card" style={{
@@ -43,23 +54,29 @@ const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart }: {
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          background: '#e5e7eb',
+          background: isCompared ? '#e60012' : '#e5e7eb',
           padding: '6px 12px',
           borderRadius: '20px',
           fontSize: '11px',
           fontWeight: '700',
-          color: '#4b5563',
+          color: isCompared ? '#fff' : '#4b5563',
           textTransform: 'uppercase',
           cursor: 'pointer',
-          pointerEvents: 'auto'
-        }}>
+          pointerEvents: 'auto',
+          transition: 'all 0.2s'
+        }} onClick={handleCompareClick}>
           <span style={{
             width: '14px',
             height: '14px',
             border: '1px solid currentColor',
             borderRadius: '50%',
-            display: 'block'
-          }}></span>
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '10px'
+          }}>
+            {isCompared && '✓'}
+          </span>
           SO SÁNH
         </div>
         <div
