@@ -72,6 +72,7 @@ export interface Product {
     description: string;
     features: string[];
     isNew?: boolean;
+    isBestSeller?: boolean;
     isPremium?: boolean;
     price: number;
     detailedDescription?: string;
@@ -92,7 +93,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img0,
         description: "Sản phẩm Sơn Nippon 1100 Fast Drying Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -102,8 +103,9 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img1,
         description: "Sản phẩm Sơn Nippon Bilac chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
-        price: 350000
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
+        price: 350000,
+        isBestSeller: true
     },
     {
         id: 202,
@@ -112,7 +114,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img2,
         description: "Sản phẩm Sơn Nippon Bilac Aluminium Wood Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -122,7 +124,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img3,
         description: "Sản phẩm Sơn Nippon Bilac Metal Red Oxide Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -132,7 +134,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img4,
         description: "Sản phẩm Sơn Nippon Pylox Lazer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -142,7 +144,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img5,
         description: "Sản phẩm Sơn Nippon Road Line chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -152,7 +154,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img6,
         description: "Sản phẩm Sơn Nippon Tilac chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -162,7 +164,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img7,
         description: "Sản phẩm Sơn Nippon Vinilex 120 Active Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -172,7 +174,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img8,
         description: "Sản phẩm Sơn Nippon Vinilex 130 Active Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -182,7 +184,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img9,
         description: "Sản phẩm Sơn Nippon Đường Phản Quang chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -192,7 +194,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img10,
         description: "Sản phẩm Sơn Tilac Grey Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -202,7 +204,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img11,
         description: "Sản phẩm TILAC FD chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -212,7 +214,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img12,
         description: "Sản phẩm TILAC RED OXIDE PRIMER chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -222,7 +224,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn dân dụng",
         image: img13,
         description: "Sản phẩm TILAC SƠN SẮT MẠ KẼM chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 350000
     },
     {
@@ -232,7 +234,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img14,
         description: "Sản phẩm NIPPON EXTERIOR PUTTY chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -242,7 +244,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img15,
         description: "Sản phẩm Nippon Paint Hitex 5180 Sealer chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -252,7 +254,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img16,
         description: "Sản phẩm Skimcoat WeatherGard chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -262,7 +264,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img17,
         description: "Sản phẩm Sơn chống thấm Nippon WP 100 chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -272,7 +274,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img18,
         description: "Sản phẩm Sơn Chống Thấm WP 200 chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -282,7 +284,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img19,
         description: "Sản phẩm Sơn Lót Ngoại Thất Super Matex Sealer chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -292,7 +294,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img20,
         description: "Sản phẩm Sơn lót ngoại thất WeatherGard Nippon Sealer chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -302,7 +304,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img21,
         description: "Sản phẩm Sơn Ngoại Thất Supergard chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -312,7 +314,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img22,
         description: "Sản phẩm Sơn Nippon Super Matex chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -322,7 +324,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img23,
         description: "Sản phẩm Sơn Nippon Texkote (Sơn Gai) chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -332,7 +334,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img24,
         description: "Sản phẩm Sơn Nippon WeatherGard Hitex chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -342,7 +344,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img25,
         description: "Sản phẩm Sơn Nippon WeatherGard Plus+ chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -352,7 +354,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img26,
         description: "Sản phẩm Sơn Nippon WeatherGard Siêu Bóng chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000,
         isPremium: true
     },
@@ -363,7 +365,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img27,
         description: "Sản phẩm WP 100 White Chống Thấm chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -373,7 +375,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Ngoại Thất",
         image: img28,
         description: "Sản phẩm WP 200 PLUS chất lượng cao từ Nippon Paint.",
-        features: ["Chống thấm","Bền màu","Chống rêu mốc"],
+        features: ["Chống thấm", "Bền màu", "Chống rêu mốc"],
         price: 900000
     },
     {
@@ -383,7 +385,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img29,
         description: "Sản phẩm NIPPON INTERIOR PUTTY chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -393,8 +395,9 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img30,
         description: "Sản phẩm Nippon Paint Easy Wash chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
-        price: 900000
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
+        price: 900000,
+        isBestSeller: true
     },
     {
         id: 231,
@@ -403,7 +406,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img31,
         description: "Sản phẩm Nippon Paint Matex chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -413,7 +416,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img32,
         description: "Sản phẩm Nippon Paint Matex Sắc Màu Dịu Mát chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -423,7 +426,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img33,
         description: "Sản phẩm Nippon Paint Odour-less Chùi Rửa Vượt Trội & Kháng Khuẩn chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -433,12 +436,13 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img34,
         description: "Chống bám bẩn - Vượt trội với công nghệ Ion Bạc",
-        features: ["Chống bám bẩn","Kháng khuẩn","Mùi nhẹ"],
+        features: ["Chống bám bẩn", "Kháng khuẩn", "Mùi nhẹ"],
         price: 890000,
         isPremium: true,
+        isBestSeller: true,
         detailedDescription: "Nippon Paint Spot-less Plus là sản phẩm sơn nội thất cao cấp với khả năng chống bám bẩn vượt trội nhờ công nghệ 'Popping' và kháng khuẩn hiệu quả với công nghệ Ion Bạc. Các vết bẩn dạng lỏng như trà, cà phê, nước trái cây... sẽ tạo thành hạt nước trên bề mặt màng sơn và dễ dàng lau chùi mà không gây hư hại màng sơn.",
-        technicalData: {"dryingTime":"30 - 60 phút","coats":2,"coverage":"12 m2/lít/lớp","packing":"1L, 5L, 18L"},
-        benefits: ["Chống bám bẩn tuyệt vời","Kháng khuẩn & Kháng nấm mốc","Mùi rất nhẹ, gần như không mùi","Dễ dàng lau chùi"]
+        technicalData: { "dryingTime": "30 - 60 phút", "coats": 2, "coverage": "12 m2/lít/lớp", "packing": "1L, 5L, 18L" },
+        benefits: ["Chống bám bẩn tuyệt vời", "Kháng khuẩn & Kháng nấm mốc", "Mùi rất nhẹ, gần như không mùi", "Dễ dàng lau chùi"]
     },
     {
         id: 235,
@@ -447,7 +451,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img35,
         description: "Sản phẩm Nippon Paint Vatex chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -457,13 +461,14 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img36,
         description: "Sơn sạch vi khuẩn - Bảo vệ sức khỏe gia đình",
-        features: ["Kháng virus & vi khuẩn","Chùi rửa vượt trội","Thân thiện môi trường"],
+        features: ["Kháng virus & vi khuẩn", "Chùi rửa vượt trội", "Thân thiện môi trường"],
         price: 1250000,
         isNew: true,
         isPremium: true,
+        isBestSeller: true,
         detailedDescription: "Nippon Paint VirusGuard là loại sơn phủ nội thất cao cấp có khả năng kháng virus và vi khuẩn. Sản phẩm được công thức hóa với Công nghệ Ion Bạc, có hiệu quả ức chế sự lây lan của virus và vi khuẩn trên bề mặt sơn, bảo vệ sức khỏe cho cả gia đình.",
-        technicalData: {"dryingTime":"30 phút","coats":2,"coverage":"10-12 m2/lít/lớp","packing":"1L, 5L"},
-        benefits: ["Kháng lại 99% Virus & Vi khuẩn","Chùi rửa vượt trội","Hàm lượng VOC gần như bằng 0","Thân thiện với môi trường"]
+        technicalData: { "dryingTime": "30 phút", "coats": 2, "coverage": "10-12 m2/lít/lớp", "packing": "1L, 5L" },
+        benefits: ["Kháng lại 99% Virus & Vi khuẩn", "Chùi rửa vượt trội", "Hàm lượng VOC gần như bằng 0", "Thân thiện với môi trường"]
     },
     {
         id: 237,
@@ -472,7 +477,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img37,
         description: "Sản phẩm Skimcoat Nội Thất chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -482,7 +487,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img38,
         description: "Sản phẩm Sơn lót nội thất Easy Wash chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -492,7 +497,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img39,
         description: "Sản phẩm Sơn Lót Nội Thất Matex Sealer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -502,7 +507,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img40,
         description: "Sản phẩm Sơn Lót Nội Thất Odour-less Sealer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -512,7 +517,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img41,
         description: "Sản phẩm Sơn Nippon Matex Super White chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -522,7 +527,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img42,
         description: "Sản phẩm Sơn Nippon Odour-less All-in-1 chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -532,7 +537,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img43,
         description: "Sơn nội thất siêu bóng, sang trọng và đẳng cấp",
-        features: ["Siêu bóng","Kháng khuẩn","Mùi rất nhẹ"],
+        features: ["Siêu bóng", "Kháng khuẩn", "Mùi rất nhẹ"],
         price: 1150000,
         isPremium: true
     },
@@ -543,7 +548,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img44,
         description: "Sản phẩm Sơn Nippon Odour-Less Chùi Rửa Vượt Trội chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -553,7 +558,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img45,
         description: "Sản phẩm Sơn Nippon Odour-less Spot-less chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -563,7 +568,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img46,
         description: "Sản phẩm Sơn Nippon Trắng Trần Toàn Diện chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -573,7 +578,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn Nội Thất",
         image: img47,
         description: "Sản phẩm Sơn Odour-less All-in-1 Siêu Bóng chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000,
         isPremium: true
     },
@@ -584,7 +589,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img48,
         description: "Sản phẩm Nippon EP4 Clear Sealer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -594,7 +599,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img49,
         description: "Sản phẩm Sơn Chống Cháy Nội Thất Taikalitt S-100 NCB Intumescent chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -604,7 +609,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img50,
         description: "Sản phẩm Sơn Nippon 1226 Epotar HB Black chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -614,7 +619,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img51,
         description: "Sản phẩm Sơn Nippon EA4 chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -624,7 +629,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img52,
         description: "Sản phẩm Sơn Nippon EA9 chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -634,7 +639,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img53,
         description: "Sản phẩm Sơn Nippon EA9 Red Oxide Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -644,7 +649,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img54,
         description: "Sản phẩm Sơn Nippon EA9 White Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -654,7 +659,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img55,
         description: "Sản phẩm Sơn Nippon Epoxy MIO chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -664,7 +669,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img56,
         description: "Sản phẩm Sơn Nippon Heat Resisting Aluminium chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -674,7 +679,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img57,
         description: "Sản phẩm Sơn Nippon NIOZ chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -684,7 +689,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img58,
         description: "Sản phẩm Sơn Nippon PU chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -694,7 +699,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img59,
         description: "Sản phẩm Sơn Nippon PU Undercoat White chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -704,7 +709,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img60,
         description: "Sản phẩm Sơn Nippon S450 Heat Resisting Black chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -714,7 +719,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img61,
         description: "Sản phẩm Sơn Nippon S500 Heat Resisting Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -724,7 +729,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img62,
         description: "Sản phẩm Sơn Nippon Zinc Phosphate Blast Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
     {
@@ -734,7 +739,7 @@ export const PRODUCTS: Product[] = [
         category: "Sơn và chất phủ công nghiệp",
         image: img63,
         description: "Sản phẩm Sơn Nippon Zinc Rich Primer HS chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng","Che phủ tốt","Mùi nhẹ"],
+        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
         price: 900000
     },
 ];

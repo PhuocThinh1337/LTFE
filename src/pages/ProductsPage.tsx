@@ -99,6 +99,7 @@ const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart }: {
       <div className="np-card-image" style={{ position: 'relative' }}>
         <img src={product.image} alt={product.name} />
         {product.isNew && <span className="np-badge-new">Mới</span>}
+        {product.isBestSeller && <span className="np-badge-bestseller">Bán chạy</span>}
       </div>
       <div className="np-card-content">
         <span className="np-category">{product.category}</span>
@@ -173,6 +174,15 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
   const [pageTitle, setPageTitle] = useState('Sản phẩm Nippon Paint');
 
+  // Filter states
+  const [locationFilter, setLocationFilter] = useState<string>('all');
+  const [surfaceFilter, setSurfaceFilter] = useState<string>('all');
+  const [productTypeFilter, setProductTypeFilter] = useState<string>('all');
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 12; // 12 products per page
+
   // State for wishlist
   const [wishlistIds, setWishlistIds] = React.useState<number[]>([]);
 
@@ -206,6 +216,7 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
     let filtered = PRODUCTS;
     let title = 'Sản phẩm Nippon Paint';
 
+    // Filter by category first
     if (category) {
       switch (category) {
         case 'son-noi-that':
@@ -225,16 +236,72 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
           title = 'Sơn và Chất Phủ Công Nghiệp';
           break;
         default:
-          // Try simple match if not in switch
           filtered = PRODUCTS.filter(p => p.category === category);
           title = category.toUpperCase().replace(/-/g, ' ');
           break;
       }
     }
 
+    // Apply location filter
+    if (locationFilter !== 'all') {
+      filtered = filtered.filter(p => {
+        const name = p.name.toLowerCase();
+        const cat = p.category.toLowerCase();
+        if (locationFilter === 'indoor') {
+          return cat.includes('nội') || name.includes('nội');
+        } else if (locationFilter === 'outdoor') {
+          return cat.includes('ngoại') || name.includes('ngoại');
+        }
+        return true;
+      });
+    }
+
+    // Apply surface filter
+    if (surfaceFilter !== 'all') {
+      filtered = filtered.filter(p => {
+        const name = p.name.toLowerCase();
+        const desc = p.description?.toLowerCase() || '';
+        if (surfaceFilter === 'wall') {
+          return name.includes('tường') || desc.includes('tường') || desc.includes('vữa');
+        } else if (surfaceFilter === 'wood') {
+          return name.includes('gỗ') || desc.includes('gỗ');
+        } else if (surfaceFilter === 'metal') {
+          return name.includes('kim loại') || desc.includes('kim loại') || name.includes('sắt');
+        }
+        return true;
+      });
+    }
+
+    // Apply product type filter
+    if (productTypeFilter !== 'all') {
+      filtered = filtered.filter(p => {
+        const name = p.name.toLowerCase();
+        if (productTypeFilter === 'topcoat') {
+          return name.includes('phủ') || name.includes('bóng') || name.includes('mờ');
+        } else if (productTypeFilter === 'sealer') {
+          return name.includes('lót') || name.includes('primer');
+        }
+        return true;
+      });
+    }
+
     setDisplayedProducts(filtered);
     setPageTitle(title);
-  }, [category]);
+    setCurrentPage(1); // Reset to page 1 when filters change
+  }, [category, locationFilter, surfaceFilter, productTypeFilter]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(displayedProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = displayedProducts.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top of products section
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+  };
 
   return (
     <div className="np-app">
@@ -263,7 +330,7 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
             <div className="np-filter-bar">
               <div className="np-filter-group">
                 <label>Vị trí:</label>
-                <select defaultValue="all">
+                <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
                   <option value="all">Tất cả</option>
                   <option value="indoor">Trong nhà</option>
                   <option value="outdoor">Ngoài trời</option>
@@ -272,7 +339,7 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
 
               <div className="np-filter-group">
                 <label>Bề mặt:</label>
-                <select defaultValue="all">
+                <select value={surfaceFilter} onChange={(e) => setSurfaceFilter(e.target.value)}>
                   <option value="all">Tất cả</option>
                   <option value="wall">Tường trát vữa</option>
                   <option value="wood">Gỗ</option>
@@ -282,15 +349,23 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
 
               <div className="np-filter-group">
                 <label>Loại sản phẩm:</label>
-                <select defaultValue="all">
+                <select value={productTypeFilter} onChange={(e) => setProductTypeFilter(e.target.value)}>
                   <option value="all">Tất cả</option>
                   <option value="topcoat">Sơn phủ</option>
                   <option value="sealer">Sơn lót</option>
                 </select>
               </div>
 
-              <button className="np-btn-apply">
-                ÁP DỤNG →
+              <button
+                className="np-btn-apply"
+                onClick={() => {
+                  // Reset filters
+                  setLocationFilter('all');
+                  setSurfaceFilter('all');
+                  setProductTypeFilter('all');
+                }}
+              >
+                XÓA BỘ LỌC
               </button>
             </div>
           </div>
@@ -298,9 +373,25 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
 
         <section className="np-products-section">
           <div className="np-container">
+            {/* Products count info */}
+            {displayedProducts.length > 0 && (
+              <div style={{
+                marginBottom: '20px',
+                color: '#666',
+                fontSize: '14px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <span>
+                  Hiển thị {startIndex + 1}-{Math.min(endIndex, displayedProducts.length)} trong tổng số {displayedProducts.length} sản phẩm
+                </span>
+              </div>
+            )}
+
             <div className="np-products-grid">
-              {displayedProducts.length > 0 ? (
-                displayedProducts.map((product) => (
+              {currentProducts.length > 0 ? (
+                currentProducts.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
@@ -315,6 +406,72 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
                 </div>
               )}
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '8px',
+                marginTop: '40px',
+                padding: '20px 0'
+              }}>
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  style={{
+                    padding: '8px 16px',
+                    border: '1px solid #ddd',
+                    background: currentPage === 1 ? '#f5f5f5' : '#fff',
+                    color: currentPage === 1 ? '#999' : '#333',
+                    borderRadius: '4px',
+                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                    fontWeight: '500',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  ← Trước
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    style={{
+                      padding: '8px 14px',
+                      border: currentPage === page ? '2px solid #0046ad' : '1px solid #ddd',
+                      background: currentPage === page ? '#0046ad' : '#fff',
+                      color: currentPage === page ? '#fff' : '#333',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontWeight: currentPage === page ? '700' : '500',
+                      minWidth: '40px',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  style={{
+                    padding: '8px 16px',
+                    border: '1px solid #ddd',
+                    background: currentPage === totalPages ? '#f5f5f5' : '#fff',
+                    color: currentPage === totalPages ? '#999' : '#333',
+                    borderRadius: '4px',
+                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                    fontWeight: '500',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  Sau →
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
