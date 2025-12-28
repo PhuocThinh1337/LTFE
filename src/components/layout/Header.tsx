@@ -7,6 +7,7 @@ import './header.css';
 
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { PRODUCTS } from '../../data/products';
 
 
 function Header(): React.JSX.Element {
@@ -15,6 +16,31 @@ function Header(): React.JSX.Element {
   const [isProductsMenuOpen, setIsProductsMenuOpen] = useState(false);
   const [isSupportMenuOpen, setIsSupportMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
+  // Search State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  // Filter products for live search
+  const filteredProducts = searchTerm.trim()
+    ? PRODUCTS.filter(p =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.category.toLowerCase().includes(searchTerm.toLowerCase())
+    ).slice(0, 5) // Limit to 5 results
+    : [];
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setShowSearchResults(true);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      setShowSearchResults(false);
+      navigate(`/san-pham?search=${encodeURIComponent(searchTerm)}`);
+    }
+  };
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { state } = useCart();
@@ -119,6 +145,60 @@ function Header(): React.JSX.Element {
           </nav>
 
           <div className="np-header-actions">
+
+            {/* Live Search Bar */}
+            <div className="np-search-wrapper" onMouseLeave={() => setShowSearchResults(false)}>
+              <form onSubmit={handleSearchSubmit} className="np-search-form">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm sản phẩm..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  onFocus={() => setShowSearchResults(true)}
+                  className="np-search-input"
+                />
+                <button type="submit" className="np-search-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </button>
+              </form>
+
+              {/* Search Results Dropdown */}
+              {showSearchResults && searchTerm.trim() && (
+                <div className="np-search-results">
+                  {filteredProducts.length > 0 ? (
+                    <>
+                      {filteredProducts.map(product => (
+                        <Link
+                          key={product.id}
+                          to={`/san-pham/${product.slug}`}
+                          className="np-search-item"
+                          onClick={() => setShowSearchResults(false)}
+                        >
+                          <img src={product.image} alt={product.name} />
+                          <div className="np-search-item-info">
+                            <div className="np-search-item-name">{product.name}</div>
+                            <div className="np-search-item-price">
+                              {product.price.toLocaleString('vi-VN')} ₫
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                      <div className="np-search-view-all" onClick={handleSearchSubmit}>
+                        Xem tất cả kết quả cho "{searchTerm}"
+                      </div>
+                    </>
+                  ) : (
+                    <div className="np-search-no-results">
+                      Không tìm thấy sản phẩm nào.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             <Link to="/yeu-thich" className="np-action-icon" title="Yêu thích">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -145,9 +225,9 @@ function Header(): React.JSX.Element {
                 onMouseLeave={() => setIsUserMenuOpen(false)}
               >
                 <button className="np-user-btn">
-                  <Avatar 
-                    name={user.name} 
-                    avatar={user.avatar} 
+                  <Avatar
+                    name={user.name}
+                    avatar={user.avatar}
                     size="small"
                     className="np-user-avatar-circle"
                   />
