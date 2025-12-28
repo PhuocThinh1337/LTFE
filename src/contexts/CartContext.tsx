@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { CartItem, api } from '../services/api';
+import { useAuth } from './AuthContext';
 
 // Interfaces for Order History
 interface Order {
@@ -107,19 +108,20 @@ interface CartProviderProps {
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const { user } = useAuth(); // Lấy user từ AuthContext
 
-  // Load cart from localStorage on mount
+  // Load cart from localStorage on mount và khi user thay đổi
   useEffect(() => {
     loadCart();
-  }, []);
+  }, [user]); // Reload khi user thay đổi
 
   const loadCart = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const items = await api.getCart();
+      const items = await api.getCart(user?.id?.toString());
       
       if (items.length === 0) {
-        dispatch({ type: 'SET_ITEMS', payload: [] }); // Start with an empty cart
+        dispatch({ type: 'SET_ITEMS', payload: [] });
       } else {
         dispatch({ type: 'SET_ITEMS', payload: items });
       }
@@ -132,10 +134,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const addToCart = async (productId: number, quantity: number = 1, color?: string) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      // First get product details
       const product = await api.getProduct(productId);
       if (product) {
-        const updatedCart = await api.addToCart(product, quantity, color);
+        const updatedCart = await api.addToCart(product, quantity, color, user?.id?.toString());
         dispatch({ type: 'SET_ITEMS', payload: updatedCart });
       }
     } catch (error) {
@@ -145,7 +146,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const updateQuantity = async (itemId: number, quantity: number) => {
     try {
-      const updatedCart = await api.updateCartItem(itemId, quantity);
+      const updatedCart = await api.updateCartItem(itemId, quantity, user?.id?.toString());
       dispatch({ type: 'SET_ITEMS', payload: updatedCart });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Không thể cập nhật số lượng' });
@@ -154,7 +155,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const removeItem = async (itemId: number) => {
     try {
-      const updatedCart = await api.removeFromCart(itemId);
+      const updatedCart = await api.removeFromCart(itemId, user?.id?.toString());
       dispatch({ type: 'SET_ITEMS', payload: updatedCart });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Không thể xóa sản phẩm' });
@@ -195,7 +196,7 @@ const addOrderToHistory = async (order: Order) => {
 
   const clearCart = async () => {
     try {
-      await api.clearCart();
+      await api.clearCart(user?.id?.toString());
       dispatch({ type: 'CLEAR_CART' });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Không thể xóa giỏ hàng' });
