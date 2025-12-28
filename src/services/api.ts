@@ -133,17 +133,19 @@ export const api = {
   },
 
   // Cart
-  getCart: async (): Promise<CartItem[]> => {
+  getCart: async (userId?: string): Promise<CartItem[]> => {
     await delay(300);
-    const cart = localStorage.getItem('cart');
+    const cartKey = userId ? `cart_${userId}` : 'guest_cart';
+    const cart = localStorage.getItem(cartKey);
     return cart ? JSON.parse(cart) : [];
   },
 
-  addToCart: async (product: Product, quantity: number = 1, color?: string): Promise<CartItem[]> => {
+  addToCart: async (product: Product, quantity: number = 1, color?: string, userId?: string): Promise<CartItem[]> => {
     await delay(400);
-    const cart = await api.getCart();
+    const cartKey = userId ? `cart_${userId}` : 'guest_cart';
+    const cart: CartItem[] = JSON.parse(localStorage.getItem(cartKey) || '[]');
     
-    const existingItem = cart.find(item => 
+    const existingItem = cart.find((item: CartItem) => 
       item.productId === product.id && item.color === color
     );
 
@@ -162,37 +164,40 @@ export const api = {
       cart.push(newItem);
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem(cartKey, JSON.stringify(cart));
     return cart;
   },
 
-  updateCartItem: async (itemId: number, quantity: number): Promise<CartItem[]> => {
+  updateCartItem: async (itemId: number, quantity: number, userId?: string): Promise<CartItem[]> => {
     await delay(300);
-    const cart = await api.getCart();
-    const item = cart.find(item => item.id === itemId);
+    const cartKey = userId ? `cart_${userId}` : 'guest_cart';
+    const cart: CartItem[] = JSON.parse(localStorage.getItem(cartKey) || '[]');
+    const item = cart.find((item: CartItem) => item.id === itemId);
     
     if (item) {
       if (quantity <= 0) {
-        return api.removeFromCart(itemId);
+        return api.removeFromCart(itemId, userId);
       }
       item.quantity = quantity;
-      localStorage.setItem('cart', JSON.stringify(cart));
+      localStorage.setItem(cartKey, JSON.stringify(cart));
     }
     
     return cart;
   },
 
-  removeFromCart: async (itemId: number): Promise<CartItem[]> => {
+  removeFromCart: async (itemId: number, userId?: string): Promise<CartItem[]> => {
     await delay(300);
-    const cart = await api.getCart();
-    const filteredCart = cart.filter(item => item.id !== itemId);
-    localStorage.setItem('cart', JSON.stringify(filteredCart));
+    const cartKey = userId ? `cart_${userId}` : 'guest_cart';
+    const cart: CartItem[] = JSON.parse(localStorage.getItem(cartKey) || '[]');
+    const filteredCart = cart.filter((item: CartItem) => item.id !== itemId);
+    localStorage.setItem(cartKey, JSON.stringify(filteredCart));
     return filteredCart;
   },
 
-  clearCart: async (): Promise<void> => {
+  clearCart: async (userId?: string): Promise<void> => {
     await delay(200);
-    localStorage.removeItem('cart');
+    const cartKey = userId ? `cart_${userId}` : 'guest_cart';
+    localStorage.removeItem(cartKey);
   },
 
   // User - Login
