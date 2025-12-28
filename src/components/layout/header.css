@@ -1,115 +1,118 @@
 /* Cart Button Styles - Override App.css for header */
 .np-header-actions .np-cart-btn {
-    margin-right: 0;
-    min-width: 40px;
-    height: 40px;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+  margin-right: 0;
+  min-width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.np-header-actions .np-cart-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.np-cart-icon {
+  font-size: 20px;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+.np-cart-btn:hover .np-cart-icon {
+  transform: scale(1.1);
+}
+
+.np-header-actions .np-cart-count {
+  top: -4px;
+  right: -4px;
+  background: #b71010;
+  border: 2px solid #0046ad;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  border-radius: 10px;
+  padding: 2px 6px;
+  min-width: 18px;
+  animation: none;
+}
+
+.np-cart-count:empty {
+  display: none;
+}
+
+/* Pulse animation for cart badge */
+@keyframes cartBadgePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
   }
-  
-  .np-header-actions .np-cart-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-  
-  .np-cart-icon {
-    font-size: 20px;
-    color: inherit;
-    transition: all 0.3s ease;
-  }
-  
-  .np-cart-btn:hover .np-cart-icon {
+
+  50% {
     transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
   }
-  
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
+  }
+}
+
+/* Enhanced hover effects */
+.np-cart-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
+}
+
+/* Responsive Design for Cart */
+@media (max-width: 768px) {
+  .np-header-actions .np-cart-btn {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+
   .np-header-actions .np-cart-count {
-    top: -4px;
-    right: -4px;
-    background: #b71010;
-    border: 2px solid #0046ad;
-    width: 18px;
-    height: 18px;
-    font-size: 11px;
-    border-radius: 10px;
-    padding: 2px 6px;
-    min-width: 18px;
-    animation: none;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    top: -3px;
+    right: -3px;
   }
-  
-  .np-cart-count:empty {
-    display: none;
+}
+
+@media (max-width: 480px) {
+  .np-header-actions .np-cart-btn {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
   }
-  
-  /* Pulse animation for cart badge */
-  @keyframes cartBadgePulse {
-    0% {
-      transform: scale(1);
-      box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
-    }
-    50% {
-      transform: scale(1.1);
-      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-    }
-    100% {
-      transform: scale(1);
-      box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
-    }
-  }
-  
-  /* Enhanced hover effects */
-  .np-cart-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
-  }
-  
-  /* Responsive Design for Cart */
-  @media (max-width: 768px) {
-    .np-header-actions .np-cart-btn {
-      width: 36px;
-      height: 36px;
-      padding: 6px;
-    }
-    
-    .np-header-actions .np-cart-count {
-      width: 16px;
-      height: 16px;
-      font-size: 10px;
-      top: -3px;
-      right: -3px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .np-header-actions .np-cart-btn {
-      width: 36px;
-      height: 36px;
-      padding: 6px;
-    }
-  }
-  /* Font Awesome Icon Fix */
+}
+
+/* Font Awesome Icon Fix */
 .fas.fa-shopping-cart:before {
-    content: "\f07a";
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-  }
-  
-  /* Ensure icon is visible */
-  .np-cart-icon {
-    font-size: 20px;
-    color: inherit;
-    transition: all 0.3s ease;
-    display: inline-block;
-    width: 20px;
-    text-align: center;
-  }
-  
-  .np-cart-btn:hover .np-cart-icon {
-    transform: scale(1.1);
-    color: #e74c3c;
-  }
+  content: "\f07a";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+}
+
+/* Ensure icon is visible */
+.np-cart-icon {
+  font-size: 20px;
+  color: inherit;
+  transition: all 0.3s ease;
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+}
+
+.np-cart-btn:hover .np-cart-icon {
+  transform: scale(1.1);
+  color: #e74c3c;
+}
 
 /* Header Actions Container - Ensure proper spacing */
 .np-header-actions {
@@ -119,7 +122,7 @@
   flex-wrap: nowrap;
 }
 
-.np-header-actions > * {
+.np-header-actions>* {
   flex-shrink: 0;
 }
 
@@ -141,69 +144,67 @@
     opacity: 0;
     transform: translateY(-8px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
 
+/* Revert Login Button and User Button */
+.np-header-actions .np-login-btn {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  color: white;
+  padding: 0 16px;
+  height: 36px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.np-header-actions .np-login-btn:hover {
+  background: #ffffff;
+  color: #0046ad;
+  border-color: #fff;
+}
+
+.np-header-actions .np-login-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* User Button (Logged In) */
 .np-user-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 8px 4px 4px;
-  background: #ffffff;
-  border: 1px solid #e2e4ea;
-  border-radius: 8px;
-  color: #0046ad;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 13px;
-  white-space: nowrap;
+  transition: all 0.2s;
   height: 40px;
-  position: relative;
-}
-
-.np-user-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(0, 70, 173, 0.1) 0%, rgba(0, 70, 173, 0.05) 100%);
-  opacity: 0;
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .np-user-btn:hover {
-  border-color: #0046ad;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 70, 173, 0.2);
-}
-
-.np-user-btn:hover::after {
-  opacity: 1;
-}
-
-.np-user-btn:hover .np-user-avatar-circle {
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(0, 70, 173, 0.3);
-}
-
-.np-user-btn:hover svg {
-  stroke: #0046ad;
-  transform: rotate(180deg);
-}
-
-.np-user-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 70, 173, 0.15);
+  opacity: 0.9;
 }
 
 .np-user-btn svg {
-  stroke: #0046ad;
-  flex-shrink: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  stroke: #ffffff;
+}
+
+.np-user-avatar-circle {
+  box-shadow: none;
+  border: 2px solid white;
 }
 
 .np-user-avatar-circle {
@@ -361,45 +362,35 @@
 }
 
 /* Responsive Design for User Menu */
+/* Responsive Adjustments */
 @media (max-width: 1024px) {
-  .np-user-btn {
-    padding: 8px;
-    width: 40px;
-    height: 40px;
-    justify-content: center;
+  .np-main-nav {
+    display: none;
+    /* Hide main nav links on mobile/tablet */
   }
 
-  .np-user-name {
-    display: none;
+  .np-mobile-menu-toggle {
+    display: block;
+    color: white;
   }
 
-  .np-user-btn svg:last-child {
-    display: none;
+  .np-search-form {
+    width: 160px;
   }
 }
 
 @media (max-width: 768px) {
-  .np-user-btn {
-    padding: 8px;
-    width: 36px;
-    height: 36px;
+  .np-header-nav-wrapper {
+    padding: 10px 0;
   }
 
-  .np-user-dropdown {
-    right: 0;
-    min-width: 200px;
-  }
-}
-
-@media (max-width: 480px) {
-  .np-user-btn {
-    padding: 6px;
-    width: 36px;
-    height: 36px;
+  .np-search-wrapper {
+    display: none;
+    /* Hide search bar on mobile for now, or move to slide out */
   }
 
-  .np-user-dropdown {
-    min-width: 180px;
+  .np-header-actions {
+    gap: 8px;
   }
 }
 
@@ -477,30 +468,190 @@
 }
 
 .np-order-details-summary h5 {
-  /* User Menu */
-  .np-user-menu {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    background: #f8f9fa;
-    border: 1px solid #e2e4ea;
-    border-radius: 6px;
-    color: #333;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    margin-right: 8px;
-  }
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #333;
+}
 
-  .np-user-menu:hover {
-    background: #e9ecef;
-    border-color: #adb5bd;
-    color: #e74c3c;
-  }
 
-  .np-user-menu i {
-    font-size: 16px;
+/* Live Search Styles - Compact for better layout */
+.np-search-wrapper {
+  position: relative;
+  margin-right: 8px;
+}
+
+.np-search-form {
+  display: flex;
+  align-items: center;
+  background: #f1f2f6;
+  border-radius: 20px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  width: 200px;
+  /* Reduced from 240px */
+}
+
+.np-search-form:focus-within {
+  background: #fff;
+  border-color: #e60012;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.np-search-input {
+  border: none;
+  background: none;
+  padding: 6px 0;
+  width: 100%;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+}
+
+.np-search-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.np-search-btn:hover {
+  color: #e60012;
+}
+
+
+/* Smooth dropdown visibility */
+.np-user-dropdown {
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+/* User Menu */
+.np-user-menu {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 1px solid #e2e4ea;
+  border-radius: 6px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-right: 8px;
+}
+
+.np-user-menu:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+  color: #e74c3c;
+}
+
+.np-user-menu i {
+  font-size: 16px;
+}
+
+/* Search Results Dropdown */
+.np-search-results {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 320px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  margin-top: 10px;
+  z-index: 1005;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.np-search-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  text-decoration: none;
+  transition: background 0.2s;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.np-search-item:last-child {
+  border-bottom: none;
+}
+
+.np-search-item:hover {
+  background: #f8f9fa;
+}
+
+.np-search-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.np-search-item-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.np-search-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.np-search-item-price {
+  font-size: 12px;
+  color: #e60012;
+  font-weight: 700;
+}
+
+.np-search-view-all {
+  padding: 12px;
+  text-align: center;
+  font-size: 13px;
+  color: #0046ad;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+}
+
+.np-search-view-all:hover {
+  background: #f0f4f8;
+  text-decoration: underline;
+}
+
+.np-search-no-results {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .np-search-form {
+    width: 160px;
+  }
+}
+
+@media (max-width: 550px) {
+  .np-search-wrapper {
+    display: none;
+    /* Hide on very small screens or move to mobile menu */
   }
 }
