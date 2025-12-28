@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import Breadcrumb from '../../components/common/Breadcrumb';
@@ -31,6 +32,7 @@ interface PaymentMethod {
 }
 
 function CheckoutPage(): React.JSX.Element {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { addOrderToHistory, removeItems } = useCart();
@@ -41,7 +43,7 @@ function CheckoutPage(): React.JSX.Element {
   const shipping = location.state?.shipping || 0;
   const total = location.state?.total || 0;
 
-  // Form states
+  // Form states 
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     fullName: '',
     phone: '',
@@ -64,6 +66,18 @@ function CheckoutPage(): React.JSX.Element {
 
   const [errors, setErrors] = useState<Partial<CustomerInfo>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Chuyển hướng về trang login nếu chưa đăng nhập
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Kiểm tra authentication 
+  if (!isAuthenticated) {
+    return <></>;
+  }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
