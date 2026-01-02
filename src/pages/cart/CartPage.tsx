@@ -7,15 +7,21 @@ import { useCart } from '../../contexts/CartContext';
 import './CartPage.css';
 
 function CartPage(): React.JSX.Element {
-  const { 
-    state: { items: cartItems, loading, error }, 
-    updateQuantity, 
-    removeItem 
+  const {
+    state: { items: cartItems, loading, error, appliedVoucher, discountAmount },
+    updateQuantity,
+    removeItem,
+    applyVoucher,
+    removeVoucher
   } = useCart();
   const navigate = useNavigate();
 
   // State để track sản phẩm được chọn
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+
+  // Voucher state
+  const [couponCode, setCouponCode] = useState('');
+  const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   // Khởi tạo tất cả sản phẩm được chọn khi load
   useEffect(() => {
@@ -33,8 +39,11 @@ function CartPage(): React.JSX.Element {
   // Tính toán chỉ cho sản phẩm được chọn
   const selectedCartItems = cartItems.filter(item => selectedItems.has(item.id));
   const subtotal = selectedCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = selectedItems.size === 0 ? 0 : (subtotal > 3000000 ? 0 : 100000); // Miễn phí ship cho đơn > 3 triệu, còn lại 100k. Nếu không chọn sản phẩm nào thì ship = 0
-  const total = subtotal + shipping;
+  const shipping = selectedItems.size === 0 ? 0 : (subtotal > 3000000 ? 0 : 100000);
+
+  // Tính discount
+  const effectiveDiscount = Math.min(discountAmount, subtotal);
+  const total = Math.max(0, subtotal + shipping - effectiveDiscount);
 
   // Toggle chọn/bỏ chọn sản phẩm
   const toggleItemSelection = (itemId: number) => {
@@ -65,6 +74,24 @@ function CartPage(): React.JSX.Element {
 
   const handleRemoveItem = async (id: number) => {
     await removeItem(id);
+  };
+
+  // Xử lý Voucher
+  const handleApplyVoucher = () => {
+    if (!couponCode.trim()) return;
+    setCouponMessage(null);
+    const result = applyVoucher(couponCode);
+    if (result.success) {
+      setCouponMessage({ type: 'success', text: result.message });
+      setCouponCode('');
+    } else {
+      setCouponMessage({ type: 'error', text: result.message });
+    }
+  };
+
+  const handleRemoveVoucher = () => {
+    removeVoucher();
+    setCouponMessage(null);
   };
 
   if (loading) {
@@ -107,7 +134,7 @@ function CartPage(): React.JSX.Element {
           <div className="np-container">
             <h1>Giỏ hàng của bạn</h1>
             <p>
-              {cartItems.length > 0 
+              {cartItems.length > 0
                 ? `Bạn có ${cartItems.length} sản phẩm trong giỏ hàng`
                 : 'Giỏ hàng của bạn đang trống'
               }
@@ -151,19 +178,19 @@ function CartPage(): React.JSX.Element {
                           className="np-checkbox"
                         />
                       </div>
-                      
+
                       <div className="np-cart-item-image">
                         <img src={item.image} alt={item.name} />
                       </div>
-                      
+
                       <div className="np-cart-item-info">
                         <h3>{item.name}</h3>
                         {item.color && <p className="np-cart-item-color">Màu: {item.color}</p>}
                         <p className="np-cart-item-price">{formatPrice(item.price)}</p>
                       </div>
-                      
+
                       <div className="np-cart-item-quantity">
-                        <button 
+                        <button
                           className="np-quantity-btn"
                           onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                           disabled={loading}
@@ -171,7 +198,7 @@ function CartPage(): React.JSX.Element {
                           -
                         </button>
                         <span className="np-quantity-value">{item.quantity}</span>
-                        <button 
+                        <button
                           className="np-quantity-btn"
                           onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                           disabled={loading}
@@ -179,12 +206,12 @@ function CartPage(): React.JSX.Element {
                           +
                         </button>
                       </div>
-                      
+
                       <div className="np-cart-item-total">
                         {formatPrice(item.price * item.quantity)}
                       </div>
-                      
-                      <button 
+
+                      <button
                         className="np-cart-item-remove"
                         onClick={() => handleRemoveItem(item.id)}
                         disabled={loading}
@@ -199,69 +226,158 @@ function CartPage(): React.JSX.Element {
                 <div className="np-cart-summary">
                   <div className="np-cart-summary-card">
                     <h3>Tóm tắt đơn hàng</h3>
-                    
+
+                    {/* Voucher Input Section */}
+                    <div className="np-voucher-section" style={{ marginBottom: '20px' }}>
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                        <input
+                          type="text"
+                          placeholder="Nhập mã giảm giá"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                          style={{
+                            flex: 1,
+                            padding: '8px 12px',
+                            border: '1px solid #ddd',
+                            borderRadius: '4px',
+                            outline: 'none'
+                          }}
+                        />
+                        <button
+                          onClick={handleApplyVoucher}
+                          disabled={!couponCode.trim()}
+                          style={{
+                            padding: '8px 16px',
+                            background: '#333',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: couponCode.trim() ? 'pointer' : 'not-allowed',
+                            opacity: couponCode.trim() ? 1 : 0.7
+                          }}
+                        >
+                          Áp dụng
+                        </button>
+                      </div>
+
+                      {/* Messages */}
+                      {couponMessage && (
+                        <div style={{
+                          fontSize: '13px',
+                          color: couponMessage.type === 'success' ? 'green' : 'red',
+                          marginBottom: '8px'
+                        }}>
+                          {couponMessage.text}
+                        </div>
+                      )}
+
+                      {/* Applied Voucher Tag */}
+                      {appliedVoucher && (
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          background: '#f0f9ff',
+                          border: '1px dashed #0046ad',
+                          padding: '8px 12px',
+                          borderRadius: '4px',
+                          fontSize: '13px',
+                          color: '#0046ad',
+                          marginTop: '8px'
+                        }}>
+                          <span>
+                            <strong>{appliedVoucher.code}</strong>: -{formatPrice(effectiveDiscount)}
+                          </span>
+                          <button
+                            onClick={handleRemoveVoucher}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#999',
+                              cursor: 'pointer',
+                              fontSize: '18px',
+                              padding: '0 4px',
+                              lineHeight: 1
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="np-summary-divider"></div>
+
                     <div className="np-summary-row">
                       <span>Tạm tính:</span>
                       <span>{formatPrice(subtotal)}</span>
                     </div>
-                    
+
                     <div className="np-summary-row">
                       <span>Phí vận chuyển:</span>
                       <span>
-                        {selectedItems.size === 0 
-                          ? '0 VND' 
-                          : (shipping === 0 
-                            ? 'Miễn phí (đơn > 3 triệu)' 
+                        {selectedItems.size === 0
+                          ? '0 VND'
+                          : (shipping === 0
+                            ? 'Miễn phí (đơn > 3 triệu)'
                             : formatPrice(shipping) + ' (đơn < 3 triệu)'
                           )
                         }
                       </span>
                     </div>
-                    
+
+                    {appliedVoucher && (
+                      <div className="np-summary-row" style={{ color: '#28a745', fontWeight: 500 }}>
+                        <span>Giảm giá ({appliedVoucher.code}):</span>
+                        <span>-{formatPrice(effectiveDiscount)}</span>
+                      </div>
+                    )}
+
                     {/* Note về chính sách vận chuyển */}
                     {subtotal < 3000000 && selectedItems.size > 0 && (
                       <div className="np-shipping-note">
                         Mua thêm {formatPrice(3000000 - subtotal)} để được miễn phí vận chuyển
                       </div>
                     )}
-                    
+
                     {subtotal >= 3000000 && selectedItems.size > 0 && (
                       <div className="np-shipping-note np-shipping-free">
                         Đơn hàng của bạn đã được miễn phí vận chuyển!
                       </div>
                     )}
-                    
+
                     <div className="np-summary-divider"></div>
-                    
+
                     <div className="np-summary-row np-summary-total">
                       <span>Tổng cộng ({selectedItems.size} sản phẩm):</span>
                       <span>{formatPrice(total)}</span>
                     </div>
-                    
-                    <button 
+
+                    <button
                       className="git np-btn-primary np-btn-full"
                       disabled={selectedItems.size === 0}
                       onClick={() => {
                         if (selectedItems.size > 0) {
-                          // TODO: Navigate to checkout với selected items
                           navigate('/thanh-toan', {
                             state: {
                               selectedItems: selectedCartItems,
                               subtotal,
                               shipping,
+                              discount: effectiveDiscount,
+                              voucher: appliedVoucher,
                               total
                             }
                           });
                         }
                       }}
                     >
-                      {selectedItems.size === 0 
-                        ? 'Vui lòng chọn sản phẩm' 
+                      {selectedItems.size === 0
+                        ? 'Vui lòng chọn sản phẩm'
                         : `Thanh toán `
                       }
                     </button>
-                    
-                    <button 
+
+                    <button
                       className="np-btn-outline np-btn-full"
                       onClick={() => navigate('/san-pham')}
                     >
@@ -278,9 +394,9 @@ function CartPage(): React.JSX.Element {
               <div className="np-empty-cart-content">
                 <div className="np-empty-cart-icon">
                   <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="9" cy="21" r="1" />
-                  <circle cx="20" cy="21" r="1" />
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
                 </div>
                 <h2>Giỏ hàng trống</h2>

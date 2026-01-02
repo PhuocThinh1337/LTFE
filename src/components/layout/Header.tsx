@@ -169,36 +169,50 @@ function Header(): React.JSX.Element {
 
               {/* Search Results Dropdown */}
               {showSearchResults && searchTerm.trim() && (
-                <div className="np-search-results">
-                  {filteredProducts.length > 0 ? (
-                    <>
-                      {filteredProducts.map(product => (
-                        <Link
-                          key={product.id}
-                          to={`/san-pham/${product.slug}`}
-                          className="np-search-item"
-                          onClick={() => setShowSearchResults(false)}
-                        >
-                          <img src={product.image} alt={product.name} />
-                          <div className="np-search-item-info">
-                            <div className="np-search-item-name">{product.name}</div>
-                            <div className="np-search-item-price">
-                              {product.price.toLocaleString('vi-VN')} ₫
+                <>
+                  {/* Invisible bridge to prevent mouseleave when crossing margin */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    height: '20px',
+                    zIndex: 1004,
+                    background: 'transparent'
+                  }} />
+                  <div className="np-search-results">
+
+                    {filteredProducts.length > 0 ? (
+                      <>
+                        {filteredProducts.map(product => (
+                          <Link
+                            key={product.id}
+                            to={`/san-pham/${product.slug}`}
+                            className="np-search-item"
+                            onClick={() => setShowSearchResults(false)}
+                          >
+                            <img src={product.image} alt={product.name} />
+                            <div className="np-search-item-info">
+                              <div className="np-search-item-name">{product.name}</div>
+                              <div className="np-search-item-price">
+                                {product.price.toLocaleString('vi-VN')} ₫
+                              </div>
                             </div>
-                          </div>
-                        </Link>
-                      ))}
-                      <div className="np-search-view-all" onClick={handleSearchSubmit}>
-                        Xem tất cả kết quả cho "{searchTerm}"
+                          </Link>
+                        ))}
+                        <div className="np-search-view-all" onClick={handleSearchSubmit}>
+                          Xem tất cả kết quả cho "{searchTerm}"
+                        </div>
+                      </>
+                    ) : (
+                      <div className="np-search-no-results">
+                        Không tìm thấy sản phẩm nào.
                       </div>
-                    </>
-                  ) : (
-                    <div className="np-search-no-results">
-                      Không tìm thấy sản phẩm nào.
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                </>
               )}
+
             </div>
 
             <Link to="/yeu-thich" className="np-action-icon" title="Yêu thích">
