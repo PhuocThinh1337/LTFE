@@ -30,6 +30,12 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
+  position: relative;
+}
+
+/* Đảm bảo header container không cắt dropdown */
+.np-header-nav .np-container {
+  overflow: visible;
 }
 
 /* Header */
@@ -175,14 +181,19 @@ body {
   background: #0046ad;
   color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
+  z-index: 1000;
 }
 
 .np-header-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0;
+  padding: 0 16px; /* Thêm padding để tránh đè */
   position: relative;
+  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
+  gap: 16px; /* Thêm gap giữa các phần tử */
   /* Thêm position relative cho np-header-nav */
 }
 
@@ -191,11 +202,13 @@ body {
   gap: 0;
   font-size: 14px;
   font-weight: 500;
-  width: 100%;
-  justify-content: center;
+  flex: 1; /* Cho phép nav chiếm không gian còn lại */
+  justify-content: flex-start; /* Căn trái thay vì center */
   flex-wrap: wrap;
   font-family: 'Inter', sans-serif;
   letter-spacing: -0.01em;
+  min-width: 0; /* Cho phép shrink */
+  margin-right: 16px; /* Thêm margin để tách khỏi search */
 }
 
 .np-main-nav a,
@@ -272,12 +285,11 @@ body {
 .np-header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  gap: 8px; /* Giảm gap để tiết kiệm không gian */
+  position: relative; /* Đổi từ absolute sang relative */
   z-index: 10;
+  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
+  flex-shrink: 0; /* Không cho shrink */
 }
 
 .np-action-icon {

@@ -113,7 +113,9 @@ function Header(): React.JSX.Element {
             <Link to="/" className={isActive('/')} onClick={() => setMobileMenuOpen(false)}>
               Trang chủ
             </Link>
-            <a href="#colors" onClick={() => setMobileMenuOpen(false)}>Màu sắc</a>
+            <Link to="/phoi-mau-tuy-chinh" className={isActive('/phoi-mau-tuy-chinh')} onClick={() => setMobileMenuOpen(false)}>
+              Phối màu tùy chỉnh
+            </Link>
             <div
               className={`np-nav-item-wrapper ${isProductsMenuOpen ? 'open' : ''}`}
             >

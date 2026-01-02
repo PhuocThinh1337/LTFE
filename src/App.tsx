@@ -10,6 +10,7 @@ import ProductsPage from './pages/ProductsPage';
 import ContactPage from './pages/ContactPage';
 import PaintEstimatorPage from './pages/PaintEstimatorPage';
 import ColorSupportPage from './pages/ColorSupportPage';
+import CustomColorPage from './pages/CustomColorPage';
 import WishlistPage from './pages/WishlistPage';
 import AuthLoginPage from './pages/AuthLoginPage';
 import AuthRegisterPage from './pages/AuthRegisterPage';
@@ -37,6 +38,7 @@ function App(): React.JSX.Element {
 
               <Route path="/tinh-toan-luong-son" element={<PaintEstimatorPage />} />
               <Route path="/ho-tro-phoi-mau" element={<ColorSupportPage />} />
+              <Route path="/phoi-mau-tuy-chinh" element={<CustomColorPage />} />
               <Route path="/so-sanh/san-pham" element={<ComparePage />} />
 
               <Route path="/son-noi-that" element={<ProductsPage category="son-noi-that" />} />
