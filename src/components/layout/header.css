@@ -118,12 +118,18 @@
 .np-header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px; /* Giảm gap */
   flex-wrap: nowrap;
+  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
 }
 
 .np-header-actions>* {
   flex-shrink: 0;
+}
+
+/* Đảm bảo search wrapper có thể shrink */
+.np-header-actions .np-search-wrapper {
+  flex-shrink: 1;
 }
 
 /* User Menu Styles */
@@ -132,6 +138,7 @@
   margin-left: 0;
   z-index: 1001;
   flex-shrink: 0;
+  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
 }
 
 /* Smooth dropdown visibility */
@@ -478,7 +485,9 @@
 /* Live Search Styles - Compact for better layout */
 .np-search-wrapper {
   position: relative;
-  margin-right: 8px;
+  margin-right: 12px;
+  flex-shrink: 1;
+  min-width: 0; /* Cho phép shrink khi cần */
 }
 
 .np-search-form {
@@ -489,8 +498,8 @@
   padding: 0 10px;
   border: 1px solid transparent;
   transition: all 0.2s;
-  width: 200px;
-  /* Reduced from 240px */
+  width: 180px; /* Giảm từ 200px */
+  max-width: 180px;
 }
 
 .np-search-form:focus-within {
@@ -643,9 +652,21 @@
   font-size: 13px;
 }
 
+@media (max-width: 1024px) {
+  .np-search-form {
+    width: 150px;
+    max-width: 150px;
+  }
+  
+  .np-main-nav {
+    margin-right: 12px;
+  }
+}
+
 @media (max-width: 900px) {
   .np-search-form {
-    width: 160px;
+    width: 140px;
+    max-width: 140px;
   }
 }
 

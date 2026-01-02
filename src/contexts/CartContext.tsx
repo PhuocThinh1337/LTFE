@@ -110,10 +110,19 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const { user } = useAuth(); // Lấy user từ AuthContext
 
-  // Load cart from localStorage on mount và khi user thay đổi
   useEffect(() => {
     loadCart();
-  }, [user]); // Reload khi user thay đổi
+    
+    const handleCartUpdate = () => {
+      loadCart();
+    };
+    
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
+  }, [user]);
 
   const loadCart = async () => {
     try {
