@@ -24,7 +24,7 @@ const HomePage: React.FC = () => {
     {
       title: 'Xu hướng Màu sắc 2026–27: Cộng Hưởng',
       subtitle: 'Cùng chúng tôi kiến tạo nên những giá trị mới cho tương lai',
-      link: '/ho-tro-phoi-mau',
+      link: '/phoi-mau-tuy-chinh',
       image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1200'
     }
   ];
@@ -243,17 +243,6 @@ const HomePage: React.FC = () => {
     setActiveTrendIndex((prev) => (prev - 1 + colorTrends.length) % colorTrends.length);
   };
 
-  const businessAreas = [
-    { name: 'Sơn Kiến Trúc', icon: '🏗️' },
-    { name: 'Sơn và chất phủ ô tô, xe máy', icon: '🚗' },
-    { name: 'Sơn hàng hải', icon: '🚢' },
-    { name: 'Sơn và chất bảo vệ sàn', icon: '🏢' },
-    { name: 'Sơn và chất phủ công nghiệp', icon: '🏭' },
-    { name: 'Sơn gỗ', icon: '🪵' },
-    { name: 'Beyond Paint', icon: '🎨' },
-    { name: 'Sơn và chất phủ tole cuộn', icon: '📦' }
-  ];
-
   const featuredProducts = PRODUCTS.filter(p => p.isPremium || p.isNew).slice(0, 3);
 
   useEffect(() => {
@@ -289,7 +278,12 @@ const HomePage: React.FC = () => {
               <div
                 key={index}
                 className={`np-banner-slide ${index === currentSlide ? 'active' : ''}`}
-                style={{ backgroundImage: `url(${banner.image})` }}
+                style={{ 
+                  backgroundImage: `url(${banner.image})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
               >
                 <div className="np-banner-overlay"></div>
                 <div className="np-container np-banner-content">
@@ -327,7 +321,7 @@ const HomePage: React.FC = () => {
               {currentColorSwatches.map((color, index) => (
                 <Link
                   key={`${colorCodeCarouselIndex}-${index}`}
-                  to="/ho-tro-phoi-mau"
+                  to="/phoi-mau-tuy-chinh"
                   className={`np-color-swatch-circle ${index === 6 ? 'highlighted' : ''} color-transition`}
                   style={{ 
                     backgroundColor: color,
@@ -350,7 +344,15 @@ const HomePage: React.FC = () => {
                       index === (colorCodeCarouselIndex - 1 + colorCodeImages.length) % colorCodeImages.length ? 'prev' : ''
                     }`}
                   >
-                    <img src={item.image} alt={item.title} />
+                    <img 
+                      src={item.image} 
+                      alt={item.title}
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80';
+                        e.currentTarget.onerror = null;
+                      }}
+                      loading="lazy"
+                    />
                     {index === colorCodeCarouselIndex && (
                       <>
                         <button
@@ -379,7 +381,7 @@ const HomePage: React.FC = () => {
             </div>
 
             <div className="np-section-cta">
-              <Link to="/ho-tro-phoi-mau" className="np-btn-color-code-search">
+              <Link to="/phoi-mau-tuy-chinh" className="np-btn-color-code-search">
                 <span>TÌM MÃ MÀU SƠN</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="11" cy="11" r="8" />
@@ -406,6 +408,11 @@ const HomePage: React.FC = () => {
                   src={activeTrend.image} 
                   alt={activeTrend.title}
                   className="np-trend-main-image"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600';
+                    e.currentTarget.onerror = null;
+                  }}
+                  loading="lazy"
                 />
               </div>
               <div className="np-trend-content">
@@ -420,7 +427,7 @@ const HomePage: React.FC = () => {
                   ))}
                 </div>
                 <p className="np-trend-text">{activeTrend.description}</p>
-                <Link to="/ho-tro-phoi-mau" className="np-trend-cta-btn">
+                <Link to="/phoi-mau-tuy-chinh" className="np-trend-cta-btn">
                   <span>XEM CHI TIẾT</span>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M5 12h14M12 5l7 7-7 7" />
@@ -440,7 +447,15 @@ const HomePage: React.FC = () => {
                         onClick={() => setActiveTrendIndex(index)}
                         aria-label={`Go to ${trend.title}`}
                       >
-                        <img src={trend.image} alt={trend.title} />
+                        <img 
+                          src={trend.image} 
+                          alt={trend.title}
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=200';
+                            e.currentTarget.onerror = null;
+                          }}
+                          loading="lazy"
+                        />
                       </button>
                     ))}
                   </div>
@@ -461,7 +476,9 @@ const HomePage: React.FC = () => {
                     alt={`Gallery ${index + 1}`}
                     onError={(e) => {
                       e.currentTarget.src = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400';
+                      e.currentTarget.onerror = null;
                     }}
+                    loading="lazy"
                   />
                 </div>
               ))}
@@ -487,33 +504,22 @@ const HomePage: React.FC = () => {
               {featuredProducts.map((product) => (
                 <Link key={product.id} to={`/san-pham`} className="np-featured-product-card">
                   <div className="np-product-image-wrapper">
-                    <img src={product.image} alt={product.name} className="np-product-image" />
+                    <img 
+                      src={product.image} 
+                      alt={product.name} 
+                      className="np-product-image"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400';
+                        e.currentTarget.onerror = null;
+                      }}
+                      loading="lazy"
+                    />
                     {product.isNew && <span className="np-product-badge">Mới</span>}
                     {product.isPremium && <span className="np-product-badge premium">Premium</span>}
                   </div>
                   <h3 className="np-product-name">{product.name}</h3>
                   <p className="np-product-description">{product.description}</p>
                   <div className="np-product-link">Xem ngay →</div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Business Areas Section */}
-        <section className="np-business-areas-section">
-          <div className="np-container">
-            <div className="np-section-header-center">
-              <h2 className="np-section-title-large">LĨNH VỰC KINH DOANH</h2>
-              <p className="np-section-description-large">
-                Kiến tạo giá trị bền vững thông qua sản phẩm Sơn Nippon
-              </p>
-            </div>
-            <div className="np-business-grid">
-              {businessAreas.map((area, index) => (
-                <Link key={index} to="/san-pham" className="np-business-card">
-                  <div className="np-business-icon">{area.icon}</div>
-                  <div className="np-business-name">{area.name}</div>
                 </Link>
               ))}
             </div>
@@ -544,7 +550,7 @@ const HomePage: React.FC = () => {
                       <polyline points="9 22 9 12 15 12 15 22" />
                     </svg>
                   </Link>
-                  <Link to="/ho-tro-phoi-mau" className="np-support-button">
+                  <Link to="/phoi-mau-tuy-chinh" className="np-support-button">
                     <span>HỖ TRỢ PHỐI MÀU</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <rect x="3" y="3" width="7" height="7" />
@@ -561,7 +567,9 @@ const HomePage: React.FC = () => {
                   alt="Hỗ trợ Nippon Paint"
                   onError={(e) => {
                     e.currentTarget.src = 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80';
+                    e.currentTarget.onerror = null;
                   }}
+                  loading="lazy"
                 />
               </div>
             </div>
