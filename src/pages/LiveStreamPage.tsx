@@ -7,7 +7,7 @@ import './LiveStreamPage.css';
 
 // --- CONFIGURATION ---
 // IMPORTANT: Replace with your actual App ID from Agora Console
-const APP_ID = "ce7be072473642cfbe5eb9d7213e1211";
+const APP_ID = process.env.REACT_APP_AGORA_APP_ID || "";
 const CHANNEL_NAME = "ecommerce_live";
 const TOKEN = null; // Create an App ID only project for testing to avoid token generation
 
