@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getDatabase, ref, set, onValue, onDisconnect } from "firebase/database";
+import { getDatabase, ref, set, onValue, onDisconnect, DataSnapshot } from "firebase/database";
 
 // TODO: Replace with your actual Firebase Configuration
 const firebaseConfig = {
@@ -24,7 +24,7 @@ export const updatePinnedProduct = (productId: number | null) => {
 export const subscribeToPinnedProduct = (callback: (productId: number | null) => void) => {
     const starCountRef = ref(db, 'live/pinnedProductId');
     // Return the unsubscribe function (handled by Firebase SDK mostly, but onValue returns Unsubscribe)
-    return onValue(starCountRef, (snapshot) => {
+    return onValue(starCountRef, (snapshot: DataSnapshot) => {
         const data = snapshot.val();
         callback(data);
     });
@@ -44,7 +44,7 @@ export const updateStreamStatus = (isLive: boolean) => {
 
 export const subscribeToStreamStatus = (callback: (isLive: boolean) => void) => {
     const statusRef = ref(db, 'live/isLive');
-    return onValue(statusRef, (snapshot) => {
+    return onValue(statusRef, (snapshot: DataSnapshot) => {
         const data = snapshot.val();
         callback(!!data); // Convert to boolean
     });
