@@ -21,6 +21,7 @@ import CheckoutPage from './pages/checkout/CheckoutPage';
 import ProfilePage from './pages/ProfilePage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ComparePage from './pages/CompareProductPage';
+import LiveStreamPage from './pages/LiveStreamPage';
 
 
 function App(): React.JSX.Element {
@@ -56,6 +57,7 @@ function App(): React.JSX.Element {
               <Route path="/login" element={<AuthLoginPage />} />
               <Route path="/register" element={<AuthRegisterPage />} />
               <Route path="/forgot-password" element={<AuthForgotPasswordPage />} />
+              <Route path="/live-stream" element={<LiveStreamPage />} />
             </Routes>
           </Router>
         </CompareProvider>

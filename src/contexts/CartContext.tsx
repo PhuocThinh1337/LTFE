@@ -340,7 +340,13 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const getTotalPrice = () => {
     const subtotal = getSubtotal();
-    return Math.max(0, subtotal - state.discountAmount);
+    let total = Math.max(0, subtotal - state.discountAmount);
+
+    if (user?.isPremium) {
+      total = total * 0.9;
+    }
+
+    return total;
   };
 
   const value: CartContextType = {
