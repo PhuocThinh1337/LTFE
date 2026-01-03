@@ -1,0 +1,200 @@
+.live-stream-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #1a1a1a;
+    color: white;
+    position: relative;
+}
+
+.live-controls {
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 10;
+}
+
+.video-grid {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.host-player,
+.remote-player {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.join-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 20px;
+}
+
+.btn-primary {
+    padding: 10px 20px;
+    background-color: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-secondary {
+    padding: 10px 20px;
+    background-color: #2f3542;
+    color: white;
+    border: 1px solid #57606f;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* --- OVERLAY --- */
+.overlay-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Let clicks pass through to video */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* Space content */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.host-product-list {
+    pointer-events: auto;
+    width: 300px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: 80%;
+    padding: 10px;
+    align-self: center;
+    /* Center vertically */
+    margin-left: auto;
+    /* Push to right */
+}
+
+.product-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #444;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.product-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.product-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.product-price {
+    font-size: 13px;
+    color: #ffcc00;
+    margin: 0;
+}
+
+.pinned-product-card {
+    pointer-events: auto;
+    position: absolute;
+    bottom: 80px;
+    /* Above controls */
+    left: 20px;
+    background-color: white;
+    color: black;
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    max-width: 350px;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.pinned-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.pinned-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+}
+
+.pinned-price {
+    font-weight: bold;
+    color: #ff4757;
+    font-size: 18px;
+}
+
+.buy-now-btn {
+    background-color: #ff4757;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.pin-badge {
+    background-color: #ff4757;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    margin-left: 5px;
+}
