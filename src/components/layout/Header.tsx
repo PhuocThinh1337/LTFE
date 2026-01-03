@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import MegaMenu from './MegaMenu';
 import SupportMegaMenu from './SupportMegaMenu';
@@ -16,6 +16,27 @@ function Header(): React.JSX.Element {
   const [isProductsMenuOpen, setIsProductsMenuOpen] = useState(false);
   const [isSupportMenuOpen, setIsSupportMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
+  // Refs for click outside detection
+  const productsMenuRef = useRef<HTMLDivElement>(null);
+  const supportMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close menus when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (productsMenuRef.current && !productsMenuRef.current.contains(event.target as Node)) {
+        setIsProductsMenuOpen(false);
+      }
+      if (supportMenuRef.current && !supportMenuRef.current.contains(event.target as Node)) {
+        setIsSupportMenuOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Search State
   const [searchTerm, setSearchTerm] = useState('');
@@ -118,6 +139,7 @@ function Header(): React.JSX.Element {
             </Link>
             <div
               className={`np-nav-item-wrapper ${isProductsMenuOpen ? 'open' : ''}`}
+              ref={productsMenuRef}
             >
               <div
                 className={`np-nav-trigger ${isActive('/san-pham')}`}
@@ -131,6 +153,7 @@ function Header(): React.JSX.Element {
             <a href="#business" onClick={() => setMobileMenuOpen(false)}>Lĩnh vực kinh doanh</a>
             <div
               className={`np-nav-item-wrapper ${isSupportMenuOpen ? 'open' : ''}`}
+              ref={supportMenuRef}
             >
               <div
                 className={`np-nav-trigger ${isActive('/tinh-toan-luong-son') || isActive('/ho-tro-phoi-mau') ? 'active-link' : ''}`}

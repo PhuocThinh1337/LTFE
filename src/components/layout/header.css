@@ -1,3 +1,12 @@
+.np-header {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  width: 100%;
+  background: #fff;
+  /* Ensure it's opaque */
+}
+
 /* Cart Button Styles - Override App.css for header */
 .np-header-actions .np-cart-btn {
   margin-right: 0;
@@ -118,9 +127,11 @@
 .np-header-actions {
   display: flex;
   align-items: center;
-  gap: 8px; /* Giảm gap */
+  gap: 8px;
+  /* Giảm gap */
   flex-wrap: nowrap;
-  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
+  overflow: visible;
+  /* Cho phép dropdown hiển thị ra ngoài */
 }
 
 .np-header-actions>* {
@@ -138,7 +149,8 @@
   margin-left: 0;
   z-index: 1001;
   flex-shrink: 0;
-  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
+  overflow: visible;
+  /* Cho phép dropdown hiển thị ra ngoài */
 }
 
 /* Smooth dropdown visibility */
@@ -182,6 +194,8 @@
 }
 
 .np-header-actions .np-login-btn svg {
+  width: 16px;
+  height: 16px;
   width: 16px;
   height: 16px;
 }
@@ -487,7 +501,8 @@
   position: relative;
   margin-right: 12px;
   flex-shrink: 1;
-  min-width: 0; /* Cho phép shrink khi cần */
+  min-width: 0;
+  /* Cho phép shrink khi cần */
 }
 
 .np-search-form {
@@ -498,7 +513,8 @@
   padding: 0 10px;
   border: 1px solid transparent;
   transition: all 0.2s;
-  width: 180px; /* Giảm từ 200px */
+  width: 180px;
+  /* Giảm từ 200px */
   max-width: 180px;
 }
 
@@ -657,7 +673,7 @@
     width: 150px;
     max-width: 150px;
   }
-  
+
   .np-main-nav {
     margin-right: 12px;
   }
