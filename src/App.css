@@ -182,7 +182,8 @@ body {
   color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
-  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
+  overflow: visible;
+  /* Cho phép dropdown hiển thị ra ngoài */
   z-index: 1000;
 }
 
@@ -190,11 +191,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px; /* Thêm padding để tránh đè */
-  position: relative;
-  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
-  gap: 16px; /* Thêm gap giữa các phần tử */
-  /* Thêm position relative cho np-header-nav */
+  padding: 0 16px;
+  /* Thêm padding để tránh đè */
+  overflow: visible;
+  /* Cho phép dropdown hiển thị ra ngoài */
+  gap: 16px;
+  /* Thêm gap giữa các phần tử */
 }
 
 .np-main-nav {
@@ -202,13 +204,17 @@ body {
   gap: 0;
   font-size: 14px;
   font-weight: 500;
-  flex: 1; /* Cho phép nav chiếm không gian còn lại */
-  justify-content: flex-start; /* Căn trái thay vì center */
+  flex: 1;
+  /* Cho phép nav chiếm không gian còn lại */
+  justify-content: flex-start;
+  /* Căn trái thay vì center */
   flex-wrap: wrap;
   font-family: 'Inter', sans-serif;
   letter-spacing: -0.01em;
-  min-width: 0; /* Cho phép shrink */
-  margin-right: 16px; /* Thêm margin để tách khỏi search */
+  min-width: 0;
+  /* Cho phép shrink */
+  margin-right: 16px;
+  /* Thêm margin để tách khỏi search */
 }
 
 .np-main-nav a,
@@ -239,8 +245,7 @@ body {
 
 /* Mega Menu Trigger Styles - FROM HEAD */
 .np-nav-item-wrapper {
-  position: relative;
-  /* Context for mega menu if needed */
+  /* Context for mega menu moved to header wrapper */
   display: flex;
   /* Behave like a flex item in nav */
   align-items: stretch;
@@ -285,11 +290,15 @@ body {
 .np-header-actions {
   display: flex;
   align-items: center;
-  gap: 8px; /* Giảm gap để tiết kiệm không gian */
-  position: relative; /* Đổi từ absolute sang relative */
+  gap: 8px;
+  /* Giảm gap để tiết kiệm không gian */
+  position: relative;
+  /* Đổi từ absolute sang relative */
   z-index: 10;
-  overflow: visible; /* Cho phép dropdown hiển thị ra ngoài */
-  flex-shrink: 0; /* Không cho shrink */
+  overflow: visible;
+  /* Cho phép dropdown hiển thị ra ngoài */
+  flex-shrink: 0;
+  /* Không cho shrink */
 }
 
 .np-action-icon {
