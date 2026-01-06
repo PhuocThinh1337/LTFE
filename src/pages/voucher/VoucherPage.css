@@ -137,13 +137,51 @@
   color: #667eea;
 }
 
+.np-voucher-actions {
+  display: flex;
+  gap: 12px;
+  padding: 1rem 1.5rem;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+}
+
+.np-save-voucher-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.np-save-voucher-btn:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.np-save-voucher-btn.saved {
+  background: #d1ecf1;
+  border-color: #bee5eb;
+  color: #0c5460;
+}
+
+.np-save-voucher-btn.saved:hover {
+  background: #bee5eb;
+}
+
 .np-copy-voucher-btn {
-  width: 100%;
   background: #3182ce;
   color: white;
   border: none;
-  padding: 0.875rem 1rem;
-  border-radius: 0;
+  padding: 8px 16px;
+  border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -151,7 +189,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-size: 1rem;
+  font-size: 14px;
+  flex: 1;
 }
 
 .np-copy-voucher-btn:hover {
@@ -164,6 +203,27 @@
 
 .np-copy-voucher-btn svg {
   flex-shrink: 0;
+}
+
+.np-remove-voucher-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  color: #721c24;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.np-remove-voucher-btn:hover {
+  background: #f5c6cb;
+  border-color: #f1aeb5;
 }
 
 .np-no-vouchers {
@@ -208,5 +268,9 @@
   .np-discount-value {
     font-size: 1.75rem;
   }
-}
 
+  .np-voucher-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

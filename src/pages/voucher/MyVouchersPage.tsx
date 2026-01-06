@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
-import { VOUCHERS, Voucher } from '../data/vouchers';
+import React, { useState, useEffect } from 'react';
+import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
+import { VOUCHERS, Voucher } from '../../data/vouchers';
 import './VoucherPage.css';
 
-const VoucherPage: React.FC = () => {
+
+const MyVouchersPage: React.FC = () => {
+  const [savedVouchers, setSavedVouchers] = useState<number[]>([]);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('savedVouchers');
+    if (saved) {
+      setSavedVouchers(JSON.parse(saved));
+    }
+  }, []);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
@@ -42,13 +51,13 @@ const VoucherPage: React.FC = () => {
     }
   };
 
-  const activeVouchers = VOUCHERS.filter(v => {
-    const now = new Date();
-    const endDate = new Date(v.endDate);
-    const isNotExpired = endDate >= now;
-    const hasUsageLeft = v.usedCount < v.usageLimit;
-    return v.isActive && isNotExpired && hasUsageLeft;
-  });
+  const handleRemoveVoucher = (voucherId: number) => {
+    const newSavedVouchers = savedVouchers.filter(id => id !== voucherId);
+    setSavedVouchers(newSavedVouchers);
+    localStorage.setItem('savedVouchers', JSON.stringify(newSavedVouchers));
+  };
+
+  const myVouchers = VOUCHERS.filter(voucher => savedVouchers.includes(voucher.id));
 
   return (
     <div className="np-page-wrapper">
@@ -58,12 +67,12 @@ const VoucherPage: React.FC = () => {
         <div className="np-container">
           <div className="np-voucher-page">
             <div className="np-page-header">
-              <h1>Mã giảm giá</h1>
-              <p>Khám phá các voucher giảm giá hấp dẫn dành cho bạn</p>
+              <h1>Voucher của tôi</h1>
+              <p>Các voucher bạn đã lưu để sử dụng khi thanh toán</p>
             </div>
 
             <div className="np-vouchers-grid">
-              {activeVouchers.map((voucher) => (
+              {myVouchers.map((voucher) => (
                 <div key={voucher.id} className="np-voucher-card">
                   <div className="np-voucher-header">
                     <div className="np-voucher-code">{voucher.code}</div>
@@ -117,39 +126,55 @@ const VoucherPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <button 
-                    className={`np-copy-voucher-btn ${copiedCode === voucher.code ? 'copied' : ''}`}
-                    onClick={() => handleCopyCode(voucher.code)}
-                  >
-                    {copiedCode === voucher.code ? (
-                      <>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        Đã sao chép!
-                      </>
-                    ) : (
-                      <>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                        Sao chép mã
-                      </>
-                    )}
-                  </button>
+                  <div className="np-voucher-actions">
+                    <button 
+                      className={`np-copy-voucher-btn ${copiedCode === voucher.code ? 'copied' : ''}`}
+                      onClick={() => handleCopyCode(voucher.code)}
+                    >
+                      {copiedCode === voucher.code ? (
+                        <>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                          Đã sao chép!
+                        </>
+                      ) : (
+                        <>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                          </svg>
+                          Sao chép mã
+                        </>
+                      )}
+                    </button>
+                    <button 
+                      className="np-remove-voucher-btn"
+                      onClick={() => handleRemoveVoucher(voucher.id)}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        <line x1="10" y1="11" x2="10" y2="17"/>
+                        <line x1="14" y1="11" x2="14" y2="17"/>
+                      </svg>
+                      Xóa
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {activeVouchers.length === 0 && (
+            {myVouchers.length === 0 && (
               <div className="np-no-vouchers">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                   <path d="M12 7v6M12 16h.01"/>
                 </svg>
-                <p>Hiện tại không có voucher nào khả dụng.</p>
-                <p className="np-no-vouchers-subtitle">Vui lòng quay lại sau để xem các chương trình khuyến mãi mới!</p>
+                <p>Bạn chưa lưu voucher nào.</p>
+                <p className="np-no-vouchers-subtitle">
+                  Hãy truy cập <a href="/ma-giam-gia">trang mã giảm giá</a> để lưu voucher!
+                </p>
               </div>
             )}
           </div>
@@ -161,5 +186,4 @@ const VoucherPage: React.FC = () => {
   );
 };
 
-export default VoucherPage;
-
+export default MyVouchersPage;
