@@ -150,7 +150,9 @@ function Header(): React.JSX.Element {
               </div>
               <MegaMenu active={isProductsMenuOpen} onClose={() => setIsProductsMenuOpen(false)} />
             </div>
-            <a href="#business" onClick={() => setMobileMenuOpen(false)}>Lĩnh vực kinh doanh</a>
+            <Link to="/ma-giam-gia" className={isActive('/ma-giam-gia')} onClick={() => setMobileMenuOpen(false)}>
+              Mã giảm giá
+            </Link>
             <div
               className={`np-nav-item-wrapper ${isSupportMenuOpen ? 'open' : ''}`}
               ref={supportMenuRef}
