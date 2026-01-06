@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import Breadcrumb from '../../components/common/Breadcrumb';
 import { useCart } from '../../contexts/CartContext';
+import { VOUCHERS, Voucher } from '../../data/vouchers';
 import './CartPage.css';
 
 function CartPage(): React.JSX.Element {
@@ -22,12 +23,47 @@ function CartPage(): React.JSX.Element {
   // Voucher state
   const [couponCode, setCouponCode] = useState('');
   const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [showMyVouchers, setShowMyVouchers] = useState(false);
+  const [myVouchers, setMyVouchers] = useState<Voucher[]>([]);
+  const myVouchersRef = useRef<HTMLDivElement>(null);
 
   // Khởi tạo tất cả sản phẩm được chọn khi load
   useEffect(() => {
     const allIds = new Set(cartItems.map(item => item.id));
     setSelectedItems(allIds);
   }, [cartItems]);
+
+  // Load vouchers từ "Voucher của tôi"
+  useEffect(() => {
+    const saved = localStorage.getItem('savedVouchers');
+    if (saved) {
+      const savedIds: number[] = JSON.parse(saved);
+      const vouchers = VOUCHERS.filter(v => savedIds.includes(v.id));
+      // Chỉ hiển thị voucher còn hiệu lực và còn lượt dùng
+      const now = new Date();
+      const validVouchers = vouchers.filter(v => {
+        const endDate = new Date(v.endDate);
+        return v.isActive && endDate >= now && v.usedCount < v.usageLimit;
+      });
+      setMyVouchers(validVouchers);
+    }
+  }, []);
+
+  // Đóng dropdown khi click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (myVouchersRef.current && !myVouchersRef.current.contains(event.target as Node)) {
+        setShowMyVouchers(false);
+      }
+    }
+
+    if (showMyVouchers) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showMyVouchers]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -84,8 +120,31 @@ function CartPage(): React.JSX.Element {
     if (result.success) {
       setCouponMessage({ type: 'success', text: result.message });
       setCouponCode('');
+      setShowMyVouchers(false);
     } else {
       setCouponMessage({ type: 'error', text: result.message });
+    }
+  };
+
+  const handleSelectVoucher = (voucher: Voucher) => {
+    setCouponCode(voucher.code);
+    setShowMyVouchers(false);
+    // Tự động áp dụng voucher
+    setCouponMessage(null);
+    const result = applyVoucher(voucher.code);
+    if (result.success) {
+      setCouponMessage({ type: 'success', text: result.message });
+      setCouponCode('');
+    } else {
+      setCouponMessage({ type: 'error', text: result.message });
+    }
+  };
+
+  const formatDiscount = (voucher: Voucher) => {
+    if (voucher.discountType === 'percentage') {
+      return `${voucher.value}%`;
+    } else {
+      return `${voucher.value.toLocaleString('vi-VN')} ₫`;
     }
   };
 
@@ -228,33 +287,75 @@ function CartPage(): React.JSX.Element {
                     <h3>Tóm tắt đơn hàng</h3>
 
                     {/* Voucher Input Section */}
-                    <div className="np-voucher-section" style={{ marginBottom: '20px' }}>
-                      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                    <div className="np-voucher-section">
+                      {/* Input row - trên cùng */}
+                      <div className="np-voucher-input-row">
                         <input
                           type="text"
                           placeholder="Nhập mã giảm giá"
                           value={couponCode}
                           onChange={(e) => setCouponCode(e.target.value)}
-                          style={{
-                            flex: 1,
-                            padding: '8px 12px',
-                            border: '1px solid #ddd',
-                            borderRadius: '4px',
-                            outline: 'none'
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handleApplyVoucher();
+                            }
                           }}
+                          className="np-voucher-input"
                         />
+                      </div>
+
+                      {/* Buttons row - dưới input */}
+                      <div className="np-voucher-buttons-row">
+                        {myVouchers.length > 0 && (
+                          <div ref={myVouchersRef} className="np-my-vouchers-wrapper">
+                            <button
+                              type="button"
+                              onClick={() => setShowMyVouchers(!showMyVouchers)}
+                              className="np-my-vouchers-btn"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                              </svg>
+                              Voucher của tôi
+                            </button>
+                            {showMyVouchers && (
+                              <div className="np-my-vouchers-dropdown">
+                                <div className="np-my-vouchers-header">
+                                  <strong>Voucher của tôi ({myVouchers.length})</strong>
+                                </div>
+                                <div className="np-my-vouchers-list">
+                                  {myVouchers.map((voucher) => (
+                                    <div
+                                      key={voucher.id}
+                                      className="np-my-voucher-item"
+                                      onClick={() => handleSelectVoucher(voucher)}
+                                    >
+                                      <div className="np-my-voucher-code">{voucher.code}</div>
+                                      <div className="np-my-voucher-info">
+                                        <div className="np-my-voucher-desc">{voucher.description}</div>
+                                        <div className="np-my-voucher-discount">
+                                          Giảm: <strong>{formatDiscount(voucher)}</strong>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                {myVouchers.length === 0 && (
+                                  <div className="np-my-vouchers-empty">
+                                    <p>Bạn chưa có voucher nào.</p>
+                                    <a href="/ma-giam-gia">Xem mã giảm giá</a>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
                         <button
                           onClick={handleApplyVoucher}
                           disabled={!couponCode.trim()}
-                          style={{
-                            padding: '8px 16px',
-                            background: '#333',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: couponCode.trim() ? 'pointer' : 'not-allowed',
-                            opacity: couponCode.trim() ? 1 : 0.7
-                          }}
+                          className="np-apply-voucher-btn"
                         >
                           Áp dụng
                         </button>

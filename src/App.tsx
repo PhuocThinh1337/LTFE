@@ -22,7 +22,8 @@ import ProfilePage from './pages/ProfilePage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ComparePage from './pages/CompareProductPage';
 import LiveStreamPage from './pages/LiveStreamPage';
-
+import VoucherPage from './pages/voucher/VoucherPage';
+import MyVouchersPage from './pages/voucher/MyVouchersPage';
 
 function App(): React.JSX.Element {
   return (
@@ -58,6 +59,8 @@ function App(): React.JSX.Element {
               <Route path="/register" element={<AuthRegisterPage />} />
               <Route path="/forgot-password" element={<AuthForgotPasswordPage />} />
               <Route path="/live-stream" element={<LiveStreamPage />} />
+              <Route path="/ma-giam-gia" element={<VoucherPage />} />
+              <Route path="/voucher-cua-toi" element={<MyVouchersPage />} />
             </Routes>
           </Router>
         </CompareProvider>
