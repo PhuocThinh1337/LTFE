@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import '../components/layout/BusinessFields.css'; // Import styles for Business Fields
 import { PRODUCTS } from '../data/products';
 
 const HomePage: React.FC = () => {
@@ -522,6 +523,116 @@ const HomePage: React.FC = () => {
                   <div className="np-product-link">Xem ngay →</div>
                 </Link>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Business Fields Section */}
+        <section className="np-business-fields-section">
+          <div className="np-container">
+            <div className="np-section-header-center">
+              <h2 className="np-section-title-large">LĨNH VỰC KINH DOANH</h2>
+              <p className="np-section-description-large">
+                Kiến tạo giá trị bền vững thông qua sản phẩm Sơn Nippon
+              </p>
+            </div>
+            
+            <div className="np-business-fields-grid">
+              {/* Item 1: Large Vertical - Architectural */}
+              <div className="np-business-item large">
+                <img 
+                  src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80" 
+                  alt="Sơn Kiến Trúc" 
+                  loading="lazy"
+                />
+                <div className="np-business-item-overlay">
+                  <h3>Sơn Kiến Trúc</h3>
+                </div>
+              </div>
+
+              {/* Item 2: Automotive */}
+              <div className="np-business-item">
+                <img 
+                  src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80" 
+                  alt="Sơn và chất phủ ô tô, xe máy" 
+                  loading="lazy"
+                />
+                <div className="np-business-item-overlay">
+                  <h3>Sơn và chất phủ ô tô, xe máy</h3>
+                </div>
+              </div>
+
+              {/* Item 3: Marine */}
+              <div className="np-business-item">
+                <img 
+                  src="https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2025-06/3_0.png.webp?itok=Mt49nLAe" 
+                  alt="Sơn hàng hải" 
+                  loading="lazy"
+                />
+                <div className="np-business-item-overlay">
+                  <h3>Sơn hàng hải</h3>
+                </div>
+              </div>
+
+              {/* Item 4: Floor */}
+              <div className="np-business-item">
+                <img 
+                  src="https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2025-06/5_0.png.webp?itok=ahK9HvxD" 
+                  alt="Sơn và chất bảo vệ sàn" 
+                  loading="lazy"
+                />
+                <div className="np-business-item-overlay">
+                  <h3>Sơn và chất bảo vệ sàn</h3>
+                </div>
+              </div>
+
+              {/* Item 5: Industrial */}
+              <div className="np-business-item">
+                <img 
+                  src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&q=80" 
+                  alt="Sơn và chất phủ công nghiệp" 
+                  loading="lazy"
+                />
+                <div className="np-business-item-overlay">
+                  <h3>Sơn và chất phủ công nghiệp</h3>
+                </div>
+              </div>
+
+              {/* Item 6: Coil Coating (Under Large) */}
+              <div className="np-business-item">
+                <img 
+                  src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&q=80" 
+                  alt="Sơn và chất phủ tole cuộn" 
+                  loading="lazy"
+                />
+                <div className="np-business-item-overlay">
+                  <h3>Sơn và chất phủ tole cuộn</h3>
+                </div>
+              </div>
+
+              {/* Item 7: Wood */}
+              <div className="np-business-item">
+                <img 
+                  src="https://images.unsplash.com/photo-1532372320572-cda25653a26d?w=800&q=80" 
+                  alt="Sơn gỗ" 
+                  loading="lazy"
+                />
+                <div className="np-business-item-overlay">
+                  <h3>Sơn gỗ</h3>
+                </div>
+              </div>
+
+              {/* Item 8: Beyond Paint */}
+              <div className="np-business-item">
+                <img 
+                  src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&q=80" 
+                  alt="Beyond Paint" 
+                  loading="lazy"
+                />
+                <div className="np-business-item-overlay">
+                  <h3>Beyond Paint</h3>
+                </div>
+              </div>
             </div>
           </div>
         </section>

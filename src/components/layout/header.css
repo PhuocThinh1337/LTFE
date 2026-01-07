@@ -132,6 +132,13 @@
   flex-wrap: nowrap;
   overflow: visible;
   /* Cho phép dropdown hiển thị ra ngoài */
+  margin-left: 30px; /* Increased separation */
+}
+
+/* Override nav link padding to create more space */
+.np-main-nav a,
+.np-nav-trigger {
+  padding: 14px 12px; /* Reduced from 20px */
 }
 
 .np-header-actions>* {
