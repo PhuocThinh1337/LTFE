@@ -132,13 +132,17 @@
   flex-wrap: nowrap;
   overflow: visible;
   /* Cho phép dropdown hiển thị ra ngoài */
-  margin-left: 30px; /* Increased separation */
+  margin-left: 10px;
+  /* Reduced from 30px to save space */
 }
 
 /* Override nav link padding to create more space */
 .np-main-nav a,
 .np-nav-trigger {
-  padding: 14px 12px; /* Reduced from 20px */
+  padding: 12px 9px;
+  /* Balanced padding */
+  font-size: 14px;
+  /* Restored standard size */
 }
 
 .np-header-actions>* {
@@ -520,9 +524,9 @@
   padding: 0 10px;
   border: 1px solid transparent;
   transition: all 0.2s;
-  width: 180px;
-  /* Giảm từ 200px */
-  max-width: 180px;
+  width: 120px;
+  /* Reduced to 120px to fit larger menu items */
+  max-width: 120px;
 }
 
 .np-search-form:focus-within {
@@ -698,4 +702,38 @@
     display: none;
     /* Hide on very small screens or move to mobile menu */
   }
+}
+
+/* Live Stream Link Styles */
+.live-link {
+  position: relative;
+  font-weight: 600;
+  color: #ff4757 !important;
+}
+
+.live-link svg {
+  animation: livePulse 2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.live-link:hover {
+  color: #ff6b7a !important;
+}
+
+.live-link.active-link {
+  color: #ff4757 !important;
+  background: rgba(255, 71, 87, 0.1);
 }

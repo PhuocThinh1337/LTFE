@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getDatabase, ref, set, onValue, onDisconnect, DataSnapshot } from "firebase/database";
+import { getDatabase, ref, set, onValue, onDisconnect, DataSnapshot, push, off, query, limitToLast, remove } from "firebase/database";
 
 // TODO: Replace with your actual Firebase Configuration
 const firebaseConfig = {
@@ -9,106 +9,203 @@ const firebaseConfig = {
     projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
     storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.REACT_APP_FIREBASE_APP_ID,
-    measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
+    appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
-// Initialize Firebase (Handle HMR to prevent "App already exists" error)
-let app;
-let db: any = null;
+// Initialize Firebase
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const db = firebaseConfig.databaseURL ? getDatabase(app) : null;
 
-if (firebaseConfig.databaseURL) {
-    try {
-        app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-        db = getDatabase(app, firebaseConfig.databaseURL);
-    } catch (error) {
-        console.error("Firebase initialization failed:", error);
+// --- PINNED PRODUCT LOGIC ---
+export const updatePinnedProduct = (productId: number | null) => {
+    if (db) {
+        set(ref(db, 'live/pinnedProductId'), productId);
     }
-} else {
-    console.warn("Firebase configuration missing (REACT_APP_FIREBASE_DATABASE_URL). Running in offline/mock mode.");
-}
-
-export const updatePinnedProduct = (productId: number | null): void => {
-  // Mock: Store in localStorage
-  localStorage.setItem('live_pinnedProductId', productId?.toString() || 'null');
-  // Dispatch custom event for same-tab updates
-  window.dispatchEvent(new CustomEvent('live_pinned_product_update', { detail: productId }));
-  
-  if (db) {
-      // TODO: Implement Firebase write if db is available
-      // set(ref(db, 'live/pinnedProductId'), productId);
-  }
 };
 
 export const subscribeToPinnedProduct = (callback: (productId: number | null) => void) => {
     if (!db) {
-        // Mock implementation
-        const handleLocalUpdate = (e: any) => {
+        const handleLocalUpdate = () => {
             const val = localStorage.getItem('live_pinnedProductId');
-            callback(val === 'null' ? null : Number(val));
+            callback(val ? parseInt(val) : null);
         };
-        const handleCustomUpdate = (e: any) => {
-            callback(e.detail);
-        };
-        
         window.addEventListener('storage', handleLocalUpdate);
-        window.addEventListener('live_pinned_product_update', handleCustomUpdate);
-        
-        // Initial value
-        const val = localStorage.getItem('live_pinnedProductId');
-        callback(val === 'null' ? null : Number(val));
-
-        return () => {
-            window.removeEventListener('storage', handleLocalUpdate);
-            window.removeEventListener('live_pinned_product_update', handleCustomUpdate);
-        };
+        handleLocalUpdate();
+        return () => window.removeEventListener('storage', handleLocalUpdate);
     }
 
-    const starCountRef = ref(db, 'live/pinnedProductId');
-    // Return the unsubscribe function
-    return onValue(starCountRef, (snapshot: DataSnapshot) => {
+    const productRef = ref(db, 'live/pinnedProductId');
+    return onValue(productRef, (snapshot: DataSnapshot) => {
         const data = snapshot.val();
         callback(data);
     });
 };
 
-export const updateStreamStatus = (isLive: boolean): void => {
-  // Mock: Store in localStorage
-  localStorage.setItem('live_isLive', isLive.toString());
-  window.dispatchEvent(new CustomEvent('live_stream_status_update', { detail: isLive }));
-  
-  if (db) {
-      // set(ref(db, 'live/isLive'), isLive);
-  }
+// --- STREAM STATUS LOGIC ---
+export const updateStreamStatus = (isLive: boolean) => {
+    if (db) {
+        set(ref(db, 'live/isLive'), isLive);
+    }
 };
 
 export const subscribeToStreamStatus = (callback: (isLive: boolean) => void) => {
     if (!db) {
-        // Mock implementation
         const handleLocalUpdate = () => {
-             const val = localStorage.getItem('live_isLive');
-             callback(val === 'true');
+            const val = localStorage.getItem('live_isLive');
+            callback(val === 'true');
+        };
+        window.addEventListener('storage', handleLocalUpdate);
+        handleLocalUpdate();
+        return () => window.removeEventListener('storage', handleLocalUpdate);
+    }
+
+    const statusRef = ref(db, 'live/isLive');
+    return onValue(statusRef, (snapshot: DataSnapshot) => {
+        const data = snapshot.val();
+        callback(data || false);
+    });
+};
+
+// --- FLASH VOUCHER LOGIC ---
+export const updateFlashVoucher = (voucher: any) => {
+    if (db) {
+        // set(ref(db, 'live/flashVoucher'), voucher);
+    }
+};
+
+export const subscribeToFlashVoucher = (callback: (voucher: any) => void) => {
+    if (!db) {
+        const handleLocalUpdate = () => {
+            const val = localStorage.getItem('live_flashVoucher');
+            callback(val ? JSON.parse(val) : null);
         };
         const handleCustomUpdate = (e: any) => {
             callback(e.detail);
         };
 
         window.addEventListener('storage', handleLocalUpdate);
-        window.addEventListener('live_stream_status_update', handleCustomUpdate);
-
-        // Initial check
-        const val = localStorage.getItem('live_isLive');
-        callback(val === 'true');
+        window.addEventListener('live_flash_voucher_update', handleCustomUpdate);
 
         return () => {
             window.removeEventListener('storage', handleLocalUpdate);
-            window.removeEventListener('live_stream_status_update', handleCustomUpdate);
+            window.removeEventListener('live_flash_voucher_update', handleCustomUpdate);
         };
     }
 
-    const statusRef = ref(db, 'live/isLive');
-    return onValue(statusRef, (snapshot: DataSnapshot) => {
+    const voucherRef = ref(db, 'live/flashVoucher');
+    return onValue(voucherRef, (snapshot: DataSnapshot) => {
         const data = snapshot.val();
-        callback(!!data); // Convert to boolean
+        callback(data);
     });
+
+};
+
+// --- CHAT LOGIC ---
+// Global in-memory chat storage (resets on page refresh - perfect for live sessions!)
+let inMemoryComments: any[] = [];
+
+// Clear all chat messages (both in-memory and Firebase)
+export const clearChat = async () => {
+    // Clear in-memory storage
+    inMemoryComments = [];
+    window.dispatchEvent(new CustomEvent('live_chat_update', { detail: [] }));
+
+    // Clear Firebase database
+    if (db) {
+        try {
+            const chatRef = ref(db, 'live/comments');
+            await remove(chatRef);
+            console.log("✅ Đã xóa lịch sử chat trên Firebase");
+        } catch (error) {
+            console.error("❌ Lỗi khi xóa chat:", error);
+        }
+    }
+};
+
+export const sendComment = (userName: string, text: string) => {
+    const comment = { userName, text, timestamp: Date.now() };
+
+    // Store ONLY in memory (NOT localStorage - this prevents old messages)
+    inMemoryComments.push(comment);
+
+    // Keep only last 50 messages
+    if (inMemoryComments.length > 50) {
+        inMemoryComments = inMemoryComments.slice(-50);
+    }
+
+    // Broadcast to all listeners in the same session
+    window.dispatchEvent(new CustomEvent('live_chat_update', { detail: [...inMemoryComments] }));
+
+    // Also send to Firebase if available
+    if (db) {
+        push(ref(db, 'live/comments'), comment);
+    }
+};
+
+export const subscribeToComments = (callback: (comments: any[]) => void) => {
+    if (!db) {
+        // Listen for new chat updates
+        const handleCustomUpdate = (e: any) => {
+            callback(e.detail);
+        };
+
+        window.addEventListener('live_chat_update', handleCustomUpdate);
+
+        // Start with current in-memory comments (will be empty on fresh load)
+        callback([...inMemoryComments]);
+
+        return () => {
+            window.removeEventListener('live_chat_update', handleCustomUpdate);
+        };
+    }
+
+    // Firebase mode
+    const chatRef = ref(db, 'live/comments');
+    const q = query(chatRef, limitToLast(50));
+    const unsubscribe = onValue(q, (snapshot) => {
+        const data = snapshot.val();
+        const list = data ? Object.values(data) : [];
+        callback(list);
+    });
+
+    return unsubscribe;
+};
+
+// --- VOUCHER LOGIC ---
+export const updateVoucher = (voucher: any) => {
+    localStorage.setItem('live_active_voucher', JSON.stringify(voucher));
+    window.dispatchEvent(new CustomEvent('live_voucher_update', { detail: voucher }));
+
+    if (db) {
+        set(ref(db, 'live/active_voucher'), voucher);
+    }
+};
+
+export const subscribeToVoucher = (callback: (voucher: any) => void) => {
+    if (!db) {
+        const handleLocalUpdate = () => {
+            const val = localStorage.getItem('live_active_voucher');
+            callback(val ? JSON.parse(val) : null);
+        };
+        const handleCustomUpdate = (e: any) => {
+            callback(e.detail);
+        };
+        window.addEventListener('storage', handleLocalUpdate);
+        window.addEventListener('live_voucher_update', handleCustomUpdate);
+
+        handleLocalUpdate();
+
+        return () => {
+            window.removeEventListener('storage', handleLocalUpdate);
+            window.removeEventListener('live_voucher_update', handleCustomUpdate);
+        };
+    }
+
+    const vRef = ref(db, 'live/active_voucher');
+    const unsubscribe = onValue(vRef, (snapshot) => {
+        const data = snapshot.val();
+        callback(data);
+    });
+
+    return unsubscribe;
 };
