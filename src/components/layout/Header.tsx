@@ -167,6 +167,14 @@ function Header(): React.JSX.Element {
             <Link to="/lien-he" className={isActive('/lien-he')} onClick={() => setMobileMenuOpen(false)}>
               Liên hệ
             </Link>
+            <Link to="/live-stream" className={`${isActive('/live-stream')} live-link`} onClick={() => setMobileMenuOpen(false)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px', verticalAlign: 'middle' }}>
+                <circle cx="12" cy="12" r="10" fill="#ff4757" />
+                <circle cx="12" cy="12" r="6" fill="white" />
+                <circle cx="12" cy="12" r="3" fill="#ff4757" />
+              </svg>
+              Live Stream
+            </Link>
           </nav>
 
           <div className="np-header-actions">
@@ -300,9 +308,9 @@ function Header(): React.JSX.Element {
                       </Link>
                       <Link to="/voucher-cua-toi" className="np-user-menu-item" onClick={() => setIsUserMenuOpen(false)}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                          <line x1="8" y1="21" x2="16" y2="21"/>
-                          <line x1="12" y1="17" x2="12" y2="21"/>
+                          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                          <line x1="8" y1="21" x2="16" y2="21" />
+                          <line x1="12" y1="17" x2="12" y2="21" />
                         </svg>
                         <span>Voucher của tôi</span>
                       </Link>

@@ -140,8 +140,8 @@
 
 /* Bottom half: Grey with info */
 .np-mm-product-info {
-    padding: 15px 12px;
-    /* Reduced padding from 24px 20px */
+    padding: 15px 16px 24px 16px;
+    /* Increased bottom padding to prevent button clipping */
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -187,31 +187,29 @@
     display: none;
 }
 
-/* Button matches reference: Pill shape, red border, transparent bg, red arrow circle */
+/* Button matches reference: Pill shape, red border, transparent bg, solid red circle icon */
 .np-mm-product-btn {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 4px 4px 12px;
+    /* Padding: Trên/Dưới 6px, Phải 6px (để icon ko bị sát), Trái 20px (để chữ thụt vào) */
+    padding: 6px 6px 6px 20px;
     background-color: transparent;
-    /* Transparent on grey bg */
-    color: #c41230 !important;
-    /* Slightly darker/richer red */
-    border: 1px solid #c41230;
-    border-radius: 20px;
-    /* More rounded */
+    color: #e60012 !important;
+    /* Màu đỏ tươi giống mẫu */
+    border: 1.5px solid #e60012;
+    /* Viền dày hơn 1 chút cho rõ nét */
+    border-radius: 50px;
+    /* Bo tròn hoàn toàn (Pill shape) */
     text-decoration: none;
     font-weight: 700;
-    transition: all 0.25s ease;
-    width: 100%;
     text-transform: uppercase;
-    font-size: 10px;
-    letter-spacing: 0.3px;
-    margin-top: auto;
-    white-space: nowrap;
-    /* Prevent wrapping */
-    overflow: hidden;
-    /* Ensure overflow doesn't break layout */
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-top: 15px;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 .np-mm-product-btn:hover {
@@ -220,19 +218,22 @@
 
 .np-btn-icon {
     width: 24px;
-    /* Slightly larger again */
+    /* Smaller icon */
     height: 24px;
     background-color: #c41230;
+    /* Solid red background */
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    /* White arrow */
     font-size: 12px;
-    font-weight: bold;
+    /* Smaller arrow */
     flex-shrink: 0;
-    margin-left: 6px;
 }
+
+
 
 
 /* Image fallback styling */
