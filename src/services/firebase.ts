@@ -14,35 +14,98 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase (Handle HMR to prevent "App already exists" error)
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-const db = getDatabase(app, firebaseConfig.databaseURL);
+let app;
+let db: any = null;
 
-export const updatePinnedProduct = (productId: number | null) => {
-    set(ref(db, 'live/pinnedProductId'), productId);
+if (firebaseConfig.databaseURL) {
+    try {
+        app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+        db = getDatabase(app, firebaseConfig.databaseURL);
+    } catch (error) {
+        console.error("Firebase initialization failed:", error);
+    }
+} else {
+    console.warn("Firebase configuration missing (REACT_APP_FIREBASE_DATABASE_URL). Running in offline/mock mode.");
+}
+
+export const updatePinnedProduct = (productId: number | null): void => {
+  // Mock: Store in localStorage
+  localStorage.setItem('live_pinnedProductId', productId?.toString() || 'null');
+  // Dispatch custom event for same-tab updates
+  window.dispatchEvent(new CustomEvent('live_pinned_product_update', { detail: productId }));
+  
+  if (db) {
+      // TODO: Implement Firebase write if db is available
+      // set(ref(db, 'live/pinnedProductId'), productId);
+  }
 };
 
 export const subscribeToPinnedProduct = (callback: (productId: number | null) => void) => {
+    if (!db) {
+        // Mock implementation
+        const handleLocalUpdate = (e: any) => {
+            const val = localStorage.getItem('live_pinnedProductId');
+            callback(val === 'null' ? null : Number(val));
+        };
+        const handleCustomUpdate = (e: any) => {
+            callback(e.detail);
+        };
+        
+        window.addEventListener('storage', handleLocalUpdate);
+        window.addEventListener('live_pinned_product_update', handleCustomUpdate);
+        
+        // Initial value
+        const val = localStorage.getItem('live_pinnedProductId');
+        callback(val === 'null' ? null : Number(val));
+
+        return () => {
+            window.removeEventListener('storage', handleLocalUpdate);
+            window.removeEventListener('live_pinned_product_update', handleCustomUpdate);
+        };
+    }
+
     const starCountRef = ref(db, 'live/pinnedProductId');
-    // Return the unsubscribe function (handled by Firebase SDK mostly, but onValue returns Unsubscribe)
+    // Return the unsubscribe function
     return onValue(starCountRef, (snapshot: DataSnapshot) => {
         const data = snapshot.val();
         callback(data);
     });
 };
 
-export const updateStreamStatus = (isLive: boolean) => {
-    const statusRef = ref(db, 'live/isLive');
-    set(statusRef, isLive);
-
-    if (isLive) {
-        // If user goes offline/closes tab, automatically set isLive to false
-        onDisconnect(statusRef).set(false);
-    } else {
-        onDisconnect(statusRef).cancel(); // Cancel if manually stopped
-    }
+export const updateStreamStatus = (isLive: boolean): void => {
+  // Mock: Store in localStorage
+  localStorage.setItem('live_isLive', isLive.toString());
+  window.dispatchEvent(new CustomEvent('live_stream_status_update', { detail: isLive }));
+  
+  if (db) {
+      // set(ref(db, 'live/isLive'), isLive);
+  }
 };
 
 export const subscribeToStreamStatus = (callback: (isLive: boolean) => void) => {
+    if (!db) {
+        // Mock implementation
+        const handleLocalUpdate = () => {
+             const val = localStorage.getItem('live_isLive');
+             callback(val === 'true');
+        };
+        const handleCustomUpdate = (e: any) => {
+            callback(e.detail);
+        };
+
+        window.addEventListener('storage', handleLocalUpdate);
+        window.addEventListener('live_stream_status_update', handleCustomUpdate);
+
+        // Initial check
+        const val = localStorage.getItem('live_isLive');
+        callback(val === 'true');
+
+        return () => {
+            window.removeEventListener('storage', handleLocalUpdate);
+            window.removeEventListener('live_stream_status_update', handleCustomUpdate);
+        };
+    }
+
     const statusRef = ref(db, 'live/isLive');
     return onValue(statusRef, (snapshot: DataSnapshot) => {
         const data = snapshot.val();

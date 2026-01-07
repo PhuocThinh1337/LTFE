@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack } from 'agora-rtc-sdk-ng';
+import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack, IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng';
 import { PRODUCTS, Product } from '../data/products';
 import { useCart } from '../contexts/CartContext';
 import { updatePinnedProduct, subscribeToPinnedProduct, updateStreamStatus, subscribeToStreamStatus } from '../services/firebase';
@@ -79,7 +79,7 @@ const LiveStreamPage: React.FC = () => {
                 await client.join(APP_ID, CHANNEL_NAME, TOKEN, null);
 
                 // Event listener for remote users
-                client.on("user-published", async (user, mediaType) => {
+                client.on("user-published", async (user: IAgoraRTCRemoteUser, mediaType: "audio" | "video") => {
                     await client.subscribe(user, mediaType);
                     console.log("subscribed to user", user.uid);
 

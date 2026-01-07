@@ -1,0 +1,106 @@
+
+/* Business Fields Section */
+.np-business-fields-section {
+  padding: 60px 0;
+  background-color: #fff;
+}
+
+.np-business-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 250px;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.np-business-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.np-business-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.np-business-item.large {
+  grid-row: span 2;
+  /* If you want the large item to span 2 rows height */
+}
+
+/* Adjust grid placement to match visual layout if automatic flow doesn't work perfectly */
+/* 
+   Row 1: Item 1 (Large), Item 2, Item 3
+   Row 2: Item 1 (Cont.), Item 4, Item 5
+   Row 3: Item 6, Item 7, Item 8
+*/
+
+/* If using dense packing, CSS grid auto-flow usually handles this if Item 1 is first in DOM */
+.np-business-fields-grid {
+  grid-auto-flow: dense;
+}
+
+.np-business-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.np-business-item:hover img {
+  transform: scale(1.05);
+}
+
+.np-business-item-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  padding: 24px 20px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.np-business-item-overlay h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+}
+
+.np-business-item:hover .np-business-item-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.2));
+  padding-bottom: 30px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .np-business-fields-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 200px;
+  }
+  
+  .np-business-item.large {
+    grid-row: span 1; /* Reset on tablet if needed, or keep span 2 */
+    grid-column: span 2; /* Make large item wide on tablet? */
+  }
+}
+
+@media (max-width: 576px) {
+  .np-business-fields-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 200px;
+  }
+  
+  .np-business-item.large {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+

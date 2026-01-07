@@ -85,13 +85,6 @@ function Header(): React.JSX.Element {
     <header className="np-header">
       <div className="np-header-top">
         <div className="np-container np-header-top-inner">
-          <Link to="/" className="np-logo">
-            <span className="np-logo-mark">NP</span>
-            <span className="np-logo-text">
-              Nippon <span>Paint</span>
-            </span>
-          </Link>
-
           <nav className="np-quick-links">
             <a href="#projects">Khách hàng dự án</a>
             <a href="#support">Hỗ trợ</a>
@@ -116,6 +109,13 @@ function Header(): React.JSX.Element {
 
       <div className="np-header-nav-wrapper">
         <div className="np-container np-header-nav">
+          <Link to="/" className="np-logo">
+            <span className="np-logo-mark">NP</span>
+            <span className="np-logo-text">
+              Nippon <span>Paint</span>
+            </span>
+          </Link>
+
           <button
             className="np-mobile-menu-toggle"
             onClick={toggleMobileMenu}
@@ -131,9 +131,7 @@ function Header(): React.JSX.Element {
           </button>
 
           <nav className={`np-main-nav ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-            <Link to="/" className={isActive('/')} onClick={() => setMobileMenuOpen(false)}>
-              Trang chủ
-            </Link>
+            {/* "Trang chủ" removed - Logo acts as Home link */}
             <Link to="/phoi-mau-tuy-chinh" className={isActive('/phoi-mau-tuy-chinh')} onClick={() => setMobileMenuOpen(false)}>
               Phối màu tùy chỉnh
             </Link>
@@ -150,7 +148,9 @@ function Header(): React.JSX.Element {
               </div>
               <MegaMenu active={isProductsMenuOpen} onClose={() => setIsProductsMenuOpen(false)} />
             </div>
-            <a href="#business" onClick={() => setMobileMenuOpen(false)}>Lĩnh vực kinh doanh</a>
+            <Link to="/ma-giam-gia" className={isActive('/ma-giam-gia')} onClick={() => setMobileMenuOpen(false)}>
+              Mã giảm giá
+            </Link>
             <div
               className={`np-nav-item-wrapper ${isSupportMenuOpen ? 'open' : ''}`}
               ref={supportMenuRef}
@@ -297,6 +297,14 @@ function Header(): React.JSX.Element {
                           <path d="M9 14l2 2 4-4" />
                         </svg>
                         <span>Lịch sử mua hàng</span>
+                      </Link>
+                      <Link to="/voucher-cua-toi" className="np-user-menu-item" onClick={() => setIsUserMenuOpen(false)}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                          <line x1="8" y1="21" x2="16" y2="21"/>
+                          <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                        <span>Voucher của tôi</span>
                       </Link>
                       <button className="np-user-menu-item" onClick={handleLogout}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

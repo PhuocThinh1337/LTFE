@@ -208,13 +208,14 @@ body {
   /* Cho phép nav chiếm không gian còn lại */
   justify-content: flex-start;
   /* Căn trái thay vì center */
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   font-family: 'Inter', sans-serif;
   letter-spacing: -0.01em;
   min-width: 0;
   /* Cho phép shrink */
   margin-right: 16px;
   /* Thêm margin để tách khỏi search */
+  white-space: nowrap;
 }
 
 .np-main-nav a,
