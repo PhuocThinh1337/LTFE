@@ -85,13 +85,6 @@ function Header(): React.JSX.Element {
     <header className="np-header">
       <div className="np-header-top">
         <div className="np-container np-header-top-inner">
-          <Link to="/" className="np-logo">
-            <span className="np-logo-mark">NP</span>
-            <span className="np-logo-text">
-              Nippon <span>Paint</span>
-            </span>
-          </Link>
-
           <nav className="np-quick-links">
             <a href="#projects">Khách hàng dự án</a>
             <a href="#support">Hỗ trợ</a>
@@ -116,6 +109,13 @@ function Header(): React.JSX.Element {
 
       <div className="np-header-nav-wrapper">
         <div className="np-container np-header-nav">
+          <Link to="/" className="np-logo">
+            <span className="np-logo-mark">NP</span>
+            <span className="np-logo-text">
+              Nippon <span>Paint</span>
+            </span>
+          </Link>
+
           <button
             className="np-mobile-menu-toggle"
             onClick={toggleMobileMenu}
@@ -131,9 +131,7 @@ function Header(): React.JSX.Element {
           </button>
 
           <nav className={`np-main-nav ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-            <Link to="/" className={isActive('/')} onClick={() => setMobileMenuOpen(false)}>
-              Trang chủ
-            </Link>
+            {/* "Trang chủ" removed - Logo acts as Home link */}
             <Link to="/phoi-mau-tuy-chinh" className={isActive('/phoi-mau-tuy-chinh')} onClick={() => setMobileMenuOpen(false)}>
               Phối màu tùy chỉnh
             </Link>
