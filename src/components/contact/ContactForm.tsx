@@ -7,13 +7,6 @@ interface FormData {
   address: string;
   subject: string;
   message: string;
-  captcha: string;
-}
-
-interface CaptchaAnswer {
-  num1: number;
-  num2: number;
-  answer: number;
 }
 
 function ContactForm(): React.JSX.Element {
@@ -23,21 +16,13 @@ function ContactForm(): React.JSX.Element {
     phone: '',
     address: '',
     subject: '',
-    message: '',
-    captcha: ''
+    message: ''
   });
 
-  const [captchaValue, setCaptchaValue] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
-
-  const [captchaAnswer] = useState<CaptchaAnswer>(() => {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    return { num1, num2, answer: num1 + num2 };
-  });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
@@ -83,12 +68,6 @@ function ContactForm(): React.JSX.Element {
       newErrors.message = 'Vui lòng nhập nội dung';
     }
 
-    if (!captchaValue) {
-      newErrors.captcha = 'Vui lòng nhập kết quả CAPTCHA';
-    } else if (parseInt(captchaValue) !== captchaAnswer.answer) {
-      newErrors.captcha = 'Câu trả lời không đúng';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -107,29 +86,58 @@ function ContactForm(): React.JSX.Element {
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+        // Prepare data for FormSubmit.co
+        // Note: Using numbered keys ensures correct order in the email table
+        const submitData = {
+            _subject: `[Liên hệ mới] ${formData.subject} - từ ${formData.fullName}`,
+            _replyto: formData.email, // Cho phép reply trực tiếp vào email khách
+            _template: "table", // Hiển thị dạng bảng đẹp mắt
+            _captcha: "false", // Tắt captcha của FormSubmit
+            
+            "1. Họ và tên": formData.fullName,
+            "2. Email": formData.email,
+            "3. Số điện thoại": formData.phone,
+            "4. Địa chỉ": formData.address || "Không cung cấp",
+            "5. Tiêu đề": formData.subject,
+            "6. Nội dung liên hệ": formData.message
+        };
 
-    // Tạm thời chỉ log ra console, bạn có thể nối API backend sau
-    console.log('Submitted contact form:', formData);
-    
-    setIsSubmitting(false);
-    setSubmitSuccess(true);
+        // Send to FormSubmit.co via AJAX
+        const response = await fetch("https://formsubmit.co/ajax/kirito.05.dz@gmail.com", {
+            method: "POST",
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(submitData)
+        });
 
-    // Reset form after success
-    setTimeout(() => {
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        address: '',
-        subject: '',
-        message: '',
-        captcha: ''
-      });
-      setCaptchaValue('');
-      setSubmitSuccess(false);
-    }, 3000);
+        if (!response.ok) {
+            throw new Error("Lỗi khi gửi form");
+        }
+
+        setSubmitSuccess(true);
+        
+        // Reset form after success
+        setTimeout(() => {
+            setFormData({
+                fullName: '',
+                email: '',
+                phone: '',
+                address: '',
+                subject: '',
+                message: ''
+            });
+            setSubmitSuccess(false);
+        }, 3000);
+
+    } catch (error) {
+        console.error('Lỗi:', error);
+        alert('Có lỗi xảy ra khi gửi liên hệ. Vui lòng thử lại sau.');
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
   return (
@@ -264,48 +272,6 @@ function ContactForm(): React.JSX.Element {
             <span className="np-input-border"></span>
           </div>
           {errors.message && <span className="np-error-message">{errors.message}</span>}
-        </div>
-
-        <div className={`np-form-field np-captcha-field ${captchaValue ? 'np-field-filled' : ''} ${errors.captcha ? 'np-field-error' : ''}`}>
-          <label htmlFor="captcha">
-            CAPTCHA <span className="np-required">*</span>
-          </label>
-          <div className="np-captcha-wrapper">
-            <div className="np-captcha-question">
-              <div className="np-captcha-numbers">
-                <span className="np-captcha-num">{captchaAnswer.num1}</span>
-                <span className="np-captcha-operator">+</span>
-                <span className="np-captcha-num">{captchaAnswer.num2}</span>
-                <span className="np-captcha-equals">=</span>
-                <span className="np-captcha-question-mark">?</span>
-              </div>
-              <small>Câu hỏi này dùng để kiểm tra xem bạn là người hay là chương trình tự động.</small>
-            </div>
-            <div className="np-input-wrapper">
-              <input
-                id="captcha"
-                name="captcha"
-                type="number"
-                value={captchaValue}
-                onChange={(e) => {
-                  setCaptchaValue(e.target.value);
-                  if (errors.captcha) {
-                    setErrors((prev) => {
-                      const newErrors = { ...prev };
-                      delete newErrors.captcha;
-                      return newErrors;
-                    });
-                  }
-                }}
-                required
-                placeholder=" "
-                className="np-captcha-input"
-                data-error={errors.captcha ? 'true' : 'false'}
-              />
-              <span className="np-input-border"></span>
-            </div>
-            {errors.captcha && <span className="np-error-message">{errors.captcha}</span>}
-          </div>
         </div>
 
         <div className="np-form-footer">
