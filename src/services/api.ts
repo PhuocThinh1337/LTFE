@@ -22,6 +22,7 @@ export interface User {
   phone?: string;
   avatar?: string;
   isPremium?: boolean;
+  role?: 'live' | 'user';
 }
 
 interface UserWithPassword extends User {
@@ -49,7 +50,12 @@ const initializeUsers = async (): Promise<UserWithPassword[]> => {
     const storedUsers = localStorage.getItem('fake_users_db');
     if (storedUsers) {
       const data: UsersData = JSON.parse(storedUsers);
-      return data.users;
+      // Check if data is stale (missing role field)
+      const isStale = data.users.length > 0 && !data.users[0].role;
+      if (!isStale) {
+        return data.users;
+      }
+      console.log('Detected stale user data, reloading from JSON...');
     }
 
     // Load from JSON file
@@ -71,7 +77,8 @@ const initializeUsers = async (): Promise<UserWithPassword[]> => {
         password: 'admin123',
         phone: '0123 456 789',
         createdAt: new Date().toISOString(),
-        isPremium: true
+        isPremium: true,
+        role: 'live'
       }
     ];
   }
@@ -300,7 +307,20 @@ export const api = {
     const user = localStorage.getItem('user');
 
     if (token && user) {
-      return JSON.parse(user);
+      const parsedUser = JSON.parse(user);
+
+      // Auto-update session if role is missing
+      if (!parsedUser.role) {
+        const users = getUsers();
+        const freshUser = users.find(u => u.id === parsedUser.id);
+        if (freshUser && freshUser.role) {
+          const updatedUser = { ...parsedUser, role: freshUser.role };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          return updatedUser;
+        }
+      }
+
+      return parsedUser;
     }
 
     return null;

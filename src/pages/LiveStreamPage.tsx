@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack, IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng';
 import { PRODUCTS, Product } from '../data/products';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 import { updatePinnedProduct, subscribeToPinnedProduct, updateStreamStatus, subscribeToStreamStatus, sendComment, subscribeToComments, clearChat } from '../services/firebase';
 import './LiveStreamPage.css';
 
@@ -30,6 +31,7 @@ const LiveStreamPage: React.FC = () => {
     const remoteVideoRef = useRef<HTMLDivElement>(null);
 
     const { addToCart } = useCart();
+    const { user } = useAuth();
 
     useEffect(() => {
         if (joined && role === 'host' && localTracks && hostVideoRef.current) {
@@ -74,8 +76,13 @@ const LiveStreamPage: React.FC = () => {
             setComments([]);
 
             if (selectedRole === 'host') {
+                if (user?.role !== 'live') {
+                    alert("Bạn không có quyền Host!");
+                    return;
+                }
                 // QUAN TRỌNG: Xóa chat cũ trên Firebase Server khi Host bắt đầu live
                 await clearChat();
+                updatePinnedProduct(null); // Clear pinned product from previous session
 
                 await client.join(APP_ID, CHANNEL_NAME, TOKEN, null);
                 const [microphoneTrack, cameraTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
@@ -192,9 +199,11 @@ const LiveStreamPage: React.FC = () => {
         return (
             <div className="join-wrapper">
                 <h1>Live Stream Shopping</h1>
-                <p>Chọn vai trò của bạn</p>
+
                 <div style={{ display: 'flex', gap: '20px' }}>
-                    <button className="btn-primary" onClick={() => joinChannel('host')}>Start Live (Host)</button>
+                    {user?.role === 'live' && (
+                        <button className="btn-primary" onClick={() => joinChannel('host')}>Start Live (Host)</button>
+                    )}
                     <button className="btn-secondary" onClick={() => joinChannel('audience')}>Watch Live (Audience)</button>
                 </div>
             </div>
@@ -293,7 +302,7 @@ const LiveStreamPage: React.FC = () => {
             <div className="chat-sidebar">
                 <div className="chat-header">
                     <h4>💬 Trò chuyện trực tiếp</h4>
-                    <span className="viewer-count">👥 {comments.length > 0 ? Math.floor(Math.random() * 100) + 50 : 0}</span>
+
                 </div>
 
                 <div className="chat-messages">
