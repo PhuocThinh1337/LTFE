@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { CompareProvider } from './contexts/CompareContext';
 import CompareFloatingBar from './components/common/CompareFloatingBar';
 import './App.css';
+import ProtectedRoute from './components/common/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 import ContactPage from './pages/ContactPage';
@@ -58,7 +59,11 @@ function App(): React.JSX.Element {
               <Route path="/login" element={<AuthLoginPage />} />
               <Route path="/register" element={<AuthRegisterPage />} />
               <Route path="/forgot-password" element={<AuthForgotPasswordPage />} />
-              <Route path="/live-stream" element={<LiveStreamPage />} />
+              <Route path="/live-stream" element={
+                <ProtectedRoute>
+                  <LiveStreamPage />
+                </ProtectedRoute>
+              } />
               <Route path="/ma-giam-gia" element={<VoucherPage />} />
               <Route path="/voucher-cua-toi" element={<MyVouchersPage />} />
             </Routes>

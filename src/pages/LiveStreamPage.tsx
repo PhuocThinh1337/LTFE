@@ -4,7 +4,7 @@ import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack, IA
 import { PRODUCTS, Product } from '../data/products';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
-import { updatePinnedProduct, subscribeToPinnedProduct, updateStreamStatus, subscribeToStreamStatus, sendComment, subscribeToComments, clearChat } from '../services/firebase';
+import { updatePinnedProduct, subscribeToPinnedProduct, updateStreamStatus, subscribeToStreamStatus, sendComment, subscribeToComments, clearChat, getStreamStatus } from '../services/firebase';
 import './LiveStreamPage.css';
 
 // --- CONFIGURATION ---
@@ -80,9 +80,23 @@ const LiveStreamPage: React.FC = () => {
                     alert("Bạn không có quyền Host!");
                     return;
                 }
-                // QUAN TRỌNG: Xóa chat cũ trên Firebase Server khi Host bắt đầu live
-                await clearChat();
-                updatePinnedProduct(null); // Clear pinned product from previous session
+                // QUAN TRỌNG: Kiểm tra xem có đang live không trước khi clear
+                // QUAN TRỌNG: Kiểm tra xem có đang live không trước khi clear
+                const remoteIsLive = await getStreamStatus();
+                if (remoteIsLive) {
+                    const confirmReconnect = window.confirm(
+                        "Đang có phiên Live diễn ra! Bạn muốn tiếp tục (Reconnect) hay Xóa cũ tạo mới?\nOK: Reconnect\nCancel: Hủy"
+                    );
+
+                    if (!confirmReconnect) return;
+
+                    console.log("Host đang Reconnect...");
+                    // KHÔNG GỌI clearChat()
+                    // KHÔNG GỌI updatePinnedProduct(null)
+                } else {
+                    await clearChat();
+                    updatePinnedProduct(null); // Clear pinned product from previous session
+                }
 
                 await client.join(APP_ID, CHANNEL_NAME, TOKEN, null);
                 const [microphoneTrack, cameraTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
@@ -190,7 +204,14 @@ const LiveStreamPage: React.FC = () => {
     const handleSendComment = (e: React.FormEvent) => {
         e.preventDefault();
         if (!commentInput.trim()) return;
-        const userName = role === 'host' ? 'Host' : `User ${Math.floor(Math.random() * 1000)}`;
+
+        let userName = 'Khách';
+        if (role === 'host') {
+            userName = 'Host';
+        } else if (user && user.name) {
+            userName = user.name;
+        }
+
         sendComment(userName, commentInput.trim());
         setCommentInput("");
     };
@@ -201,13 +222,33 @@ const LiveStreamPage: React.FC = () => {
         return (
             <div className="join-wrapper">
                 <h1>Live Stream Shopping</h1>
+                <p>Xin chào, {user?.name || 'Khách'}</p>
 
                 <div style={{ display: 'flex', gap: '20px' }}>
-                    {user?.role === 'live' && (
-                        <button className="btn-primary" onClick={() => joinChannel('host')}>Start Live (Host)</button>
+                    {user?.role === 'live' ? (
+                        <button className="btn-primary" onClick={() => joinChannel('host')}>
+                            {isLive ? "Tiếp tục Live (Reconnect)" : "Bắt đầu Live (Start)"}
+                        </button>
+                    ) : (
+                        <button className="btn-secondary" onClick={() => joinChannel('audience')}>
+                            Xem Live (Audience)
+                        </button>
                     )}
-                    <button className="btn-secondary" onClick={() => joinChannel('audience')}>Watch Live (Audience)</button>
                 </div>
+
+                <button
+                    className="btn-secondary"
+                    style={{ marginTop: '20px', background: 'transparent', color: 'white', border: '1px solid white' }}
+                    onClick={() => navigate('/')}
+                >
+                    Quay lại Trang chủ
+                </button>
+
+                {isLive && user?.role === 'live' && (
+                    <p style={{ color: 'red', marginTop: '15px', fontSize: '18px', fontWeight: 'bold' }}>
+                        ⚠️ Phòng đang Live. Nếu bạn đang mở tab khác, vui lòng đóng tab này.
+                    </p>
+                )}
             </div>
         );
     }

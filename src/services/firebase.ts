@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getDatabase, ref, set, onValue, onDisconnect, DataSnapshot, push, off, query, limitToLast, remove } from "firebase/database";
+import { getDatabase, ref, set, onValue, DataSnapshot, push, query, limitToLast, remove, get } from "firebase/database";
 
 // TODO: Replace with your actual Firebase Configuration
 const firebaseConfig = {
@@ -66,6 +66,15 @@ export const subscribeToStreamStatus = (callback: (isLive: boolean) => void) => 
     });
 };
 
+export const getStreamStatus = async (): Promise<boolean> => {
+    if (!db) {
+        return localStorage.getItem('live_isLive') === 'true';
+    }
+    const statusRef = ref(db, 'live/isLive');
+    const snapshot = await get(statusRef);
+    return snapshot.val() || false;
+};
+
 // --- FLASH VOUCHER LOGIC ---
 export const updateFlashVoucher = (voucher: any) => {
     if (db) {
@@ -125,6 +134,12 @@ export const clearChat = async () => {
 export const sendComment = (userName: string, text: string) => {
     const comment = { userName, text, timestamp: Date.now() };
 
+    // Also send to Firebase if available
+    if (db) {
+        push(ref(db, 'live/comments'), comment);
+        return; // Early return to avoid local state update in DB mode
+    }
+
     // Store ONLY in memory (NOT localStorage - this prevents old messages)
     inMemoryComments.push(comment);
 
@@ -135,11 +150,6 @@ export const sendComment = (userName: string, text: string) => {
 
     // Broadcast to all listeners in the same session
     window.dispatchEvent(new CustomEvent('live_chat_update', { detail: [...inMemoryComments] }));
-
-    // Also send to Firebase if available
-    if (db) {
-        push(ref(db, 'live/comments'), comment);
-    }
 };
 
 export const subscribeToComments = (callback: (comments: any[]) => void) => {
@@ -165,6 +175,7 @@ export const subscribeToComments = (callback: (comments: any[]) => void) => {
     const unsubscribe = onValue(q, (snapshot) => {
         const data = snapshot.val();
         const list = data ? Object.values(data) : [];
+        list.sort((a: any, b: any) => a.timestamp - b.timestamp);
         callback(list);
     });
 
