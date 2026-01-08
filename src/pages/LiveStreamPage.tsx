@@ -81,13 +81,11 @@ const LiveStreamPage: React.FC = () => {
                 const [microphoneTrack, cameraTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
                 setLocalTracks([microphoneTrack, cameraTrack]);
                 await client.publish([microphoneTrack, cameraTrack]);
-                console.log("Host joined and published");
                 updateStreamStatus(true);
             } else {
                 await client.join(APP_ID, CHANNEL_NAME, TOKEN, null);
                 client.on("user-published", async (user: IAgoraRTCRemoteUser, mediaType: "audio" | "video") => {
                     await client.subscribe(user, mediaType);
-                    console.log("subscribed to user", user.uid);
                     if (mediaType === "video") {
                         setIsLive(true);
                         if (remoteVideoRef.current) {
