@@ -24,6 +24,7 @@ import ComparePage from './pages/CompareProductPage';
 import LiveStreamPage from './pages/LiveStreamPage';
 import VoucherPage from './pages/voucher/VoucherPage';
 import MyVouchersPage from './pages/voucher/MyVouchersPage';
+import DealerLocatorPage from './pages/Dealer/DealerLocatorPage';
 
 function App(): React.JSX.Element {
   return (
@@ -61,6 +62,7 @@ function App(): React.JSX.Element {
               <Route path="/live-stream" element={<LiveStreamPage />} />
               <Route path="/ma-giam-gia" element={<VoucherPage />} />
               <Route path="/voucher-cua-toi" element={<MyVouchersPage />} />
+              <Route path="/tim-dai-ly" element={<DealerLocatorPage />} />
             </Routes>
           </Router>
         </CompareProvider>
