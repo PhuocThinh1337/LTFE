@@ -645,7 +645,7 @@ function CheckoutPage(): React.JSX.Element {
               </button>
             </div>
             <div className="np-order-success-modal-content">
-              <div className="np-success-icon-large">✓</div>
+              <div className="np-success-icon-large"></div>
               <h4>Cảm ơn bạn đã đặt hàng!</h4>
               <p>Mã đơn hàng của bạn là: <strong>{orderId}</strong></p>
               <p>Đơn hàng sẽ được giao đến bạn trong thời gian sớm nhất.</p>
