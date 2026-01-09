@@ -251,7 +251,7 @@ export const VOUCHERS: Voucher[] = [
         usageLimit: 100,
         usedCount: 23,
         isActive: true
-    }
+    },
 
 
     // 16. Voucher Valentine
@@ -1107,4 +1107,4 @@ export const VOUCHERS: Voucher[] = [
         isActive: true
     }
 ];
-];
+
