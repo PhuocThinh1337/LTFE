@@ -23,9 +23,9 @@ const Toast: React.FC<ToastProps> = ({
     <div className={`toast toast-${type}`}>
       <div className="toast-content">
         <span className="toast-icon">
-          {type === 'success' && '✓'}
-          {type === 'error' && '✕'}
-          {type === 'info' && 'ℹ'}
+          {type === 'success' && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>}
+          {type === 'error' && ''}
+          {type === 'info' && ''}
         </span>
         <span className="toast-message">{message}</span>
         <button className="toast-close" onClick={onClose}>×</button>

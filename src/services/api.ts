@@ -1,5 +1,6 @@
 // Import từ data/products.ts
 import { Product, PRODUCTS } from '../data/products';
+import emailjs from '@emailjs/browser';
 
 // Mock API service for development
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -102,22 +103,18 @@ const saveUsers = (users: UserWithPassword[]): void => {
   localStorage.setItem('fake_users_db', JSON.stringify(data));
 };
 
-// Get reset tokens from localStorage
+// Get reset tokens from localStorage (Separate DB)
 const getResetTokens = (): Array<{ email: string; token: string; expiresAt: string }> => {
-  const stored = localStorage.getItem('fake_users_db');
+  const stored = localStorage.getItem('reset_tokens_db');
   if (stored) {
-    const data: UsersData = JSON.parse(stored);
-    return data.resetTokens || [];
+    return JSON.parse(stored);
   }
   return [];
 };
 
-// Save reset tokens to localStorage
+// Save reset tokens to localStorage (Separate DB)
 const saveResetTokens = (tokens: Array<{ email: string; token: string; expiresAt: string }>): void => {
-  const stored = localStorage.getItem('fake_users_db');
-  const data: UsersData = stored ? JSON.parse(stored) : { users: [], resetTokens: [] };
-  data.resetTokens = tokens;
-  localStorage.setItem('fake_users_db', JSON.stringify(data));
+  localStorage.setItem('reset_tokens_db', JSON.stringify(tokens));
 };
 
 // Initialize users on module load
@@ -276,7 +273,6 @@ export const api = {
 
     if (!user) {
       // Don't reveal if email exists for security
-      // Still return success message
       return {
         message: 'Nếu email tồn tại trong hệ thống, chúng tôi đã gửi liên kết đặt lại mật khẩu đến email của bạn.'
       };
@@ -288,17 +284,104 @@ export const api = {
 
     // Save reset token
     const tokens = getResetTokens();
-    // Remove old tokens for this email
     const filteredTokens = tokens.filter(t => t.email.toLowerCase() !== email.toLowerCase());
+    
+    // Lưu token vào localStorage
     filteredTokens.push({ email: user.email, token: resetToken, expiresAt });
     saveResetTokens(filteredTokens);
+    
+    // In ra console để debug
+    console.log('Reset token saved:', { email: user.email, token: resetToken });
 
-    // In a real app, you would send an email here
-    console.log(`Reset password link for ${email}: /reset-password?token=${resetToken}`);
+
+    // Send email using EmailJS
+    try {
+      // Check if EmailJS is configured
+      const serviceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+      const templateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
+      const publicKey = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+
+      if (serviceId && templateId && publicKey) {
+        const resetLink = `${window.location.origin}/reset-password?token=${resetToken}`;
+        
+        await emailjs.send(
+          serviceId,
+          templateId,
+          {
+            to_name: user.name,
+            to_email: user.email,
+            email: user.email, // Fallback for default template variable
+            reset_link: resetLink,
+            reply_to: 'support@nipponpaint.vn'
+          },
+          publicKey
+        );
+        console.log('Email sent successfully via EmailJS');
+      } else {
+        console.warn('EmailJS not configured. Printing link to console.');
+        console.log(`Reset password link for ${email}: ${window.location.origin}/reset-password?token=${resetToken}`);
+      }
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      // Fallback to console log if email fails
+      console.log(`Reset password link for ${email}: ${window.location.origin}/reset-password?token=${resetToken}`);
+    }
 
     return {
       message: 'Liên kết đặt lại mật khẩu đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư.'
     };
+  },
+
+  // User - Reset Password
+  resetPassword: async (token: string, newPassword: string): Promise<{ message: string }> => {
+    await delay(1000);
+
+    console.log('--- START RESET PASSWORD DEBUG ---');
+    console.log('Received token:', token);
+    
+    const tokens = getResetTokens();
+    console.log('Current tokens in DB:', tokens);
+
+    const tokenData = tokens.find(t => t.token === token);
+    console.log('Found token data:', tokenData);
+
+    if (!tokenData) {
+      console.error('❌ Token not found in DB');
+      throw new Error('Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.');
+    }
+
+    const now = new Date();
+    const expires = new Date(tokenData.expiresAt);
+    console.log('Time check:', { now, expires, isExpired: expires < now });
+
+    if (expires < now) {
+      // Clean up expired token
+      const newTokens = tokens.filter(t => t.token !== token);
+      saveResetTokens(newTokens);
+      console.error('❌ Token expired');
+      throw new Error('Liên kết đặt lại mật khẩu đã hết hạn.');
+    }
+
+    const users = getUsers();
+    const userIndex = users.findIndex(u => u.email.toLowerCase() === tokenData.email.toLowerCase());
+
+    if (userIndex === -1) {
+       console.error('❌ User not found for email:', tokenData.email);
+       throw new Error('Người dùng không tồn tại.');
+    }
+
+    // Update password
+    users[userIndex].password = newPassword;
+    saveUsers(users);
+
+    // Remove used token
+    const newTokens = tokens.filter(t => t.token !== token);
+    saveResetTokens(newTokens);
+
+    console.log('✅ Password reset successful');
+    console.log('--- END RESET PASSWORD DEBUG ---');
+
+    return { message: 'Mật khẩu đã được đặt lại thành công.' };
   },
 
   getCurrentUser: async (): Promise<User | null> => {

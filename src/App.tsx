@@ -16,6 +16,7 @@ import WishlistPage from './pages/WishlistPage';
 import AuthLoginPage from './pages/AuthLoginPage';
 import AuthRegisterPage from './pages/AuthRegisterPage';
 import AuthForgotPasswordPage from './pages/AuthForgotPasswordPage';
+import AuthResetPasswordPage from './pages/AuthResetPasswordPage';
 import CartPage from './pages/cart/CartPage';
 import OrderHistoryPage from './pages/order-history/OrderHistoryPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
@@ -25,6 +26,7 @@ import ComparePage from './pages/CompareProductPage';
 import LiveStreamPage from './pages/LiveStreamPage';
 import VoucherPage from './pages/voucher/VoucherPage';
 import MyVouchersPage from './pages/voucher/MyVouchersPage';
+import DealerLocatorPage from './pages/Dealer/DealerLocatorPage';
 
 function App(): React.JSX.Element {
   return (
@@ -64,8 +66,11 @@ function App(): React.JSX.Element {
                   <LiveStreamPage />
                 </ProtectedRoute>
               } />
+              <Route path="/reset-password" element={<AuthResetPasswordPage />} />
+              <Route path="/live-stream" element={<LiveStreamPage />} />
               <Route path="/ma-giam-gia" element={<VoucherPage />} />
               <Route path="/voucher-cua-toi" element={<MyVouchersPage />} />
+              <Route path="/tim-dai-ly" element={<DealerLocatorPage />} />
             </Routes>
           </Router>
         </CompareProvider>
