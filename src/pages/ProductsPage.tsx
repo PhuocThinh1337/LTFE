@@ -175,9 +175,9 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   const [pageTitle, setPageTitle] = useState('Sản phẩm Nippon Paint');
 
   // Filter states
-  const [locationFilter, setLocationFilter] = useState<string>('all');
-  const [surfaceFilter, setSurfaceFilter] = useState<string>('all');
-  const [productTypeFilter, setProductTypeFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [featureFilter, setFeatureFilter] = useState<string>('all');
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -212,83 +212,82 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
     setToast(null);
   };
 
+  // Initial setup from URL prop
+  useEffect(() => {
+    if (category) {
+      if (category === 'son-noi-that') setCategoryFilter('Sơn Nội Thất');
+      else if (category === 'son-ngoai-that') setCategoryFilter('Sơn Ngoại Thất');
+      else if (category === 'son-dan-dung') setCategoryFilter('Sơn dân dụng');
+      else if (category === 'son-va-chat-phu-cong-nghiep') setCategoryFilter('Sơn và chất phủ công nghiệp');
+    }
+  }, [category]);
+
   useEffect(() => {
     let filtered = PRODUCTS;
     let title = 'Sản phẩm Nippon Paint';
 
-    // Filter by category first
-    if (category) {
-      switch (category) {
-        case 'son-noi-that':
-          filtered = PRODUCTS.filter(p => p.category === 'Sơn Nội Thất');
-          title = 'Sơn Nội Thất';
-          break;
-        case 'son-ngoai-that':
-          filtered = PRODUCTS.filter(p => p.category === 'Sơn Ngoại Thất');
-          title = 'Sơn Ngoại Thất';
-          break;
-        case 'son-dan-dung':
-          filtered = PRODUCTS.filter(p => p.category === 'Sơn dân dụng');
-          title = 'Sơn Dân Dụng';
-          break;
-        case 'son-va-chat-phu-cong-nghiep':
-          filtered = PRODUCTS.filter(p => p.category === 'Sơn và chất phủ công nghiệp');
-          title = 'Sơn và Chất Phủ Công Nghiệp';
-          break;
-        default:
-          filtered = PRODUCTS.filter(p => p.category === category);
-          title = category.toUpperCase().replace(/-/g, ' ');
-          break;
-      }
+    // 1. Filter by Category (Dòng sản phẩm)
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(p => p.category === categoryFilter);
+      title = categoryFilter.toUpperCase();
     }
 
-    // Apply location filter
-    if (locationFilter !== 'all') {
+    // 2. Filter by Product Type (Loại sơn: Lót, Phủ, Bột trét, Chống thấm)
+    if (typeFilter !== 'all') {
       filtered = filtered.filter(p => {
         const name = p.name.toLowerCase();
         const cat = p.category.toLowerCase();
-        if (locationFilter === 'indoor') {
-          return cat.includes('nội') || name.includes('nội');
-        } else if (locationFilter === 'outdoor') {
-          return cat.includes('ngoại') || name.includes('ngoại');
+
+        if (typeFilter === 'primer') {
+          // Sơn lót
+          return name.includes('lót') || name.includes('primer') || name.includes('sealer');
+        } else if (typeFilter === 'putty') {
+          // Bột trét
+          return name.includes('bột trét') || name.includes('putty') || name.includes('skimcoat') || name.includes('mastic');
+        } else if (typeFilter === 'waterproof') {
+          // Chống thấm
+          return name.includes('chống thấm') || name.includes('wp');
+        } else if (typeFilter === 'topcoat') {
+          // Sơn phủ (Là các loại còn lại, trừ 3 loại trên)
+          const isPrimer = name.includes('lót') || name.includes('primer') || name.includes('sealer');
+          const isPutty = name.includes('bột trét') || name.includes('putty') || name.includes('skimcoat');
+          const isWP = name.includes('chống thấm') || name.includes('wp');
+          return !isPrimer && !isPutty && !isWP;
         }
         return true;
       });
     }
 
-    // Apply surface filter
-    if (surfaceFilter !== 'all') {
+    // 3. Filter by Features (Tính năng)
+    if (featureFilter !== 'all') {
       filtered = filtered.filter(p => {
         const name = p.name.toLowerCase();
         const desc = p.description?.toLowerCase() || '';
-        if (surfaceFilter === 'wall') {
-          return name.includes('tường') || desc.includes('tường') || desc.includes('vữa');
-        } else if (surfaceFilter === 'wood') {
-          return name.includes('gỗ') || desc.includes('gỗ');
-        } else if (surfaceFilter === 'metal') {
-          return name.includes('kim loại') || desc.includes('kim loại') || name.includes('sắt');
-        }
-        return true;
-      });
-    }
+        const features = p.features?.map(f => f.toLowerCase()).join(' ') || '';
+        const combinedText = `${name} ${desc} ${features}`;
 
-    // Apply product type filter
-    if (productTypeFilter !== 'all') {
-      filtered = filtered.filter(p => {
-        const name = p.name.toLowerCase();
-        if (productTypeFilter === 'topcoat') {
-          return name.includes('phủ') || name.includes('bóng') || name.includes('mờ');
-        } else if (productTypeFilter === 'sealer') {
-          return name.includes('lót') || name.includes('primer');
+        if (featureFilter === 'easy-wash') {
+          return combinedText.includes('lau chùi') || combinedText.includes('clean') || combinedText.includes('easy wash');
+        } else if (featureFilter === 'antibacterial') {
+          return combinedText.includes('kháng khuẩn') || combinedText.includes('virus') || combinedText.includes('odour-less') || combinedText.includes('mùi nhẹ');
+        } else if (featureFilter === 'gloss') {
+          return combinedText.includes('bóng');
+        } else if (featureFilter === 'matt') {
+          return combinedText.includes('mờ') || combinedText.includes('mịn');
+        } else if (featureFilter === 'durable') {
+          return combinedText.includes('bền màu') || combinedText.includes('bảo vệ');
         }
         return true;
       });
     }
 
     setDisplayedProducts(filtered);
-    setPageTitle(title);
-    setCurrentPage(1); // Reset to page 1 when filters change
-  }, [category, locationFilter, surfaceFilter, productTypeFilter]);
+    // Update title only if category changed via prop, otherwise keep it generic if manually filtering
+    if (!category) setPageTitle('TẤT CẢ SẢN PHẨM');
+    else setPageTitle(title);
+
+    setCurrentPage(1);
+  }, [categoryFilter, typeFilter, featureFilter, category]);
 
   // Calculate pagination
   const totalPages = Math.ceil(displayedProducts.length / itemsPerPage);
@@ -296,10 +295,8 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   const endIndex = startIndex + itemsPerPage;
   const currentProducts = displayedProducts.slice(startIndex, endIndex);
 
-  // Handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Scroll to top of products section
     window.scrollTo({ top: 400, behavior: 'smooth' });
   };
 
@@ -308,18 +305,17 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
       <Header />
 
       <main className="np-main">
-        {/* Dynamic Breadcrumb based on category */}
         <Breadcrumb items={[
           { label: 'Trang chủ', link: '/' },
           { label: 'Sản phẩm', link: '/san-pham' },
-          ...(category ? [{ label: pageTitle }] : [])
+          ...(categoryFilter !== 'all' ? [{ label: categoryFilter }] : [])
         ]} />
 
         <section className="np-page-title">
           <div className="np-container">
-            <h1>{pageTitle.toUpperCase()}</h1>
+            <h1>{pageTitle}</h1>
             <p className="np-page-subtitle">
-              Kiến tạo giá trị bền vững thông qua sản phẩm Nippon chất lượng cao
+              Giải pháp sơn toàn diện cho ngôi nhà của bạn
             </p>
           </div>
         </section>
@@ -327,43 +323,77 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
         {/* Filter Bar */}
         <div className="np-filter-bar-wrapper">
           <div className="np-container">
-            <div className="np-filter-bar">
+            <div className="np-filter-bar" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'flex-end' }}>
+
+              {/* Filter 1: Product Category */}
               <div className="np-filter-group">
-                <label>Vị trí:</label>
-                <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px' }}>Dòng sản phẩm:</label>
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  style={{ minWidth: '180px', padding: '10px 15px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none' }}
+                >
                   <option value="all">Tất cả</option>
-                  <option value="indoor">Trong nhà</option>
-                  <option value="outdoor">Ngoài trời</option>
+                  <option value="Sơn Nội Thất">Sơn Nội Thất</option>
+                  <option value="Sơn Ngoại Thất">Sơn Ngoại Thất</option>
+                  <option value="Sơn dân dụng">Sơn Dầu / Gỗ & Kim Loại</option>
+                  <option value="Sơn và chất phủ công nghiệp">Sơn Công Nghiệp</option>
                 </select>
               </div>
 
+              {/* Filter 2: Function/Type */}
               <div className="np-filter-group">
-                <label>Bề mặt:</label>
-                <select value={surfaceFilter} onChange={(e) => setSurfaceFilter(e.target.value)}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px' }}>Loại sơn:</label>
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  style={{ minWidth: '160px', padding: '10px 15px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none' }}
+                >
                   <option value="all">Tất cả</option>
-                  <option value="wall">Tường trát vữa</option>
-                  <option value="wood">Gỗ</option>
-                  <option value="metal">Kim loại</option>
+                  <option value="topcoat">Sơn phủ (Hoàn thiện)</option>
+                  <option value="primer">Sơn lót (Primer/Sealer)</option>
+                  <option value="putty">Bột trét (Putty/Mastic)</option>
+                  <option value="waterproof">Chống thấm</option>
                 </select>
               </div>
 
+              {/* Filter 3: Features */}
               <div className="np-filter-group">
-                <label>Loại sản phẩm:</label>
-                <select value={productTypeFilter} onChange={(e) => setProductTypeFilter(e.target.value)}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px' }}>Tính năng:</label>
+                <select
+                  value={featureFilter}
+                  onChange={(e) => setFeatureFilter(e.target.value)}
+                  style={{ minWidth: '160px', padding: '10px 15px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none' }}
+                >
                   <option value="all">Tất cả</option>
-                  <option value="topcoat">Sơn phủ</option>
-                  <option value="sealer">Sơn lót</option>
+                  <option value="easy-wash">Dễ lau chùi / Sạch</option>
+                  <option value="antibacterial">Kháng khuẩn / Mùi nhẹ</option>
+                  <option value="gloss">Bóng / Siêu bóng</option>
+                  <option value="matt">Mờ / Mịn</option>
+                  <option value="durable">Bền màu / Bảo vệ tốt</option>
                 </select>
               </div>
 
               <button
                 className="np-btn-apply"
                 onClick={() => {
-                  // Reset filters
-                  setLocationFilter('all');
-                  setSurfaceFilter('all');
-                  setProductTypeFilter('all');
+                  setCategoryFilter('all');
+                  setTypeFilter('all');
+                  setFeatureFilter('all');
                 }}
+                style={{
+                  height: '42px',
+                  padding: '0 20px',
+                  backgroundColor: '#fff',
+                  border: '1px solid #e60012',
+                  color: '#e60012',
+                  borderRadius: '4px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e60012'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.color = '#e60012'; }}
               >
                 XÓA BỘ LỌC
               </button>
@@ -408,67 +438,127 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
             </div>
 
             {/* Pagination */}
+            {/* Pagination */}
             {totalPages > 1 && (
               <div style={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '6px',
                 marginTop: '40px',
                 padding: '20px 0'
               }}>
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
+                  title="Trang trước"
                   style={{
-                    padding: '8px 16px',
-                    border: '1px solid #ddd',
-                    background: currentPage === 1 ? '#f5f5f5' : '#fff',
-                    color: currentPage === 1 ? '#999' : '#333',
+                    minWidth: '36px',
+                    height: '36px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px solid #e5e7eb',
+                    background: currentPage === 1 ? '#f9fafb' : '#fff',
+                    color: currentPage === 1 ? '#d1d5db' : '#374151',
                     borderRadius: '4px',
                     cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                    fontWeight: '500',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    fontSize: '14px'
                   }}
+                  onMouseEnter={(e) => currentPage !== 1 && (e.currentTarget.style.borderColor = '#e60012', e.currentTarget.style.color = '#e60012')}
+                  onMouseLeave={(e) => currentPage !== 1 && (e.currentTarget.style.borderColor = '#e5e7eb', e.currentTarget.style.color = '#374151')}
                 >
-                  ← Trước
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                  <span style={{ marginLeft: '4px', fontSize: '13px', fontWeight: 500 }}>Trước</span>
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    style={{
-                      padding: '8px 14px',
-                      border: currentPage === page ? '2px solid #0046ad' : '1px solid #ddd',
-                      background: currentPage === page ? '#0046ad' : '#fff',
-                      color: currentPage === page ? '#fff' : '#333',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontWeight: currentPage === page ? '700' : '500',
-                      minWidth: '40px',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    {page}
-                  </button>
-                ))}
+                {(() => {
+                  const siblingCount = 1;
+                  const range = [];
+                  const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
+                  const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages);
+                  const shouldShowLeftDots = leftSiblingIndex > 2;
+                  const shouldShowRightDots = rightSiblingIndex < totalPages - 2;
+
+                  if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) range.push(i);
+                  } else {
+                    if (!shouldShowLeftDots && shouldShowRightDots) {
+                      for (let i = 1; i <= 5; i++) range.push(i);
+                      range.push('...');
+                      range.push(totalPages);
+                    } else if (shouldShowLeftDots && !shouldShowRightDots) {
+                      range.push(1);
+                      range.push('...');
+                      for (let i = totalPages - 4; i <= totalPages; i++) range.push(i);
+                    } else if (shouldShowLeftDots && shouldShowRightDots) {
+                      range.push(1);
+                      range.push('...');
+                      for (let i = leftSiblingIndex; i <= rightSiblingIndex; i++) range.push(i);
+                      range.push('...');
+                      range.push(totalPages);
+                    }
+                  }
+
+                  return range.map((page, index) => {
+                    if (page === '...') {
+                      return (
+                        <span key={`dots-${index}`} style={{ padding: '0 6px', color: '#9ca3af', fontWeight: 500 }}>...</span>
+                      );
+                    }
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page as number)}
+                        style={{
+                          minWidth: '36px',
+                          height: '36px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: currentPage === page ? '1px solid #e60012' : '1px solid #e5e7eb',
+                          background: currentPage === page ? '#e60012' : '#fff',
+                          color: currentPage === page ? '#fff' : '#374151',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontWeight: currentPage === page ? '700' : '500',
+                          fontSize: '14px',
+                          transition: 'all 0.2s',
+                          boxShadow: currentPage === page ? '0 2px 4px rgba(230,0,18,0.2)' : 'none'
+                        }}
+                        onMouseEnter={(e) => currentPage !== page && (e.currentTarget.style.borderColor = '#e60012', e.currentTarget.style.color = '#e60012', e.currentTarget.style.background = '#fff')}
+                        onMouseLeave={(e) => currentPage !== page && (e.currentTarget.style.borderColor = '#e5e7eb', e.currentTarget.style.color = '#374151', e.currentTarget.style.background = '#fff')}
+                      >
+                        {page}
+                      </button>
+                    );
+                  });
+                })()}
 
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
+                  title="Trang sau"
                   style={{
-                    padding: '8px 16px',
-                    border: '1px solid #ddd',
-                    background: currentPage === totalPages ? '#f5f5f5' : '#fff',
-                    color: currentPage === totalPages ? '#999' : '#333',
+                    minWidth: '36px',
+                    height: '36px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '1px solid #e5e7eb',
+                    background: currentPage === totalPages ? '#f9fafb' : '#fff',
+                    color: currentPage === totalPages ? '#d1d5db' : '#374151',
                     borderRadius: '4px',
                     cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                    fontWeight: '500',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    fontSize: '14px'
                   }}
+                  onMouseEnter={(e) => currentPage !== totalPages && (e.currentTarget.style.borderColor = '#e60012', e.currentTarget.style.color = '#e60012')}
+                  onMouseLeave={(e) => currentPage !== totalPages && (e.currentTarget.style.borderColor = '#e5e7eb', e.currentTarget.style.color = '#374151')}
                 >
-                  Sau →
+                  <span style={{ marginRight: '4px', fontSize: '13px', fontWeight: 500 }}>Sau</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                 </button>
               </div>
             )}

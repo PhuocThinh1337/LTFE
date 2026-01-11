@@ -188,49 +188,51 @@
 }
 
 /* Button matches reference: Pill shape, red border, transparent bg, solid red circle icon */
-.np-mm-product-btn {
-    display: flex;
+/* Button matches reference: Pill shape, red border, transparent bg, solid red circle icon */
+.np-mega-menu .np-mm-product-btn {
+    display: flex !important;
     align-items: center;
     justify-content: space-between;
-    /* Padding: Trên/Dưới 6px, Phải 6px (để icon ko bị sát), Trái 20px (để chữ thụt vào) */
-    padding: 6px 6px 6px 20px;
+    padding: 5px 6px 5px 20px !important;
     background-color: transparent;
     color: #e60012 !important;
-    /* Màu đỏ tươi giống mẫu */
-    border: 1.5px solid #e60012;
-    /* Viền dày hơn 1 chút cho rõ nét */
-    border-radius: 50px;
-    /* Bo tròn hoàn toàn (Pill shape) */
+    border: 2px solid #e60012 !important;
+    border-radius: 99px;
     text-decoration: none;
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 0.5px;
     margin-top: 15px;
     width: 100%;
+    height: 48px !important;
     transition: all 0.3s ease;
     box-sizing: border-box;
 }
 
-.np-mm-product-btn:hover {
+.np-mega-menu .np-mm-product-btn:hover {
     background-color: rgba(196, 18, 48, 0.05);
+    border-color: #d10010 !important;
+    color: #d10010 !important;
 }
 
-.np-btn-icon {
-    width: 24px;
-    /* Smaller icon */
-    height: 24px;
-    background-color: #c41230;
-    /* Solid red background */
+.np-mega-menu .np-btn-icon {
+    width: 34px !important;
+    height: 34px !important;
+    background-color: #e60012;
     border-radius: 50%;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     color: white;
-    /* White arrow */
-    font-size: 12px;
-    /* Smaller arrow */
+    font-size: 16px;
+    font-weight: bold;
     flex-shrink: 0;
+    transition: background-color 0.3s ease;
+}
+
+.np-mega-menu .np-mm-product-btn:hover .np-btn-icon {
+    background-color: #d10010;
 }
 
 

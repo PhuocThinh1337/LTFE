@@ -8,6 +8,11 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useCompare } from '../contexts/CompareContext';
 import './ProductDetailPage.css';
+import catalogTilac from '../img/nippon_catalogs/Sơn_Dầu_Cao_Cấp_Tilac.pdf';
+import catalogMatex from '../img/nippon_catalogs/Sơn_Matex_và_Supper_Matex.pdf';
+import catalogIndustrial from '../img/nippon_catalogs/Sơn_Phủ_Công_Nghiệp.pdf';
+import catalogVatex from '../img/nippon_catalogs/Sơn_Vatex.pdf';
+import catalogPremium from '../img/nippon_catalogs/Sản_Phẩm_Cao_Cấp_-_Cloned.pdf';
 
 interface SuggestionCardProps {
     product: Product;
@@ -75,6 +80,65 @@ const ProductDetailPage: React.FC = () => {
     ]);
     const [newRating, setNewRating] = useState(5);
     const [newComment, setNewComment] = useState("");
+
+    // Catalog State & Data
+    const [catalogIndex, setCatalogIndex] = useState(0);
+
+    const catalogs = [
+        {
+            id: 'c1',
+            name: 'Sơn Phủ Công Nghiệp',
+            image: 'https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2019-02/bang-mau-son-phu-cong-nghiep_0.png.webp?itok=YLQEl0Me',
+            file: catalogIndustrial
+        },
+        {
+            id: 'c2',
+            name: 'Sản Phẩm Cao Cấp',
+            image: 'https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2019-02/bang-mau-san-pham-cao-cap_0.png.webp?itok=OOGrVDnn',
+            file: catalogPremium
+        },
+        {
+            id: 'c3',
+            name: 'Sơn Vatex',
+            image: PRODUCTS.find(p => p.name.includes('Vatex'))?.image || PRODUCTS[0].image,
+            file: catalogVatex
+        },
+        {
+            id: 'c4',
+            name: 'Sơn Matex & Super Matex',
+            image: PRODUCTS.find(p => p.name.includes('Matex'))?.image || PRODUCTS[0].image,
+            file: catalogMatex
+        },
+        {
+            id: 'c5',
+            name: 'Sơn Dầu Cao Cấp Tilac',
+            image: PRODUCTS.find(p => p.name.includes('Tilac'))?.image || PRODUCTS[0].image,
+            file: catalogTilac
+        }
+    ];
+
+    const nextCatalog = () => {
+        if (catalogs.length > 2) {
+            setCatalogIndex((prev) => (prev + 1) % catalogs.length);
+        }
+    };
+
+    const prevCatalog = () => {
+        if (catalogs.length > 2) {
+            setCatalogIndex((prev) => (prev - 1 + catalogs.length) % catalogs.length);
+        }
+    };
+
+    // Circular slice for carousel (always show 2)
+    const getDisplayedCatalogs = () => {
+        const list = [];
+        for (let i = 0; i < 2; i++) {
+            list.push(catalogs[(catalogIndex + i) % catalogs.length]);
+        }
+        return list;
+    };
+
+    const displayedCatalogs = getDisplayedCatalogs();
 
     useEffect(() => {
         if (slug) {
@@ -385,26 +449,20 @@ const ProductDetailPage: React.FC = () => {
                                 <div className="np-suggestion-col">
                                     <h2 className="np-suggestion-title">BẢNG MÀU CHỌN LỌC</h2>
                                     <div className="np-suggestion-cards">
-                                        <div className="np-suggestion-card catalog">
-                                            <div className="np-s-card-body">
-                                                <img src="https://nipponpaint.com.vn/sites/default/files/styles/np_product_teaser_480_480/public/2021-06/industrial-coating-catalogue.jpg" alt="Industrial Coatings" />
-                                                <div className="np-s-nav-arrow left">‹</div>
+                                        {displayedCatalogs.map((cat, idx) => (
+                                            <div key={cat.id} className="np-suggestion-card catalog">
+                                                <div className="np-s-card-body" style={{ cursor: 'pointer' }} onClick={() => window.open(cat.file, '_blank')}>
+                                                    <img src={cat.image} alt={cat.name} style={{ objectFit: 'cover' }} />
+                                                    {/* Show arrows on hover or always? Mimic suggestion card logic */}
+                                                    {idx === 0 && <div className="np-s-nav-arrow left" onClick={(e) => { e.stopPropagation(); prevCatalog(); }}>‹</div>}
+                                                    {idx === 1 && <div className="np-s-nav-arrow right" onClick={(e) => { e.stopPropagation(); nextCatalog(); }}>›</div>}
+                                                </div>
+                                                <div className="np-s-card-footer">
+                                                    <div className="np-s-cat">BỘ SƯU TẬP SẮC MÀU</div>
+                                                    <div className="np-s-name" onClick={() => window.open(cat.file, '_blank')} style={{ cursor: 'pointer' }}>{cat.name}</div>
+                                                </div>
                                             </div>
-                                            <div className="np-s-card-footer">
-                                                <div className="np-s-cat">BỘ SƯU TẬP SẮC MÀU</div>
-                                                <div className="np-s-name">Sơn Phủ Công Nghiệp</div>
-                                            </div>
-                                        </div>
-                                        <div className="np-suggestion-card catalog">
-                                            <div className="np-s-card-body">
-                                                <img src="https://nipponpaint.com.vn/sites/default/files/styles/np_product_teaser_480_480/public/2021-06/premium-product-catalogue.jpg" alt="Premium Products" />
-                                                <div className="np-s-nav-arrow right">›</div>
-                                            </div>
-                                            <div className="np-s-card-footer">
-                                                <div className="np-s-cat">BỘ SƯU TẬP SẮC MÀU</div>
-                                                <div className="np-s-name">Sản Phẩm Cao Cấp</div>
-                                            </div>
-                                        </div>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
