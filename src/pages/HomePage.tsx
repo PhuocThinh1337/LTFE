@@ -279,7 +279,7 @@ const HomePage: React.FC = () => {
               <div
                 key={index}
                 className={`np-banner-slide ${index === currentSlide ? 'active' : ''}`}
-                style={{ 
+                style={{
                   backgroundImage: `url(${banner.image})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
@@ -324,7 +324,7 @@ const HomePage: React.FC = () => {
                   key={`${colorCodeCarouselIndex}-${index}`}
                   to="/phoi-mau-tuy-chinh"
                   className={`np-color-swatch-circle ${index === 6 ? 'highlighted' : ''} color-transition`}
-                  style={{ 
+                  style={{
                     backgroundColor: color,
                     animationDelay: `${index * 0.05}s`
                   }}
@@ -332,21 +332,20 @@ const HomePage: React.FC = () => {
                 />
               ))}
             </div>
-            
+
             {/* Image Carousel */}
             <div className="np-color-codes-carousel-wrapper">
               <div className="np-color-codes-carousel">
                 {colorCodeImages.map((item, index) => (
                   <div
                     key={index}
-                    className={`np-color-codes-carousel-item ${
-                      index === colorCodeCarouselIndex ? 'active' : 
-                      index === (colorCodeCarouselIndex + 1) % colorCodeImages.length ? 'next' :
-                      index === (colorCodeCarouselIndex - 1 + colorCodeImages.length) % colorCodeImages.length ? 'prev' : ''
-                    }`}
+                    className={`np-color-codes-carousel-item ${index === colorCodeCarouselIndex ? 'active' :
+                        index === (colorCodeCarouselIndex + 1) % colorCodeImages.length ? 'next' :
+                          index === (colorCodeCarouselIndex - 1 + colorCodeImages.length) % colorCodeImages.length ? 'prev' : ''
+                      }`}
                   >
-                    <img 
-                      src={item.image} 
+                    <img
+                      src={item.image}
                       alt={item.title}
                       onError={(e) => {
                         e.currentTarget.src = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800&q=80';
@@ -402,11 +401,11 @@ const HomePage: React.FC = () => {
                 Nơi cập nhật những xu hướng màu sắc và phong cách phối màu mới nhất từ các chuyên gia thiết kế hàng đầu Châu Á
               </p>
             </div>
-            
+
             <div className="np-trend-featured">
               <div className="np-trend-image-wrapper">
-                <img 
-                  src={activeTrend.image} 
+                <img
+                  src={activeTrend.image}
                   alt={activeTrend.title}
                   className="np-trend-main-image"
                   onError={(e) => {
@@ -420,8 +419,8 @@ const HomePage: React.FC = () => {
                 <h3 className="np-trend-heading">{activeTrend.title}</h3>
                 <div className="np-trend-palette">
                   {activeTrend.colors.map((color, i) => (
-                    <div 
-                      key={i} 
+                    <div
+                      key={i}
                       className="np-trend-palette-swatch"
                       style={{ backgroundColor: color }}
                     />
@@ -448,8 +447,8 @@ const HomePage: React.FC = () => {
                         onClick={() => setActiveTrendIndex(index)}
                         aria-label={`Go to ${trend.title}`}
                       >
-                        <img 
-                          src={trend.image} 
+                        <img
+                          src={trend.image}
                           alt={trend.title}
                           onError={(e) => {
                             e.currentTarget.src = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=200';
@@ -472,8 +471,8 @@ const HomePage: React.FC = () => {
             <div className="np-trend-gallery">
               {activeTrend.gallery && activeTrend.gallery.map((img, index) => (
                 <div key={index} className="np-trend-gallery-item">
-                  <img 
-                    src={img} 
+                  <img
+                    src={img}
                     alt={`Gallery ${index + 1}`}
                     onError={(e) => {
                       e.currentTarget.src = 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400';
@@ -505,9 +504,9 @@ const HomePage: React.FC = () => {
               {featuredProducts.map((product) => (
                 <Link key={product.id} to={`/san-pham`} className="np-featured-product-card">
                   <div className="np-product-image-wrapper">
-                    <img 
-                      src={product.image} 
-                      alt={product.name} 
+                    <img
+                      src={product.image}
+                      alt={product.name}
                       className="np-product-image"
                       onError={(e) => {
                         e.currentTarget.src = 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400';
@@ -536,13 +535,13 @@ const HomePage: React.FC = () => {
                 Kiến tạo giá trị bền vững thông qua sản phẩm Sơn Nippon
               </p>
             </div>
-            
+
             <div className="np-business-fields-grid">
               {/* Item 1: Large Vertical - Architectural */}
               <div className="np-business-item large">
-                <img 
-                  src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80" 
-                  alt="Sơn Kiến Trúc" 
+                <img
+                  src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80"
+                  alt="Sơn Kiến Trúc"
                   loading="lazy"
                 />
                 <div className="np-business-item-overlay">
@@ -552,9 +551,9 @@ const HomePage: React.FC = () => {
 
               {/* Item 2: Automotive */}
               <div className="np-business-item">
-                <img 
-                  src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80" 
-                  alt="Sơn và chất phủ ô tô, xe máy" 
+                <img
+                  src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80"
+                  alt="Sơn và chất phủ ô tô, xe máy"
                   loading="lazy"
                 />
                 <div className="np-business-item-overlay">
@@ -564,9 +563,9 @@ const HomePage: React.FC = () => {
 
               {/* Item 3: Marine */}
               <div className="np-business-item">
-                <img 
-                  src="https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2025-06/3_0.png.webp?itok=Mt49nLAe" 
-                  alt="Sơn hàng hải" 
+                <img
+                  src="https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2025-06/3_0.png.webp?itok=Mt49nLAe"
+                  alt="Sơn hàng hải"
                   loading="lazy"
                 />
                 <div className="np-business-item-overlay">
@@ -576,9 +575,9 @@ const HomePage: React.FC = () => {
 
               {/* Item 4: Floor */}
               <div className="np-business-item">
-                <img 
-                  src="https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2025-06/5_0.png.webp?itok=ahK9HvxD" 
-                  alt="Sơn và chất bảo vệ sàn" 
+                <img
+                  src="https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2025-06/5_0.png.webp?itok=ahK9HvxD"
+                  alt="Sơn và chất bảo vệ sàn"
                   loading="lazy"
                 />
                 <div className="np-business-item-overlay">
@@ -588,9 +587,9 @@ const HomePage: React.FC = () => {
 
               {/* Item 5: Industrial */}
               <div className="np-business-item">
-                <img 
-                  src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&q=80" 
-                  alt="Sơn và chất phủ công nghiệp" 
+                <img
+                  src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&q=80"
+                  alt="Sơn và chất phủ công nghiệp"
                   loading="lazy"
                 />
                 <div className="np-business-item-overlay">
@@ -600,9 +599,9 @@ const HomePage: React.FC = () => {
 
               {/* Item 6: Coil Coating (Under Large) */}
               <div className="np-business-item">
-                <img 
-                  src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&q=80" 
-                  alt="Sơn và chất phủ tole cuộn" 
+                <img
+                  src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&q=80"
+                  alt="Sơn và chất phủ tole cuộn"
                   loading="lazy"
                 />
                 <div className="np-business-item-overlay">
@@ -612,9 +611,9 @@ const HomePage: React.FC = () => {
 
               {/* Item 7: Wood */}
               <div className="np-business-item">
-                <img 
-                  src="https://images.unsplash.com/photo-1532372320572-cda25653a26d?w=800&q=80" 
-                  alt="Sơn gỗ" 
+                <img
+                  src="https://images.unsplash.com/photo-1532372320572-cda25653a26d?w=800&q=80"
+                  alt="Sơn gỗ"
                   loading="lazy"
                 />
                 <div className="np-business-item-overlay">
@@ -624,9 +623,9 @@ const HomePage: React.FC = () => {
 
               {/* Item 8: Beyond Paint */}
               <div className="np-business-item">
-                <img 
-                  src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&q=80" 
-                  alt="Beyond Paint" 
+                <img
+                  src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=800&q=80"
+                  alt="Beyond Paint"
                   loading="lazy"
                 />
                 <div className="np-business-item-overlay">
@@ -673,8 +672,8 @@ const HomePage: React.FC = () => {
                 </div>
               </div>
               <div className="np-support-image">
-                <img 
-                  src="https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2025-06/nippon-support_0.png.webp?itok=RKBSP-2W" 
+                <img
+                  src="https://nipponpaint.com.vn/sites/default/files/styles/webp/public/2025-06/nippon-support_0.png.webp?itok=RKBSP-2W"
                   alt="Hỗ trợ Nippon Paint"
                   onError={(e) => {
                     e.currentTarget.src = 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80';
