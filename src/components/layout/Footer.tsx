@@ -59,7 +59,7 @@ function Footer(): React.JSX.Element {
             <ul className="np-footer-links">
               <li><Link to="/tinh-toan-luong-son">Tính toán lượng sơn</Link></li>
               <li><Link to="/ho-tro-phoi-mau">Hỗ trợ phối màu</Link></li>
-              <li><Link to="/lien-he">Tìm đại lý</Link></li>
+              <li><Link to="/tim-dai-ly">Tìm đại lý</Link></li>
               <li><a href="#support">Hỗ trợ kỹ thuật</a></li>
             </ul>
           </div>

@@ -1,0 +1,497 @@
+.np-dealer-locator-page {
+    padding: 2rem 0 4rem;
+    min-height: 60vh;
+  }
+  
+  .np-page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-top: 2rem;
+  }
+  
+  .np-page-header h1 {
+    font-size: 2.5rem;
+    color: #1a365d;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+  
+  .np-page-header p {
+    color: #718096;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  /* Filters */
+  .np-dealer-filters {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .np-filter-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .np-search-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .np-search-input svg {
+    position: absolute;
+    left: 1rem;
+    color: #a0aec0;
+    flex-shrink: 0;
+  }
+  
+  .np-search-input input {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 3rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .np-search-input input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+  }
+  
+  .np-province-select,
+  .np-district-select {
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .np-province-select:focus,
+  .np-district-select:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+  }
+  
+  .np-district-select:disabled {
+    background: #f7fafc;
+    color: #a0aec0;
+    cursor: not-allowed;
+  }
+  
+  .np-location-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .np-location-btn:hover {
+    background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+  }
+  
+  .np-clear-filters-btn {
+    padding: 0.75rem 1rem;
+    background: #f7fafc;
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .np-clear-filters-btn:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+  }
+  
+  /* Results Summary */
+  .np-results-summary {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f0f9ff;
+    border-radius: 8px;
+    border-left: 4px solid #3182ce;
+  }
+  
+  .np-results-summary p {
+    margin: 0;
+    color: #2b6cb0;
+    font-weight: 500;
+  }
+  
+  /* Dealers Grid */
+  .np-dealers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .np-dealer-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .np-dealer-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  .np-dealer-card.premium {
+    border: 2px solid #fbbf24;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+  }
+  
+  .np-dealer-card.premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b, #d97706);
+    z-index: 1;
+  }
+  
+  /* Premium Badge */
+  .np-premium-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+  }
+  
+  .np-premium-badge svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  /* Dealer Header */
+  .np-dealer-header {
+    padding: 1.5rem 1.5rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+  }
+  
+  .np-dealer-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+  
+  .np-dealer-location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.9;
+  }
+  
+  .np-dealer-location svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* Dealer Body */
+  .np-dealer-body {
+    padding: 1.5rem;
+  }
+  
+  .np-dealer-address,
+  .np-dealer-hours,
+  .np-dealer-distance {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    color: #4a5568;
+  }
+  
+  .np-dealer-address svg,
+  .np-dealer-hours svg,
+  .np-dealer-distance svg {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: #667eea;
+  }
+  
+  .np-dealer-distance {
+    color: #38a169;
+    font-weight: 600;
+  }
+  
+  /* Contact Info */
+  .np-dealer-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .np-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .np-contact-item svg {
+    flex-shrink: 0;
+    color: #38a169;
+  }
+  
+  .np-contact-item a {
+    color: #3182ce;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .np-contact-item a:hover {
+    color: #2c5282;
+    text-decoration: underline;
+  }
+  
+  /* Services */
+  .np-dealer-services h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.75rem;
+  }
+  
+  .np-services-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .np-service-tag {
+    background: #f7fafc;
+    color: #4a5568;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid #e2e8f0;
+  }
+  
+  /* Actions */
+  .np-dealer-actions {
+    padding: 1rem 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  .np-call-btn,
+  .np-directions-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .np-call-btn {
+    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+    color: white;
+    border: none;
+  }
+  
+  .np-call-btn:hover {
+    background: linear-gradient(135deg, #2f855a 0%, #22543d 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(56, 161, 105, 0.3);
+  }
+  
+  .np-directions-btn {
+    background: white;
+    color: #3182ce;
+    border: 2px solid #3182ce;
+  }
+  
+  .np-directions-btn:hover {
+    background: #3182ce;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+  }
+  
+  /* No Dealers */
+  .np-no-dealers {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #718096;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    max-width: 500px;
+  }
+  
+  .np-no-dealers svg {
+    color: #cbd5e0;
+    margin-bottom: 1.5rem;
+  }
+  
+  .np-no-dealers p {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .np-no-dealers-subtitle {
+    font-size: 0.95rem;
+    color: #a0aec0;
+    margin-bottom: 1.5rem;
+  }
+  
+  .np-reset-search-btn {
+    padding: 0.75rem 1.5rem;
+    background: #3182ce;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .np-reset-search-btn:hover {
+    background: #2c5282;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .np-dealers-grid {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .np-dealer-locator-page {
+      padding: 1rem 0 3rem;
+    }
+  
+    .np-page-header {
+      padding-top: 1rem;
+      margin-bottom: 2rem;
+    }
+  
+    .np-page-header h1 {
+      font-size: 2rem;
+    }
+  
+    .np-dealer-filters {
+      padding: 1.5rem;
+    }
+  
+    .np-filter-row {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  
+    .np-search-input input {
+      padding: 0.75rem 0.75rem 0.75rem 2.75rem;
+    }
+  
+    .np-search-input svg {
+      left: 0.75rem;
+    }
+  
+    .np-dealers-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  
+    .np-dealer-card {
+      margin: 0 0.5rem;
+    }
+  
+    .np-dealer-actions {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  
+    .np-no-dealers {
+      margin: 1rem 0.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .np-page-header h1 {
+      font-size: 1.8rem;
+    }
+  
+    .np-dealer-name {
+      font-size: 1.1rem;
+    }
+  
+    .np-dealer-header {
+      padding: 1rem;
+    }
+  
+    .np-dealer-body {
+      padding: 1rem;
+    }
+  
+    .np-services-list {
+      gap: 0.375rem;
+    }
+  
+    .np-service-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+    }
+  }

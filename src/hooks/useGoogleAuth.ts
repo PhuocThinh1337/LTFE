@@ -146,14 +146,7 @@ export const useGoogleAuth = (onSuccess: (userInfo: GoogleUserInfo) => void, onE
 
   // Debug: Log để kiểm tra biến môi trường (chỉ trong development)
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      const currentOrigin = window.location.origin;
-      console.log('🔍 Google OAuth Check:', {
-        hasClientId: !!GOOGLE_CLIENT_ID,
-        currentOrigin: currentOrigin,
-        needToAdd: !GOOGLE_CLIENT_ID ? 'Thêm REACT_APP_GOOGLE_CLIENT_ID vào file .env' : `Thêm "${currentOrigin}" vào Google Cloud Console > Authorized JavaScript origins`
-      });
-    }
+    // Only log if critically needed or remove if strictly cleaning
   }, []);
 
   return {

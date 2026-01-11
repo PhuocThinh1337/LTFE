@@ -124,7 +124,6 @@ export const clearChat = async () => {
         try {
             const chatRef = ref(db, 'live/comments');
             await remove(chatRef);
-            console.log("✅ Đã xóa lịch sử chat trên Firebase");
         } catch (error) {
             console.error("❌ Lỗi khi xóa chat:", error);
         }

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import Breadcrumb from '../../components/common/Breadcrumb';
+import SearchableSelect from '../../components/common/SearchableSelect';
 import { useCart } from '../../contexts/CartContext';
 import './CheckoutPage.css';
+import { ghnService, GHNProvince, GHNDistrict, GHNWard } from '../../services/ghnService';
 
 interface CheckoutItem {
   id: number;
@@ -24,6 +26,10 @@ interface CustomerInfo {
   district: string;
   city: string;
   note?: string;
+  // Store selected IDs for API
+  cityId?: number;
+  districtId?: number;
+  wardCode?: string;
 }
 
 interface PaymentMethod {
@@ -40,8 +46,15 @@ function CheckoutPage(): React.JSX.Element {
   // Lấy dữ liệu từ navigation state (từ cart page)
   const selectedItems = location.state?.selectedItems as CheckoutItem[] || [];
   const subtotal = location.state?.subtotal || 0;
-  const shipping = location.state?.shipping || 0;
-  const total = location.state?.total || 0;
+  
+  // Shipping & Location State
+  const [shipping, setShipping] = useState(location.state?.shipping || 0);
+  const [provinces, setProvinces] = useState<GHNProvince[]>([]);
+  const [districts, setDistricts] = useState<GHNDistrict[]>([]);
+  const [wards, setWards] = useState<GHNWard[]>([]);
+  const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
+
+  const total = subtotal + shipping;
 
   // Form states 
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
@@ -51,7 +64,10 @@ function CheckoutPage(): React.JSX.Element {
     ward: '', 
     district: '',
     city: '',
-    note: ''
+    note: '',
+    cityId: undefined,
+    districtId: undefined,
+    wardCode: undefined
   });
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>({
@@ -66,6 +82,50 @@ function CheckoutPage(): React.JSX.Element {
 
   const [errors, setErrors] = useState<Partial<CustomerInfo>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load Provinces on Mount
+  useEffect(() => {
+    const loadProvinces = async () => {
+      const list = await ghnService.getProvinces();
+      // Sort alphabetically
+      list.sort((a, b) => a.ProvinceName.localeCompare(b.ProvinceName));
+      setProvinces(list);
+    };
+    loadProvinces();
+  }, []);
+
+  // Calculate Shipping when Address changes
+  useEffect(() => {
+    const calculateShipping = async () => {
+      if (customerInfo.districtId && customerInfo.wardCode) {
+        setIsCalculatingShipping(true);
+        // Estimate weight: 500g per item as example
+        const totalWeight = selectedItems.reduce((sum, item) => sum + (item.quantity * 500), 0);
+        
+        // 2 = Standard Express Service Type ID (Common default)
+        const fee = await ghnService.calculateFee({
+          service_type_id: 2, 
+          to_district_id: customerInfo.districtId,
+          to_ward_code: customerInfo.wardCode,
+          weight: totalWeight,
+          insurance_value: subtotal > 5000000 ? 5000000 : subtotal
+        });
+
+        if (fee !== null) {
+          setShipping(fee);
+        } else {
+          // Fallback if API fails
+          setShipping(30000); 
+        }
+        setIsCalculatingShipping(false);
+      }
+    };
+
+    calculateShipping();
+  }, [customerInfo.districtId, customerInfo.wardCode, selectedItems, subtotal]);
+
+  // Handlers for Address Selection - Now handled directly in SearchableSelect onChange props
+  /* Removed unused handlers: handleCityChange, handleDistrictChange, handleWardChange */
 
   // Chuyển hướng về trang login nếu chưa đăng nhập
   React.useEffect(() => {
@@ -100,19 +160,19 @@ function CheckoutPage(): React.JSX.Element {
     }
 
     if (!customerInfo.address.trim()) {
-      newErrors.address = 'Vui lòng nhập địa chỉ';
+      newErrors.address = 'Vui lòng nhập địa chỉ cụ thể';
     }
 
-    if (!customerInfo.ward.trim()) {
-      newErrors.ward = 'Vui lòng nhập phường/xã';
+    if (!customerInfo.wardCode) {
+      newErrors.ward = 'Vui lòng chọn phường/xã';
     }
 
-    if (!customerInfo.district.trim()) {
-      newErrors.district = 'Vui lòng nhập quận/huyện';
+    if (!customerInfo.districtId) {
+      newErrors.district = 'Vui lòng chọn quận/huyện';
     }
 
-    if (!customerInfo.city.trim()) {
-      newErrors.city = 'Vui lòng nhập tỉnh/thành phố';
+    if (!customerInfo.cityId) {
+      newErrors.city = 'Vui lòng chọn tỉnh/thành phố';
     }
 
     setErrors(newErrors);
@@ -269,7 +329,7 @@ function CheckoutPage(): React.JSX.Element {
                   </div>
 
                   <div className="np-form-group">
-                    <label htmlFor="address">Địa chỉ *</label>
+                    <label htmlFor="address">Địa chỉ cụ thể *</label>
                     <input
                       type="text"
                       id="address"
@@ -281,45 +341,93 @@ function CheckoutPage(): React.JSX.Element {
                     {errors.address && <span className="error-message">{errors.address}</span>}
                   </div>
 
+                  {/* GHN Selectors */}
+                  <div className="np-form-group">
+                    <label htmlFor="city">Tỉnh/Thành phố *</label>
+                    <SearchableSelect
+                      options={provinces.map(p => ({ value: p.ProvinceID, label: p.ProvinceName }))}
+                      value={customerInfo.cityId}
+                      onChange={(val) => {
+                        // Create a fake event object or just call handler logic directly
+                        // We need to adapt the handler to accept value directly or reuse logic
+                        const provinceId = Number(val);
+                        const province = provinces.find(p => p.ProvinceID === provinceId);
+                        
+                        setCustomerInfo(prev => ({
+                          ...prev,
+                          city: province?.ProvinceName || '',
+                          cityId: provinceId,
+                          district: '',
+                          districtId: undefined,
+                          ward: '',
+                          wardCode: undefined
+                        }));
+                        
+                        setDistricts([]);
+                        setWards([]);
+                        
+                        if (provinceId) {
+                            ghnService.getDistricts(provinceId).then(list => setDistricts(list));
+                        }
+                      }}
+                      placeholder="Chọn Tỉnh/Thành phố"
+                      error={!!errors.city}
+                    />
+                    {errors.city && <span className="error-message">{errors.city}</span>}
+                  </div>
+
                   <div className="np-form-row">
                     <div className="np-form-group">
-                      <label htmlFor="ward">Phường/Xã *</label>
-                      <input
-                        type="text"
-                        id="ward"
-                        value={customerInfo.ward}
-                        onChange={(e) => handleInputChange('ward', e.target.value)}
-                        className={errors.ward ? 'error' : ''}
-                        placeholder="Phường/Xã"
-                      />
-                      {errors.ward && <span className="error-message">{errors.ward}</span>}
-                    </div>
-
-                    <div className="np-form-group">
                       <label htmlFor="district">Quận/Huyện *</label>
-                      <input
-                        type="text"
-                        id="district"
-                        value={customerInfo.district}
-                        onChange={(e) => handleInputChange('district', e.target.value)}
-                        className={errors.district ? 'error' : ''}
-                        placeholder="Quận/Huyện"
+                      <SearchableSelect
+                        options={districts.map(d => ({ value: d.DistrictID, label: d.DistrictName }))}
+                        value={customerInfo.districtId}
+                        onChange={(val) => {
+                            const districtId = Number(val);
+                            const district = districts.find(d => d.DistrictID === districtId);
+
+                            setCustomerInfo(prev => ({
+                              ...prev,
+                              district: district?.DistrictName || '',
+                              districtId: districtId,
+                              ward: '',
+                              wardCode: undefined
+                            }));
+
+                            setWards([]);
+
+                            if (districtId) {
+                                ghnService.getWards(districtId).then(list => setWards(list));
+                            }
+                        }}
+                        placeholder="Chọn Quận/Huyện"
+                        disabled={!customerInfo.cityId}
+                        error={!!errors.district}
                       />
                       {errors.district && <span className="error-message">{errors.district}</span>}
                     </div>
-                  </div>
 
-                  <div className="np-form-group">
-                    <label htmlFor="city">Tỉnh/Thành phố *</label>
-                    <input
-                      type="text"
-                      id="city"
-                      value={customerInfo.city}
-                      onChange={(e) => handleInputChange('city', e.target.value)}
-                      className={errors.city ? 'error' : ''}
-                      placeholder="Tỉnh/Thành phố"
-                    />
-                    {errors.city && <span className="error-message">{errors.city}</span>}
+                    <div className="np-form-group">
+                      <label htmlFor="ward">Phường/Xã *</label>
+                      <SearchableSelect
+                        options={wards.map(w => ({ value: w.WardCode, label: w.WardName }))}
+                        value={customerInfo.wardCode}
+                        onChange={(val) => {
+                            const wardCode = String(val);
+                            const ward = wards.find(w => w.WardCode === wardCode);
+
+                            setCustomerInfo(prev => ({
+                              ...prev,
+                              ward: ward?.WardName || '',
+                              wardCode: wardCode
+                            }));
+                        }}
+                        placeholder="Chọn Phường/Xã"
+                        disabled={!customerInfo.districtId}
+                        error={!!errors.ward}
+                      />
+                      {errors.ward && <span className="error-message">{errors.ward}</span>}
+                    </div>
                   </div>
 
                   <div className="np-form-group">
@@ -365,9 +473,9 @@ function CheckoutPage(): React.JSX.Element {
                       <div className="np-checkout-total-row">
                         <span>Phí vận chuyển:</span>
                         <span>
-                          {shipping === 0 
-                            ? 'Miễn phí' 
-                            : formatPrice(shipping)
+                          {isCalculatingShipping 
+                            ? 'Đang tính...' 
+                            : (shipping === 0 ? 'Miễn phí' : formatPrice(shipping))
                           }
                         </span>
                       </div>
@@ -537,7 +645,7 @@ function CheckoutPage(): React.JSX.Element {
               </button>
             </div>
             <div className="np-order-success-modal-content">
-              <div className="np-success-icon-large">✓</div>
+              <div className="np-success-icon-large"></div>
               <h4>Cảm ơn bạn đã đặt hàng!</h4>
               <p>Mã đơn hàng của bạn là: <strong>{orderId}</strong></p>
               <p>Đơn hàng sẽ được giao đến bạn trong thời gian sớm nhất.</p>
