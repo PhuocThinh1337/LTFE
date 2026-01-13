@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getDatabase, ref, set, onValue, DataSnapshot, push, query, limitToLast, remove, get } from "firebase/database";
+import { getDatabase, ref, set, onValue, DataSnapshot, push, query, limitToLast, remove, get, onDisconnect } from "firebase/database";
 
 // TODO: Replace with your actual Firebase Configuration
 const firebaseConfig = {
@@ -75,10 +75,47 @@ export const getStreamStatus = async (): Promise<boolean> => {
     return snapshot.val() || false;
 };
 
+// --- VIEWER COUNT LOGIC ---
+export const trackViewer = (userId: string, userInfo: any) => {
+    if (!db) return;
+
+    const viewerRef = ref(db, `live/viewers/${userId}`);
+
+    // Ghi thông tin người xem vào
+    set(viewerRef, {
+        name: userInfo.name || 'Khách',
+        joinedAt: Date.now()
+    });
+
+    // QUAN TRỌNG: Dặn Firebase nếu tôi mất kết nối (tắt tab/rớt mạng) thì xóa tôi đi
+    onDisconnect(viewerRef).remove();
+};
+
+export const removeViewer = (userId: string) => {
+    if (!db) return;
+    const viewerRef = ref(db, `live/viewers/${userId}`);
+    remove(viewerRef);
+};
+
+export const subscribeToViewerCount = (callback: (count: number) => void) => {
+    if (!db) return () => { };
+
+    const viewersRef = ref(db, 'live/viewers');
+    return onValue(viewersRef, (snapshot) => {
+        // Đếm số lượng keys trong node 'viewers'
+        const count = snapshot.exists() ? snapshot.size : 0;
+        callback(count);
+    });
+};
+
 // --- FLASH VOUCHER LOGIC ---
 export const updateFlashVoucher = (voucher: any) => {
+    // Local Update (for immediate feedback & no-firebase mode)
+    localStorage.setItem('live_flashVoucher', JSON.stringify(voucher));
+    window.dispatchEvent(new CustomEvent('live_flash_voucher_update', { detail: voucher }));
+
     if (db) {
-        // set(ref(db, 'live/flashVoucher'), voucher);
+        set(ref(db, 'live/flashVoucher'), voucher);
     }
 };
 

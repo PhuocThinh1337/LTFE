@@ -16,6 +16,7 @@ export interface Voucher {
     usageLimit: number; // Tổng số lượt dùng
     usedCount: number; // Số lượt đã dùng
     isActive: boolean;
+    isLiveOnly?: boolean;
 }
 
 export const VOUCHERS: Voucher[] = [
@@ -252,7 +253,35 @@ export const VOUCHERS: Voucher[] = [
         usedCount: 23,
         isActive: true
     },
-
+    {
+        id: 999,
+        code: 'FLASHLIVE50',
+        description: 'Giảm ngay 50k - Chỉ dành cho Live',
+        type: 'total',
+        discountType: 'fixed',
+        value: 50000,
+        minOrderValue: 200000,
+        startDate: '2099-12-31T00:00:00Z',
+        endDate: '2101-12-31T00:00:00Z',
+        usageLimit: 100,
+        usedCount: 0,
+        isActive: true,
+        isLiveOnly: true
+    },
+    {
+        id: 1000,
+        code: 'LIVESTREAM100',
+        description: 'Giảm 100k - Deal độc quyền Live',
+        type: 'total',
+        discountType: 'fixed',
+        value: 100000,
+        minOrderValue: 500000,
+        startDate: '2099-12-31T00:00:00Z',
+        endDate: '2101-12-31T00:00:00Z',
+        usageLimit: 50,
+        usedCount: 0,
+        isActive: true,
+    },
 
     // 16. Voucher Valentine
     {
