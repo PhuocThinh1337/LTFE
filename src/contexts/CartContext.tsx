@@ -310,20 +310,38 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const applyVoucher = (code: string): { success: boolean; message: string } => {
-    const voucher = VOUCHERS.find(v => v.code === code.toUpperCase());
+    const inputCode = code.toUpperCase();
 
-    if (!voucher) {
-      return { success: false, message: 'Mã voucher không tồn tại.' };
+    // 1. Tìm voucher trong danh sách gốc (File cứng - bị khóa 2099)
+    const staticVoucher = VOUCHERS.find(v => v.code === inputCode);
+
+    // 2. Tìm voucher trong Ví localStorage (Đã được mở khóa từ Live)
+    const savedWallet = JSON.parse(localStorage.getItem('my_vouchers') || '[]');
+    const walletVoucher = savedWallet.find((v: any) => v.code === inputCode);
+
+    // QUY TẮC: Ưu tiên dùng voucher trong ví.
+    const voucherToCheck = walletVoucher || staticVoucher;
+
+    if (!voucherToCheck) {
+      return { success: false, message: 'Mã giảm giá không tồn tại' };
     }
 
-    const result = calculateDiscount(voucher, state.items);
+    // Helper kiểm tra thời gian riêng để đảm bảo đúng logic "Lính gác"
+    const now = new Date();
+    const startDate = new Date(voucherToCheck.startDate);
+
+    if (now < startDate) {
+      return { success: false, message: "Mã này chưa đến đợt sử dụng!" };
+    }
+
+    const result = calculateDiscount(voucherToCheck, state.items);
 
     if (!result.isValid) {
       return { success: false, message: result.reason || 'Voucher không áp dụng được.' };
     }
 
-    dispatch({ type: 'APPLY_VOUCHER', payload: { voucher, discount: result.amount } });
-    return { success: true, message: 'Áp dụng voucher thành công!' };
+    dispatch({ type: 'APPLY_VOUCHER', payload: { voucher: voucherToCheck, discount: result.amount } });
+    return { success: true, message: 'Áp dụng thành công!' };
   };
 
   const removeVoucher = () => {

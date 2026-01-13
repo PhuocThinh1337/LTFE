@@ -66,16 +66,10 @@
 
 /* Host Product List */
 .host-product-list {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 300px;
-    max-height: 60vh;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 15px;
+    /* Removed absolute position as it is now inside admin-panel flex container */
+    padding: 10px;
     overflow-y: auto;
+    flex: 1;
 }
 
 .host-product-list h3 {
@@ -132,20 +126,25 @@
     font-weight: bold;
 }
 
-/* Pinned Product Card */
+/* Pinned Product Card - Compact Version */
 .pinned-product-card {
     position: absolute;
-    bottom: 80px;
-    left: 20px;
-    background: white;
+    bottom: 25px;
+    /* Aligned with controls */
+    right: 20px;
+    /* Moved to RIGHT side */
+    background: rgba(255, 255, 255, 0.95);
     color: black;
-    padding: 15px;
+    padding: 10px;
     border-radius: 12px;
     display: flex;
-    gap: 15px;
-    max-width: 350px;
+    gap: 10px;
+    max-width: 260px;
+    /* Reduced width */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease-out;
+    align-items: center;
+    backdrop-filter: blur(5px);
 }
 
 @keyframes slideUp {
@@ -161,8 +160,8 @@
 }
 
 .pinned-image {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
     border-radius: 8px;
 }
@@ -172,15 +171,22 @@
 }
 
 .pinned-details h3 {
-    margin: 0 0 5px 0;
-    font-size: 16px;
+    margin: 0 0 2px 0;
+    font-size: 14px;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    /* Standard property */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .pinned-price {
     font-weight: bold;
     color: #ff4757;
-    font-size: 18px;
-    margin-bottom: 8px;
+    font-size: 16px;
+    margin-bottom: 0;
 }
 
 .quantity-selector {
@@ -220,6 +226,14 @@
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.2s;
+}
+
+/* Action Buttons in Pinned Card */
+.pinned-product-card .add-cart-btn,
+.pinned-product-card .buy-now-btn {
+    padding: 4px 10px;
+    /* Reduced padding */
+    font-size: 12px;
 }
 
 .add-cart-btn {
@@ -524,4 +538,379 @@
     .pinned-product-card {
         max-width: 280px;
     }
+}
+
+/* 1. Admin Panel (Góc phải) */
+.admin-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    background: rgba(0, 0, 0, 0.8);
+    /* Đen mờ chuyên nghiệp */
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+}
+
+.admin-tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-tabs button {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #888;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.admin-tabs button:hover {
+    color: #ddd;
+}
+
+.admin-tabs button.active {
+    color: white;
+    border-bottom: 2px solid #e60012;
+}
+
+.admin-list {
+    padding: 10px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.admin-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-item.active-warning {
+    background: rgba(230, 0, 18, 0.2);
+    border: 1px solid #e60012;
+}
+
+.admin-item .info {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-item .info strong {
+    color: #fff;
+    font-size: 14px;
+}
+
+.admin-item .info small {
+    color: #aaa;
+    font-size: 12px;
+}
+
+.btn-push {
+    background: #e60012;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.btn-push:hover {
+    background: #ff1a2e;
+}
+
+/* 2. Popup Voucher (Giữa màn hình) */
+.flash-voucher-overlay {
+    position: fixed;
+    /* Fixed to cover screen */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    /* Dim background */
+    backdrop-filter: blur(8px);
+    /* Blur effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes popIn {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+
+    80% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.voucher-content {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    /* Màu Flash Sale */
+    padding: 30px;
+    border-radius: 20px;
+    border: 4px solid white;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    width: 320px;
+    position: relative;
+}
+
+.voucher-title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #d63031;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5);
+}
+
+.voucher-code {
+    font-size: 32px;
+    font-weight: 900;
+    color: #d63031;
+    background: white;
+    border: 2px dashed #d63031;
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+}
+
+.voucher-desc {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.voucher-content button {
+    background: #d63031;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(214, 48, 49, 0.4);
+    transition: transform 0.2s;
+}
+
+.voucher-content button:hover {
+    transform: scale(1.05);
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.1) !important;
+    color: #333 !important;
+    width: 30px;
+    height: 30px;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 20px;
+    box-shadow: none !important;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Badge chứa chữ LIVE và Mắt xem */
+.live-status-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.6);
+    /* Nền đen mờ */
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+/* Dấu chấm đỏ nhấp nháy */
+.pulsing-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #e60012;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse 1.5s infinite;
+}
+
+.viewer-count-separator {
+    margin: 0 8px;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: normal;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(230, 0, 18, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(230, 0, 18, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(230, 0, 18, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(230, 0, 18, 0);
+    }
+}
+
+/* NEW: Shopping Bag Button */
+.shopping-bag-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    padding: 8px 16px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.shopping-bag-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.shopping-bag-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.bag-label {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* NEW: Product Drawer */
+.product-drawer {
+    position: absolute;
+    top: 0;
+    left: -350px;
+    /* Hidden default - Moved to LEFT */
+    width: 320px;
+    height: 100%;
+    background: #1a1a1a;
+    z-index: 200;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #333;
+    /* Left border changed to right */
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.product-drawer.open {
+    left: 0;
+}
+
+.drawer-header {
+    padding: 20px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #222;
+}
+
+.drawer-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: white;
+}
+
+.close-drawer-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-drawer-btn:hover {
+    color: white;
+}
+
+.drawer-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.drawer-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 150;
+    backdrop-filter: blur(2px);
+    cursor: pointer;
 }

@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { checkToxicContent } from '../services/moderation';
 import { useNavigate } from 'react-router-dom';
 import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack, IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng';
 import { PRODUCTS, Product } from '../data/products';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
-import { updatePinnedProduct, subscribeToPinnedProduct, updateStreamStatus, subscribeToStreamStatus, sendComment, subscribeToComments, clearChat, getStreamStatus } from '../services/firebase';
+import { updatePinnedProduct, subscribeToPinnedProduct, updateStreamStatus, subscribeToStreamStatus, sendComment, subscribeToComments, clearChat, getStreamStatus, updateFlashVoucher, subscribeToFlashVoucher, trackViewer, removeViewer, subscribeToViewerCount } from '../services/firebase';
+import { VOUCHERS, Voucher } from '../data/vouchers';
 import './LiveStreamPage.css';
 
 // --- CONFIGURATION ---
@@ -23,7 +25,14 @@ const LiveStreamPage: React.FC = () => {
     const [buyQuantity, setBuyQuantity] = useState(1);
     const [comments, setComments] = useState<any[]>([]);
     const [commentInput, setCommentInput] = useState("");
+    const [activeVoucher, setActiveVoucher] = useState<Voucher | null>(null);
+    const [viewerCount, setViewerCount] = useState(0); // State lưu số mắt xem
+    const [adminTab, setAdminTab] = useState<'products' | 'vouchers'>('products');
+    const [productQuantities, setProductQuantities] = useState<{ [key: number]: number }>({});
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const lastChatTime = useRef<number>(0);
+    const currentViewerId = useRef<string | null>(null); // To store current viewer ID
 
     const navigate = useNavigate();
 
@@ -52,6 +61,10 @@ const LiveStreamPage: React.FC = () => {
             setIsLive(status);
         });
 
+        const unsubscribeViewerCount = subscribeToViewerCount((count) => {
+            setViewerCount(count);
+        });
+
         // Subscribe to comments AFTER clearing
         const unsubscribeComments = subscribeToComments((newComments) => {
             setComments(newComments);
@@ -60,10 +73,21 @@ const LiveStreamPage: React.FC = () => {
             }, 100);
         });
 
+        const unsubscribeVoucher = subscribeToFlashVoucher((voucher) => {
+            setActiveVoucher(voucher);
+        });
+
         return () => {
             unsubscribeProduct();
             unsubscribeStatus();
             unsubscribeComments();
+            unsubscribeVoucher();
+            unsubscribeViewerCount();
+
+            // Clean up viewer if component unmounts without clean exit
+            if (currentViewerId.current) {
+                removeViewer(currentViewerId.current);
+            }
             // Don't call leaveChannel here to avoid dependency warning
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,6 +98,13 @@ const LiveStreamPage: React.FC = () => {
             // Clear chat when joining a new session
             localStorage.removeItem('live_comments');
             setComments([]);
+
+            // --- VIEWER TRACKING ---
+            const currentUid = user?.id ? `user_${user.id}` : `guest_${Math.floor(Math.random() * 100000)}`;
+            const currentName = user?.name || 'Khách';
+            currentViewerId.current = currentUid;
+            trackViewer(currentUid, { name: currentName });
+            // -----------------------
 
             if (selectedRole === 'host') {
                 if (user?.role !== 'live') {
@@ -145,6 +176,12 @@ const LiveStreamPage: React.FC = () => {
         await client.leave();
         setJoined(false);
         setRole(null);
+
+        // Xóa view khi rời phòng
+        if (currentViewerId.current) {
+            removeViewer(currentViewerId.current);
+            currentViewerId.current = null;
+        }
     };
 
     const [isCamOn, setIsCamOn] = useState(true);
@@ -199,9 +236,18 @@ const LiveStreamPage: React.FC = () => {
         });
     };
 
-    const handleSendComment = (e: React.FormEvent) => {
+    const handleSendComment = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!commentInput.trim()) return;
+        const content = commentInput.trim();
+        if (!content) return;
+
+        // --- BƯỚC 1: CHẶN SPAM (RATE LIMIT) ---
+        const now = Date.now();
+        if (now - lastChatTime.current < 2000) {
+            alert("⏳ Bạn chat quá nhanh! Vui lòng đợi 2 giây.");
+            return;
+        }
+        lastChatTime.current = now;
 
         let userName = 'Khách';
         if (role === 'host') {
@@ -210,7 +256,30 @@ const LiveStreamPage: React.FC = () => {
             userName = user.name;
         }
 
-        sendComment(userName, commentInput.trim());
+        // --- UI FEEDBACK ---
+        const btn = document.querySelector('.send-btn') as HTMLButtonElement;
+        const originalContent = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span style="font-size: 20px">...</span>';
+        }
+
+        // --- BƯỚC 2: CHECK TOXIC (AI) ---
+        const isToxic = await checkToxicContent(content);
+
+        // Restore button
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalContent;
+        }
+
+        if (isToxic) {
+            alert("⚠️ Tin nhắn bị chặn vì vi phạm tiêu chuẩn cộng đồng!");
+            return;
+        }
+
+        // --- BƯỚC 3: GỬI LÊN FIREBASE ---
+        sendComment(userName, content);
         setCommentInput("");
     };
 
@@ -256,6 +325,30 @@ const LiveStreamPage: React.FC = () => {
             {/* LEFT: Video Area */}
             <div className="video-section">
                 <div className="video-player">
+                    {/* --- HIỂN THỊ MẮT XEM --- */}
+                    {isLive && (
+                        <div className="live-status-badge">
+                            <span className="pulsing-dot"></span>
+                            LIVE
+                            <div className="viewer-count-separator">|</div>
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="16"
+                                height="16"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                fill="none"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                style={{ marginBottom: -2, marginRight: 4 }}
+                            >
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            {viewerCount}
+                        </div>
+                    )}
+
                     {role === 'host' && <div ref={hostVideoRef} className="host-player" />}
                     {role === 'audience' && <div ref={remoteVideoRef} className="remote-player" />}
                     {role === 'audience' && (!isLive || !remoteVideoRef.current) && (
@@ -268,26 +361,223 @@ const LiveStreamPage: React.FC = () => {
 
                 {/* Video Overlays */}
                 <div className="video-overlays">
-                    {/* Host Product List */}
-                    {role === 'host' && (
-                        <div className="host-product-list">
-                            <h3>Admin Products</h3>
-                            {PRODUCTS.map(product => (
-                                <div
-                                    key={product.id}
-                                    className="product-item"
-                                    onClick={() => handlePinProduct(product.id)}
-                                    style={{ backgroundColor: pinnedProductId === product.id ? 'rgba(255, 71, 87, 0.3)' : 'transparent' }}
-                                >
-                                    <img src={product.image} alt={product.name} />
-                                    <div className="product-info">
-                                        <div className="product-name">{product.name}</div>
-                                        <div className="product-price">{product.price.toLocaleString()}đ</div>
-                                    </div>
-                                    {pinnedProductId === product.id && <span className="pin-badge">PINNED</span>}
-                                </div>
-                            ))}
+                    {/* Popup Voucher - Only for Audience */}
+                    {activeVoucher && role === 'audience' && (
+                        <div className="flash-voucher-overlay">
+                            <div className="voucher-content">
+                                <div className="voucher-title">⚡ FLASH SALE ⚡</div>
+                                <div className="voucher-code">{activeVoucher.code}</div>
+                                <div className="voucher-desc">{activeVoucher.description}</div>
+
+                                {role === 'audience' ? (
+                                    <button onClick={() => {
+                                        navigator.clipboard.writeText(activeVoucher.code);
+
+                                        // Lưu voucher đã mở khóa vào ví
+                                        const existingWallet = localStorage.getItem('my_vouchers');
+                                        const wallet = existingWallet ? JSON.parse(existingWallet) : [];
+                                        const exists = wallet.find((v: any) => v.code === activeVoucher.code);
+
+                                        if (!exists) {
+                                            wallet.push(activeVoucher);
+                                            localStorage.setItem('my_vouchers', JSON.stringify(wallet));
+                                        }
+
+                                        alert("Đã copy mã! Hãy dán ở bước thanh toán.");
+                                    }}>
+                                        Sao chép mã ngay
+                                    </button>
+                                ) : (
+                                    <p>Đang hiển thị cho khách...</p>
+                                )}
+
+                                <button className="close-btn" onClick={() => setActiveVoucher(null)}>×</button>
+                            </div>
                         </div>
+                    )}
+
+                    {/* HOST: Admin Panel (Always Visible or Toggleable - Keeping as is for Host) */}
+                    {role === 'host' && (
+                        <div className="admin-panel host-panel">
+                            {/* Tabs */}
+                            <div className="admin-tabs">
+                                <button
+                                    className={adminTab === 'products' ? 'active' : ''}
+                                    onClick={() => setAdminTab('products')}
+                                >
+                                    Sản phẩm
+                                </button>
+                                <button
+                                    className={adminTab === 'vouchers' ? 'active' : ''}
+                                    onClick={() => setAdminTab('vouchers')}
+                                >
+                                    Voucher 🎁
+                                </button>
+                            </div>
+
+                            {/* Product Tab Content */}
+                            {adminTab === 'products' && (
+                                <div className="host-product-list">
+                                    {PRODUCTS.map(product => (
+                                        <div
+                                            key={product.id}
+                                            className="product-item"
+                                            onClick={() => handlePinProduct(product.id)}
+                                            style={{ backgroundColor: pinnedProductId === product.id ? 'rgba(255, 71, 87, 0.3)' : 'transparent' }}
+                                        >
+                                            <img src={product.image} alt={product.name} />
+                                            <div className="product-info">
+                                                <div className="product-name">{product.name}</div>
+                                                <div className="product-price">{product.price.toLocaleString()}đ</div>
+                                            </div>
+                                            {pinnedProductId === product.id && <span className="pin-badge">PINNED</span>}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Voucher Tab Content */}
+                            {adminTab === 'vouchers' && (
+                                <div className="admin-list">
+                                    {VOUCHERS.filter(v => v.isLiveOnly).map(v => {
+                                        const isPushing = activeVoucher?.id === v.id;
+                                        return (
+                                            <div className={`admin-item ${isPushing ? 'active-warning' : ''}`} key={v.id}>
+                                                <div className="info">
+                                                    <strong>{v.code}</strong>
+                                                    <small>{v.description}</small>
+                                                </div>
+                                                <button
+                                                    className="btn-push"
+                                                    style={{ background: isPushing ? '#333' : '#e60012' }}
+                                                    onClick={() => {
+                                                        if (isPushing) {
+                                                            updateFlashVoucher(null);
+                                                        } else {
+                                                            const unlockedVoucher = { ...v, startDate: new Date().toISOString() };
+                                                            updateFlashVoucher(unlockedVoucher);
+                                                        }
+                                                    }}
+                                                >
+                                                    {isPushing ? 'Dừng' : 'Tung'}
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* AUDIENCE: Shopping Bag Icon & Drawer */}
+                    {role === 'audience' && (
+                        <>
+                            {/* Floating Bag Icon */}
+                            <button
+                                className="shopping-bag-btn"
+                                onClick={() => setIsDrawerOpen(true)}
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                </svg>
+                                <span className="bag-label">Mua sắm</span>
+                            </button>
+
+                            {/* Product Drawer */}
+                            <div className={`product-drawer ${isDrawerOpen ? 'open' : ''}`}>
+                                <div className="drawer-header">
+                                    <h3>Danh sách sản phẩm</h3>
+                                    <button className="close-drawer-btn" onClick={() => setIsDrawerOpen(false)}>×</button>
+                                </div>
+
+                                <div className="drawer-content">
+                                    {PRODUCTS.map(product => (
+                                        <div key={product.id} className="product-item">
+                                            <img src={product.image} alt={product.name} />
+                                            <div className="product-info">
+                                                <div className="product-name">{product.name}</div>
+                                                <div className="product-price">{product.price.toLocaleString()}đ</div>
+                                            </div>
+
+                                            {/* Audience Actions Block */}
+                                            <div className="product-actions-audience"
+                                                style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', minWidth: '85px' }}
+                                            >
+                                                {/* ROW 1: Quantity Selector */}
+                                                <div className="mini-quantity-selector" style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                                                    <button
+                                                        onClick={() => setProductQuantities(prev => ({
+                                                            ...prev,
+                                                            [product.id]: Math.max(1, (prev[product.id] || 1) - 1)
+                                                        }))}
+                                                        style={{
+                                                            width: '28px', height: '28px', borderRadius: '4px', border: 'none',
+                                                            background: '#f1f2f6', color: '#000', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px',
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                        }}
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <span style={{ fontSize: '16px', fontWeight: 'bold', minWidth: '15px', textAlign: 'center', color: '#fff' }}>
+                                                        {productQuantities[product.id] || 1}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => setProductQuantities(prev => ({
+                                                            ...prev,
+                                                            [product.id]: (prev[product.id] || 1) + 1
+                                                        }))}
+                                                        style={{
+                                                            width: '28px', height: '28px', borderRadius: '4px', border: 'none',
+                                                            background: '#f1f2f6', color: '#000', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px',
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+
+                                                {/* ROW 2: Action Buttons */}
+                                                <div style={{ display: 'flex', gap: '6px', width: '100%' }}>
+                                                    <button
+                                                        onClick={() => {
+                                                            const qty = productQuantities[product.id] || 1;
+                                                            addToCart(product.id, qty);
+                                                            alert(`Đã thêm ${qty} ${product.name} vào giỏ!`);
+                                                        }}
+                                                        style={{
+                                                            flex: 1, background: '#f39c12', color: 'white', border: 'none', borderRadius: '4px',
+                                                            padding: '6px 0', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        Thêm
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            const qty = productQuantities[product.id] || 1;
+                                                            addToCart(product.id, qty);
+                                                            const shippingCost = product.price * qty > 3000000 ? 0 : 100000;
+                                                            const checkoutItem = { id: product.id, name: product.name, price: product.price, image: product.image, quantity: qty };
+                                                            navigate('/thanh-toan', { state: { selectedItems: [checkoutItem], subtotal: product.price * qty, shipping: shippingCost, discount: 0, voucher: null, total: (product.price * qty) + shippingCost } });
+                                                        }}
+                                                        style={{
+                                                            flex: 1, background: '#ff4757', color: 'white', border: 'none', borderRadius: '4px',
+                                                            padding: '6px 0', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        Mua
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Backdrop */}
+                            {isDrawerOpen && <div className="drawer-backdrop" onClick={() => setIsDrawerOpen(false)} />}
+                        </>
                     )}
 
                     {/* Pinned Product Card */}
