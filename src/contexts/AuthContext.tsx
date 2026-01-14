@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, api, CartItem } from '../services/api';
 
+
 // Hàm helper để merge guest cart vào user cart
 const mergeGuestCartToUser = async (userId: string): Promise<void> => {
   try {
@@ -69,11 +70,18 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Load user from localStorage on mount
   useEffect(() => {
     loadUser();
   }, []);
+
+  
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000); // Tự động ẩn sau 5 giây
+  };
 
   const loadUser = async () => {
     try {
@@ -91,6 +99,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const { user: loggedInUser } = await api.login(email, password);
       
+
       // Merge guest cart vào user cart nếu có
       await mergeGuestCartToUser(loggedInUser.id.toString());
       

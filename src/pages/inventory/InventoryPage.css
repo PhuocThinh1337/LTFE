@@ -174,3 +174,53 @@
   }
 }
 
+.np-inventory-alerts {
+  padding: 20px 0;
+  background: #f8f9fa;
+}
+
+.np-alerts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.np-alert-card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.np-alert-warning {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.np-alert-danger {
+  background: #f8d7da;
+  border-left: 4px solid #dc3545;
+}
+
+.np-alert-success {
+  background: #d1edff;
+  border-left: 4px solid #007bff;
+}
+
+.np-alert-icon {
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.np-alert-content h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.np-alert-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}

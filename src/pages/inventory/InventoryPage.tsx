@@ -6,6 +6,7 @@ import { PRODUCTS, Product } from '../../data/products';
 import './InventoryPage.css';
 import '../../components/layout/FilterBar.css';
 
+
 type StockStatus = 'in_stock' | 'low_stock' | 'out_of_stock';
 
 interface InventoryRow {
@@ -16,10 +17,10 @@ interface InventoryRow {
 
 const getStockInfo = (product: Product): { quantity: number; status: StockStatus } => {
   
-  const base = (product.id % 70) + 5;
+  const base = (product.id % 75);
 
   let status: StockStatus = 'in_stock';
-  if (base <= 10) status = 'out_of_stock';
+  if (base <= 0) status = 'out_of_stock';
   else if (base <= 25) status = 'low_stock';
 
   return {
@@ -31,6 +32,7 @@ const getStockInfo = (product: Product): { quantity: number; status: StockStatus
 function InventoryPage(): React.JSX.Element {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<StockStatus | 'all'>('all');
+  
 
   const inventoryData: InventoryRow[] = useMemo(
     () =>
@@ -40,6 +42,10 @@ function InventoryPage(): React.JSX.Element {
       }),
     []
   );
+
+  const lowStockCount = inventoryData.filter(item => item.status === 'low_stock').length;
+  const outOfStockCount = inventoryData.filter(item => item.status === 'out_of_stock').length;
+
 
   const uniqueCategories = useMemo(
     () =>
@@ -96,6 +102,39 @@ function InventoryPage(): React.JSX.Element {
             <p className="np-page-subtitle">
               Theo dõi nhanh số lượng tồn kho của toàn bộ danh mục sản phẩm Nippon
             </p>
+          </div>
+        </section>
+
+        <section className="np-inventory-alerts">
+          <div className="np-container">
+            <div className="np-alerts-grid">
+              {lowStockCount > 0 && (
+                <div className="np-alert-card np-alert-warning">
+                  <div className="np-alert-content">
+                    <h3>{lowStockCount} sản phẩm sắp hết hàng</h3>
+                    <p>Cần nhập thêm hàng để tránh thiếu hụt</p>
+                  </div>
+                </div>
+              )}
+              
+              {outOfStockCount > 0 && (
+                <div className="np-alert-card np-alert-danger">
+                  <div className="np-alert-content">
+                    <h3>{outOfStockCount} sản phẩm đã hết hàng</h3>
+                    <p>Cần nhập hàng khẩn cấp</p>
+                  </div>
+                </div>
+              )}
+              
+              {lowStockCount === 0 && outOfStockCount === 0 && (
+                <div className="np-alert-card np-alert-success">
+                  <div className="np-alert-content">
+                    <h3>Tất cả sản phẩm còn đủ hàng</h3>
+                    <p>Tồn kho đang ở mức tốt</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
