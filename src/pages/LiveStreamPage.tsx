@@ -1,286 +1,125 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { checkToxicContent } from '../services/moderation';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AgoraRTC, { IAgoraRTCClient, ICameraVideoTrack, IMicrophoneAudioTrack, IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng';
-import { PRODUCTS, Product } from '../data/products';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
-import { updatePinnedProduct, subscribeToPinnedProduct, updateStreamStatus, subscribeToStreamStatus, sendComment, subscribeToComments, clearChat, getStreamStatus, updateFlashVoucher, subscribeToFlashVoucher, trackViewer, removeViewer, subscribeToViewerCount } from '../services/firebase';
-import { VOUCHERS, Voucher } from '../data/vouchers';
+import { useAgora } from '../hooks/useAgora';
+import { useLiveSession } from '../hooks/useLiveSession';
+import { useLiveChat } from '../hooks/useLiveChat';
+import { PRODUCTS, Product } from '../data/products';
+import { updateFlashVoucher } from '../services/firebase';
+import { PaintColor } from '../data/paintColors';
+import ColorSelectionModal from '../components/common/ColorSelectionModal';
+import VideoPlayer from '../components/Live/VideoPlayer';
+import ChatSidebar from '../components/Live/ChatSidebar';
+import ProductDrawer from '../components/Live/ProductDrawer';
+import VoucherPopup from '../components/Live/VoucherPopup';
+import AdminPanel from '../components/Live/AdminPanel';
+import PinnedProductCard from '../components/Live/PinnedProductCard';
 import './LiveStreamPage.css';
 
-// --- CONFIGURATION ---
-const APP_ID = process.env.REACT_APP_AGORA_APP_ID || "";
-const CHANNEL_NAME = "ecommerce_live";
-const TOKEN = null;
-
-const client: IAgoraRTCClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-
 const LiveStreamPage: React.FC = () => {
-    const [joined, setJoined] = useState(false);
-    const [role, setRole] = useState<'host' | 'audience' | null>(null);
-    const [localTracks, setLocalTracks] = useState<[IMicrophoneAudioTrack, ICameraVideoTrack] | null>(null);
-    const [pinnedProductId, setPinnedProductId] = useState<number | null>(null);
-    const [isLive, setIsLive] = useState(false);
-    const [buyQuantity, setBuyQuantity] = useState(1);
-    const [comments, setComments] = useState<any[]>([]);
-    const [commentInput, setCommentInput] = useState("");
-    const [activeVoucher, setActiveVoucher] = useState<Voucher | null>(null);
-    const [viewerCount, setViewerCount] = useState(0); // State lưu số mắt xem
-    const [adminTab, setAdminTab] = useState<'products' | 'vouchers'>('products');
-    const [productQuantities, setProductQuantities] = useState<{ [key: number]: number }>({});
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const lastChatTime = useRef<number>(0);
-    const currentViewerId = useRef<string | null>(null); // To store current viewer ID
-
     const navigate = useNavigate();
-
-    const hostVideoRef = useRef<HTMLDivElement>(null);
-    const remoteVideoRef = useRef<HTMLDivElement>(null);
-
     const { addToCart } = useCart();
     const { user } = useAuth();
 
-    useEffect(() => {
-        if (joined && role === 'host' && localTracks && hostVideoRef.current) {
-            localTracks[1].play(hostVideoRef.current);
-        }
-    }, [joined, role, localTracks]);
+    // UI State
+    const [joined, setJoined] = useState(false);
+    const [role, setRole] = useState<'host' | 'audience' | null>(null);
+    const [adminTab, setAdminTab] = useState<'products' | 'vouchers'>('products');
+    const [drawerTab, setDrawerTab] = useState<'products' | 'vouchers'>('products');
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isColorModalOpen, setIsColorModalOpen] = useState(false);
+    const [pendingAction, setPendingAction] = useState<{ product: Product, quantity: number, type: 'add' | 'buy' } | null>(null);
 
-    useEffect(() => {
-        // IMPORTANT: Clear old chat FIRST before subscribing
-        localStorage.removeItem('live_comments');
+    // Custom Hooks
+    // 1. Session Hook (Manages isLive, Pinned Products, Viewers)
+    const {
+        pinnedProductId,
+        isLive,
+        setIsLive,
+        viewerCount,
+        activeVoucher,
+        setActiveVoucher,
+        handlePinProduct
+    } = useLiveSession({ user, joined });
 
-        const unsubscribeProduct = subscribeToPinnedProduct((productId) => {
-            setPinnedProductId(productId);
-            setBuyQuantity(1);
-        });
+    // 2. Agora Hook (Manages AV, Connection)
+    const {
+        isCamOn,
+        isMicOn,
+        hostVideoRef,
+        remoteVideoRef,
+        joinChannel,
+        leaveChannel,
+        toggleCam,
+        toggleMic
+    } = useAgora({
+        user,
+        role,
+        setRole,
+        setIsLive,
+        joined,
+        setJoined
+    });
 
-        const unsubscribeStatus = subscribeToStreamStatus((status) => {
-            setIsLive(status);
-        });
+    const {
+        comments,
+        commentInput,
+        setCommentInput,
+        handleSendComment
+    } = useLiveChat({ role, user });
 
-        const unsubscribeViewerCount = subscribeToViewerCount((count) => {
-            setViewerCount(count);
-        });
+    // Handlers needed for interactions
+    const requestAddToCart = (product: Product, quantity: number) => {
+        setPendingAction({ product, quantity, type: 'add' });
+        setIsColorModalOpen(true);
+    };
 
-        // Subscribe to comments AFTER clearing
-        const unsubscribeComments = subscribeToComments((newComments) => {
-            setComments(newComments);
-            setTimeout(() => {
-                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-            }, 100);
-        });
+    const requestBuyNow = (product: Product, quantity: number) => {
+        setPendingAction({ product, quantity, type: 'buy' });
+        setIsColorModalOpen(true);
+    };
 
-        const unsubscribeVoucher = subscribeToFlashVoucher((voucher) => {
-            setActiveVoucher(voucher);
-        });
+    const handleColorSelect = async (color: PaintColor) => {
+        if (!pendingAction) return;
+        const { product, quantity, type } = pendingAction;
+        const colorString = `${color.name} (${color.code})`;
 
-        return () => {
-            unsubscribeProduct();
-            unsubscribeStatus();
-            unsubscribeComments();
-            unsubscribeVoucher();
-            unsubscribeViewerCount();
-
-            // Clean up viewer if component unmounts without clean exit
-            if (currentViewerId.current) {
-                removeViewer(currentViewerId.current);
-            }
-            // Don't call leaveChannel here to avoid dependency warning
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const joinChannel = async (selectedRole: 'host' | 'audience') => {
         try {
-            // Clear chat when joining a new session
-            localStorage.removeItem('live_comments');
-            setComments([]);
+            await addToCart(product.id, quantity, colorString);
 
-            // --- VIEWER TRACKING ---
-            const currentUid = user?.id ? `user_${user.id}` : `guest_${Math.floor(Math.random() * 100000)}`;
-            const currentName = user?.name || 'Khách';
-            currentViewerId.current = currentUid;
-            trackViewer(currentUid, { name: currentName });
-            // -----------------------
-
-            if (selectedRole === 'host') {
-                if (user?.role !== 'live') {
-                    alert("Bạn không có quyền Host!");
-                    return;
-                }
-                // QUAN TRỌNG: Kiểm tra xem có đang live không trước khi clear
-                // QUAN TRỌNG: Kiểm tra xem có đang live không trước khi clear
-                const remoteIsLive = await getStreamStatus();
-                if (remoteIsLive) {
-                    const confirmReconnect = window.confirm(
-                        "Đang có phiên Live diễn ra! Bạn muốn tiếp tục (Reconnect) hay Xóa cũ tạo mới?\nOK: Reconnect\nCancel: Hủy"
-                    );
-
-                    if (!confirmReconnect) return;
-
-                    console.log("Host đang Reconnect...");
-                    // KHÔNG GỌI clearChat()
-                    // KHÔNG GỌI updatePinnedProduct(null)
-                } else {
-                    await clearChat();
-                    updatePinnedProduct(null); // Clear pinned product from previous session
-                }
-
-                await client.join(APP_ID, CHANNEL_NAME, TOKEN, null);
-                const [microphoneTrack, cameraTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
-                setLocalTracks([microphoneTrack, cameraTrack]);
-                await client.publish([microphoneTrack, cameraTrack]);
-                updateStreamStatus(true);
+            if (type === 'add') {
+                alert(`Đã thêm ${quantity} hộp ${product.name} (Màu: ${color.name}) vào giỏ hàng!`);
             } else {
-                await client.join(APP_ID, CHANNEL_NAME, TOKEN, null);
-                client.on("user-published", async (user: IAgoraRTCRemoteUser, mediaType: "audio" | "video") => {
-                    await client.subscribe(user, mediaType);
-                    if (mediaType === "video") {
-                        setIsLive(true);
-                        if (remoteVideoRef.current) {
-                            user.videoTrack?.play(remoteVideoRef.current);
-                        }
-                    }
-                    if (mediaType === "audio") {
-                        user.audioTrack?.play();
-                    }
-                });
+                const itemTotal = product.price * quantity;
+                const shippingCost = itemTotal > 3000000 ? 0 : 100000;
+                const checkoutItem = {
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: quantity,
+                    color: colorString
+                };
 
-                client.on("user-unpublished", (user, mediaType) => {
-                    if (mediaType === "video") {
-                        setIsLive(false);
+                navigate('/thanh-toan', {
+                    state: {
+                        selectedItems: [checkoutItem],
+                        subtotal: itemTotal,
+                        shipping: shippingCost,
+                        discount: 0,
+                        voucher: null,
+                        total: itemTotal + shippingCost
                     }
                 });
             }
-
-            setRole(selectedRole);
-            setJoined(true);
         } catch (error) {
-            console.error("Failed to join:", error);
-            alert("Failed to join channel. See console for details.");
+            console.error('Error handling color select:', error);
+            alert('Có lỗi xảy ra.');
+        } finally {
+            setIsColorModalOpen(false);
+            setPendingAction(null);
         }
-    };
-
-    const leaveChannel = async () => {
-        if (role === 'host') {
-            updateStreamStatus(false);
-        }
-        if (localTracks) {
-            localTracks[0].close();
-            localTracks[1].close();
-            setLocalTracks(null);
-        }
-        await client.leave();
-        setJoined(false);
-        setRole(null);
-
-        // Xóa view khi rời phòng
-        if (currentViewerId.current) {
-            removeViewer(currentViewerId.current);
-            currentViewerId.current = null;
-        }
-    };
-
-    const [isCamOn, setIsCamOn] = useState(true);
-    const [isMicOn, setIsMicOn] = useState(true);
-
-    const toggleCam = async () => {
-        if (localTracks && localTracks[1]) {
-            await localTracks[1].setEnabled(!isCamOn);
-            setIsCamOn(!isCamOn);
-        }
-    };
-
-    const toggleMic = async () => {
-        if (localTracks && localTracks[0]) {
-            await localTracks[0].setEnabled(!isMicOn);
-            setIsMicOn(!isMicOn);
-        }
-    };
-
-    const handlePinProduct = (productId: number) => {
-        const newId = productId === pinnedProductId ? null : productId;
-        setPinnedProductId(newId);
-        updatePinnedProduct(newId);
-    };
-
-    const handleAddToCart = async (product: Product) => {
-        await addToCart(product.id, buyQuantity);
-        alert(`Đã thêm ${product.name} vào giỏ hàng!`);
-    };
-
-    const handleBuyNow = async (product: Product) => {
-        await addToCart(product.id, buyQuantity);
-        const itemTotal = product.price * buyQuantity;
-        const shippingCost = itemTotal > 3000000 ? 0 : 100000;
-        const checkoutItem = {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            quantity: buyQuantity
-        };
-
-        navigate('/thanh-toan', {
-            state: {
-                selectedItems: [checkoutItem],
-                subtotal: itemTotal,
-                shipping: shippingCost,
-                discount: 0,
-                voucher: null,
-                total: itemTotal + shippingCost
-            }
-        });
-    };
-
-    const handleSendComment = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const content = commentInput.trim();
-        if (!content) return;
-
-        // --- BƯỚC 1: CHẶN SPAM (RATE LIMIT) ---
-        const now = Date.now();
-        if (now - lastChatTime.current < 2000) {
-            alert("⏳ Bạn chat quá nhanh! Vui lòng đợi 2 giây.");
-            return;
-        }
-        lastChatTime.current = now;
-
-        let userName = 'Khách';
-        if (role === 'host') {
-            userName = 'Host';
-        } else if (user && user.name) {
-            userName = user.name;
-        }
-
-        // --- UI FEEDBACK ---
-        const btn = document.querySelector('.send-btn') as HTMLButtonElement;
-        const originalContent = btn ? btn.innerHTML : '';
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = '<span style="font-size: 20px">...</span>';
-        }
-
-        // --- BƯỚC 2: CHECK TOXIC (AI) ---
-        const isToxic = await checkToxicContent(content);
-
-        // Restore button
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = originalContent;
-        }
-
-        if (isToxic) {
-            alert("⚠️ Tin nhắn bị chặn vì vi phạm tiêu chuẩn cộng đồng!");
-            return;
-        }
-
-        // --- BƯỚC 3: GỬI LÊN FIREBASE ---
-        sendComment(userName, content);
-        setCommentInput("");
     };
 
     const pinnedProduct = PRODUCTS.find(p => p.id === pinnedProductId);
@@ -324,155 +163,41 @@ const LiveStreamPage: React.FC = () => {
         <div className="live-stream-container">
             {/* LEFT: Video Area */}
             <div className="video-section">
-                <div className="video-player">
-                    {/* --- HIỂN THỊ MẮT XEM --- */}
-                    {isLive && (
-                        <div className="live-status-badge">
-                            <span className="pulsing-dot"></span>
-                            LIVE
-                            <div className="viewer-count-separator">|</div>
-                            <svg
-                                viewBox="0 0 24 24"
-                                width="16"
-                                height="16"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                style={{ marginBottom: -2, marginRight: 4 }}
-                            >
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                            {viewerCount}
-                        </div>
-                    )}
-
-                    {role === 'host' && <div ref={hostVideoRef} className="host-player" />}
-                    {role === 'audience' && <div ref={remoteVideoRef} className="remote-player" />}
-                    {role === 'audience' && (!isLive || !remoteVideoRef.current) && (
-                        <div className="offline-placeholder">
-                            <h2>{isLive ? "Loading Stream..." : "Host is offline"}</h2>
-                            {!isLive && <p>Please wait for the host to start the stream.</p>}
-                        </div>
-                    )}
-                </div>
-
-                {/* Video Overlays */}
-                <div className="video-overlays">
-                    {/* Popup Voucher - Only for Audience */}
+                <VideoPlayer
+                    role={role}
+                    isLive={isLive}
+                    viewerCount={viewerCount}
+                    hostVideoRef={hostVideoRef}
+                    remoteVideoRef={remoteVideoRef}
+                >
+                    {/* 1. Voucher Popup (Audience) */}
                     {activeVoucher && role === 'audience' && (
-                        <div className="flash-voucher-overlay">
-                            <div className="voucher-content">
-                                <div className="voucher-title">⚡ FLASH SALE ⚡</div>
-                                <div className="voucher-code">{activeVoucher.code}</div>
-                                <div className="voucher-desc">{activeVoucher.description}</div>
-
-                                {role === 'audience' ? (
-                                    <button onClick={() => {
-                                        navigator.clipboard.writeText(activeVoucher.code);
-
-                                        // Lưu voucher đã mở khóa vào ví
-                                        const existingWallet = localStorage.getItem('my_vouchers');
-                                        const wallet = existingWallet ? JSON.parse(existingWallet) : [];
-                                        const exists = wallet.find((v: any) => v.code === activeVoucher.code);
-
-                                        if (!exists) {
-                                            wallet.push(activeVoucher);
-                                            localStorage.setItem('my_vouchers', JSON.stringify(wallet));
-                                        }
-
-                                        alert("Đã copy mã! Hãy dán ở bước thanh toán.");
-                                    }}>
-                                        Sao chép mã ngay
-                                    </button>
-                                ) : (
-                                    <p>Đang hiển thị cho khách...</p>
-                                )}
-
-                                <button className="close-btn" onClick={() => setActiveVoucher(null)}>×</button>
-                            </div>
-                        </div>
+                        <VoucherPopup
+                            activeVoucher={activeVoucher}
+                            onClose={() => setActiveVoucher(null)}
+                            role={role}
+                        />
                     )}
 
-                    {/* HOST: Admin Panel (Always Visible or Toggleable - Keeping as is for Host) */}
+                    {/* 2. Admin Panel (Host) */}
                     {role === 'host' && (
-                        <div className="admin-panel host-panel">
-                            {/* Tabs */}
-                            <div className="admin-tabs">
-                                <button
-                                    className={adminTab === 'products' ? 'active' : ''}
-                                    onClick={() => setAdminTab('products')}
-                                >
-                                    Sản phẩm
-                                </button>
-                                <button
-                                    className={adminTab === 'vouchers' ? 'active' : ''}
-                                    onClick={() => setAdminTab('vouchers')}
-                                >
-                                    Voucher 🎁
-                                </button>
-                            </div>
-
-                            {/* Product Tab Content */}
-                            {adminTab === 'products' && (
-                                <div className="host-product-list">
-                                    {PRODUCTS.map(product => (
-                                        <div
-                                            key={product.id}
-                                            className="product-item"
-                                            onClick={() => handlePinProduct(product.id)}
-                                            style={{ backgroundColor: pinnedProductId === product.id ? 'rgba(255, 71, 87, 0.3)' : 'transparent' }}
-                                        >
-                                            <img src={product.image} alt={product.name} />
-                                            <div className="product-info">
-                                                <div className="product-name">{product.name}</div>
-                                                <div className="product-price">{product.price.toLocaleString()}đ</div>
-                                            </div>
-                                            {pinnedProductId === product.id && <span className="pin-badge">PINNED</span>}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Voucher Tab Content */}
-                            {adminTab === 'vouchers' && (
-                                <div className="admin-list">
-                                    {VOUCHERS.filter(v => v.isLiveOnly).map(v => {
-                                        const isPushing = activeVoucher?.id === v.id;
-                                        return (
-                                            <div className={`admin-item ${isPushing ? 'active-warning' : ''}`} key={v.id}>
-                                                <div className="info">
-                                                    <strong>{v.code}</strong>
-                                                    <small>{v.description}</small>
-                                                </div>
-                                                <button
-                                                    className="btn-push"
-                                                    style={{ background: isPushing ? '#333' : '#e60012' }}
-                                                    onClick={() => {
-                                                        if (isPushing) {
-                                                            updateFlashVoucher(null);
-                                                        } else {
-                                                            const unlockedVoucher = { ...v, startDate: new Date().toISOString() };
-                                                            updateFlashVoucher(unlockedVoucher);
-                                                        }
-                                                    }}
-                                                >
-                                                    {isPushing ? 'Dừng' : 'Tung'}
-                                                </button>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </div>
+                        <AdminPanel
+                            adminTab={adminTab}
+                            setAdminTab={setAdminTab}
+                            pinnedProductId={pinnedProductId}
+                            handlePinProduct={handlePinProduct}
+                            activeVoucher={activeVoucher}
+                            onToggleVoucher={(voucher) => {
+                                const unlockedVoucher = { ...voucher, startDate: new Date().toISOString() };
+                                updateFlashVoucher(unlockedVoucher);
+                            }}
+                            onStopVoucher={() => updateFlashVoucher(null)}
+                        />
                     )}
 
-                    {/* AUDIENCE: Shopping Bag Icon & Drawer */}
+                    {/* 3. Shopping Buttons (Audience) */}
                     {role === 'audience' && (
                         <>
-                            {/* Floating Bag Icon */}
                             <button
                                 className="shopping-bag-btn"
                                 onClick={() => setIsDrawerOpen(true)}
@@ -485,122 +210,30 @@ const LiveStreamPage: React.FC = () => {
                                 <span className="bag-label">Mua sắm</span>
                             </button>
 
-                            {/* Product Drawer */}
-                            <div className={`product-drawer ${isDrawerOpen ? 'open' : ''}`}>
-                                <div className="drawer-header">
-                                    <h3>Danh sách sản phẩm</h3>
-                                    <button className="close-drawer-btn" onClick={() => setIsDrawerOpen(false)}>×</button>
-                                </div>
-
-                                <div className="drawer-content">
-                                    {PRODUCTS.map(product => (
-                                        <div key={product.id} className="product-item">
-                                            <img src={product.image} alt={product.name} />
-                                            <div className="product-info">
-                                                <div className="product-name">{product.name}</div>
-                                                <div className="product-price">{product.price.toLocaleString()}đ</div>
-                                            </div>
-
-                                            {/* Audience Actions Block */}
-                                            <div className="product-actions-audience"
-                                                style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', minWidth: '85px' }}
-                                            >
-                                                {/* ROW 1: Quantity Selector */}
-                                                <div className="mini-quantity-selector" style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                                                    <button
-                                                        onClick={() => setProductQuantities(prev => ({
-                                                            ...prev,
-                                                            [product.id]: Math.max(1, (prev[product.id] || 1) - 1)
-                                                        }))}
-                                                        style={{
-                                                            width: '28px', height: '28px', borderRadius: '4px', border: 'none',
-                                                            background: '#f1f2f6', color: '#000', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px',
-                                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                                        }}
-                                                    >
-                                                        -
-                                                    </button>
-                                                    <span style={{ fontSize: '16px', fontWeight: 'bold', minWidth: '15px', textAlign: 'center', color: '#fff' }}>
-                                                        {productQuantities[product.id] || 1}
-                                                    </span>
-                                                    <button
-                                                        onClick={() => setProductQuantities(prev => ({
-                                                            ...prev,
-                                                            [product.id]: (prev[product.id] || 1) + 1
-                                                        }))}
-                                                        style={{
-                                                            width: '28px', height: '28px', borderRadius: '4px', border: 'none',
-                                                            background: '#f1f2f6', color: '#000', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px',
-                                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                                        }}
-                                                    >
-                                                        +
-                                                    </button>
-                                                </div>
-
-                                                {/* ROW 2: Action Buttons */}
-                                                <div style={{ display: 'flex', gap: '6px', width: '100%' }}>
-                                                    <button
-                                                        onClick={() => {
-                                                            const qty = productQuantities[product.id] || 1;
-                                                            addToCart(product.id, qty);
-                                                            alert(`Đã thêm ${qty} ${product.name} vào giỏ!`);
-                                                        }}
-                                                        style={{
-                                                            flex: 1, background: '#f39c12', color: 'white', border: 'none', borderRadius: '4px',
-                                                            padding: '6px 0', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer'
-                                                        }}
-                                                    >
-                                                        Thêm
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            const qty = productQuantities[product.id] || 1;
-                                                            addToCart(product.id, qty);
-                                                            const shippingCost = product.price * qty > 3000000 ? 0 : 100000;
-                                                            const checkoutItem = { id: product.id, name: product.name, price: product.price, image: product.image, quantity: qty };
-                                                            navigate('/thanh-toan', { state: { selectedItems: [checkoutItem], subtotal: product.price * qty, shipping: shippingCost, discount: 0, voucher: null, total: (product.price * qty) + shippingCost } });
-                                                        }}
-                                                        style={{
-                                                            flex: 1, background: '#ff4757', color: 'white', border: 'none', borderRadius: '4px',
-                                                            padding: '6px 0', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer'
-                                                        }}
-                                                    >
-                                                        Mua
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Backdrop */}
-                            {isDrawerOpen && <div className="drawer-backdrop" onClick={() => setIsDrawerOpen(false)} />}
+                            <button
+                                className="cart-bag-btn"
+                                onClick={() => navigate('/gio-hang')}
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="9" cy="21" r="1"></circle>
+                                    <circle cx="20" cy="21" r="1"></circle>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                </svg>
+                                <span className="bag-label">Giỏ hàng</span>
+                            </button>
                         </>
                     )}
 
-                    {/* Pinned Product Card */}
+                    {/* 4. Pinned Product Card */}
                     {pinnedProduct && (
-                        <div className="pinned-product-card">
-                            <img src={pinnedProduct.image} alt={pinnedProduct.name} className="pinned-image" />
-                            <div className="pinned-details">
-                                <h3>{pinnedProduct.name}</h3>
-                                <div className="pinned-price">{pinnedProduct.price.toLocaleString()}đ</div>
-                                <div className="quantity-selector">
-                                    <button onClick={() => setBuyQuantity(q => Math.max(1, q - 1))}>-</button>
-                                    <span>{buyQuantity}</span>
-                                    <button onClick={() => setBuyQuantity(q => q + 1)}>+</button>
-                                </div>
-                                <div className="action-buttons">
-                                    <button className="add-cart-btn" onClick={() => handleAddToCart(pinnedProduct)}>Thêm</button>
-                                    <button className="buy-now-btn" onClick={() => handleBuyNow(pinnedProduct)}>Mua</button>
-                                </div>
-                            </div>
-                        </div>
+                        <PinnedProductCard
+                            product={pinnedProduct}
+                            onAddToCart={requestAddToCart}
+                            onBuyNow={requestBuyNow}
+                        />
                     )}
 
-                    {/* Control Buttons */}
+                    {/* 5. Control Buttons */}
                     <div className="live-controls">
                         <div className="control-group">
                             {role === 'host' && (
@@ -626,47 +259,34 @@ const LiveStreamPage: React.FC = () => {
                             </button>
                         </div>
                     </div>
-                </div>
+                </VideoPlayer>
             </div>
 
             {/* RIGHT: Chat Sidebar */}
-            <div className="chat-sidebar">
-                <div className="chat-header">
-                    <h4>💬 Trò chuyện trực tiếp</h4>
+            <ChatSidebar
+                comments={comments}
+                commentInput={commentInput}
+                setCommentInput={setCommentInput}
+                handleSendComment={handleSendComment}
+            />
 
-                </div>
+            {/* Product Drawer (Sidebar) */}
+            <ProductDrawer
+                isDrawerOpen={isDrawerOpen}
+                setIsDrawerOpen={setIsDrawerOpen}
+                drawerTab={drawerTab}
+                setDrawerTab={setDrawerTab}
+                onAddToCart={requestAddToCart}
+                onBuyNow={requestBuyNow}
+            />
 
-                <div className="chat-messages">
-                    {comments.map((msg, idx) => (
-                        <div key={idx} className="chat-message">
-                            <div className="message-avatar">{msg.userName.charAt(0)}</div>
-                            <div className="message-content">
-                                <span className="message-user">{msg.userName}</span>
-                                <span className="message-text">{msg.text}</span>
-                            </div>
-                        </div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                </div>
-
-                <div className="chat-input-area">
-                    <form className="chat-form" onSubmit={handleSendComment}>
-                        <input
-                            type="text"
-                            placeholder="Nhập bình luận..."
-                            value={commentInput}
-                            onChange={(e) => setCommentInput(e.target.value)}
-                            className="chat-input"
-                        />
-                        <button type="submit" className="send-btn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <line x1="22" y1="2" x2="11" y2="13"></line>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                            </svg>
-                        </button>
-                    </form>
-                </div>
-            </div>
+            {/* Color Modal */}
+            <ColorSelectionModal
+                isOpen={isColorModalOpen}
+                onClose={() => setIsColorModalOpen(false)}
+                onSelect={handleColorSelect}
+                productName={pendingAction?.product.name || ''}
+            />
         </div>
     );
 };
