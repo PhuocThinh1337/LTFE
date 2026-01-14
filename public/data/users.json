@@ -7,7 +7,7 @@
       "password": "admin123",
       "phone": "0123 456 789",
       "createdAt": "2024-01-01T00:00:00Z",
-      "role": "live"
+      "role": "admin"
     },
     {
       "id": 2,

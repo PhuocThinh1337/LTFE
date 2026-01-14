@@ -131,7 +131,7 @@ const LiveStreamPage: React.FC = () => {
                 <p>Xin chào, {user?.name || 'Khách'}</p>
 
                 <div style={{ display: 'flex', gap: '20px' }}>
-                    {user?.role === 'live' ? (
+                    {user?.role === 'admin' ? (
                         <button className="btn-primary" onClick={() => joinChannel('host')}>
                             {isLive ? "Tiếp tục Live (Reconnect)" : "Bắt đầu Live (Start)"}
                         </button>
@@ -150,7 +150,7 @@ const LiveStreamPage: React.FC = () => {
                     Quay lại Trang chủ
                 </button>
 
-                {isLive && user?.role === 'live' && (
+                {isLive && user?.role === 'admin' && (
                     <p style={{ color: 'red', marginTop: '15px', fontSize: '18px', fontWeight: 'bold' }}>
                         ⚠️ Phòng đang Live. Nếu bạn đang mở tab khác, vui lòng đóng tab này.
                     </p>

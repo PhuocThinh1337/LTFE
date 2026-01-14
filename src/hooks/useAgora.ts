@@ -58,7 +58,7 @@ export const useAgora = ({ user, role, setRole, setIsLive, joined, setJoined }: 
             }
 
             if (selectedRole === 'host') {
-                if (user?.role !== 'live') {
+                if (user?.role !== 'admin') {
                     alert("Bạn không có quyền Host!");
                     return;
                 }
