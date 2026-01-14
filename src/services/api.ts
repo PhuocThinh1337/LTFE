@@ -23,7 +23,7 @@ export interface User {
   phone?: string;
   avatar?: string;
   isPremium?: boolean;
-  role?: 'live' | 'user';
+  role?: 'admin' | 'user';
 }
 
 interface UserWithPassword extends User {
@@ -79,7 +79,7 @@ const initializeUsers = async (): Promise<UserWithPassword[]> => {
         phone: '0123 456 789',
         createdAt: new Date().toISOString(),
         isPremium: true,
-        role: 'live'
+        role: 'admin'
       }
     ];
   }
@@ -285,11 +285,11 @@ export const api = {
     // Save reset token
     const tokens = getResetTokens();
     const filteredTokens = tokens.filter(t => t.email.toLowerCase() !== email.toLowerCase());
-    
+
     // Lưu token vào localStorage
     filteredTokens.push({ email: user.email, token: resetToken, expiresAt });
     saveResetTokens(filteredTokens);
-    
+
     // In ra console để debug
     console.log('Reset token saved:', { email: user.email, token: resetToken });
 
@@ -303,7 +303,7 @@ export const api = {
 
       if (serviceId && templateId && publicKey) {
         const resetLink = `${window.location.origin}/reset-password?token=${resetToken}`;
-        
+
         await emailjs.send(
           serviceId,
           templateId,
@@ -338,7 +338,7 @@ export const api = {
 
     console.log('--- START RESET PASSWORD DEBUG ---');
     console.log('Received token:', token);
-    
+
     const tokens = getResetTokens();
     console.log('Current tokens in DB:', tokens);
 
@@ -366,8 +366,8 @@ export const api = {
     const userIndex = users.findIndex(u => u.email.toLowerCase() === tokenData.email.toLowerCase());
 
     if (userIndex === -1) {
-       console.error('❌ User not found for email:', tokenData.email);
-       throw new Error('Người dùng không tồn tại.');
+      console.error('❌ User not found for email:', tokenData.email);
+      throw new Error('Người dùng không tồn tại.');
     }
 
     // Update password
