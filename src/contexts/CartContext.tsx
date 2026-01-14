@@ -160,6 +160,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const loadCart = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
+      // Option B: không hỗ trợ guest cart. Chưa đăng nhập thì cart rỗng.
+      if (!user) {
+        dispatch({ type: 'SET_ITEMS', payload: [] });
+        return;
+      }
       const items = await api.getCart(user?.id?.toString());
       dispatch({ type: 'SET_ITEMS', payload: items });
     } catch (error) {
@@ -171,12 +176,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const addToCart = async (productId: number, quantity: number = 1, color?: string) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
+      // Option B: bắt buộc đăng nhập mới được thêm vào giỏ
+      if (!user) {
+        dispatch({ type: 'SET_ERROR', payload: 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng' });
+        throw new Error('AUTH_REQUIRED');
+      }
       const product = await api.getProduct(productId);
       if (product) {
         const updatedCart = await api.addToCart(product, quantity, color, user?.id?.toString());
         dispatch({ type: 'SET_ITEMS', payload: updatedCart });
       }
     } catch (error) {
+      if ((error as any)?.message === 'AUTH_REQUIRED') throw error;
       dispatch({ type: 'SET_ERROR', payload: 'Không thể thêm sản phẩm vào giỏ hàng' });
     }
   };
@@ -201,11 +212,16 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const removeItems = async (itemIds: number[]) => {
     try {
-      const updatedCart = await api.getCart();
+      if (!user) {
+        dispatch({ type: 'SET_ERROR', payload: 'Bạn cần đăng nhập để thao tác giỏ hàng' });
+        throw new Error('AUTH_REQUIRED');
+      }
+      const updatedCart = await api.getCart(user?.id?.toString());
       const filteredCart = updatedCart.filter(item => !itemIds.includes(item.id));
-      localStorage.setItem('cart', JSON.stringify(filteredCart));
+      localStorage.setItem(`cart_${user.id}`, JSON.stringify(filteredCart));
       dispatch({ type: 'SET_ITEMS', payload: filteredCart });
     } catch (error) {
+      if ((error as any)?.message === 'AUTH_REQUIRED') throw error;
       dispatch({ type: 'SET_ERROR', payload: 'Không thể xóa sản phẩm khỏi giỏ hàng' });
     }
   };

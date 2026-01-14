@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Breadcrumb from '../components/common/Breadcrumb';
@@ -67,6 +67,7 @@ interface Review {
 }
 
 const ProductDetailPage: React.FC = () => {
+    const navigate = useNavigate();
     const { slug } = useParams<{ slug: string }>();
     const [product, setProduct] = useState<Product | null>(null);
     const [quantity, setQuantity] = useState(1);
@@ -88,6 +89,11 @@ const ProductDetailPage: React.FC = () => {
     const [isColorModalOpen, setIsColorModalOpen] = useState(false);
 
     const handleAddToCart = () => {
+        if (!isAuthenticated) {
+            alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+            navigate('/login');
+            return;
+        }
         if (product) {
             setIsColorModalOpen(true);
         }
@@ -96,11 +102,21 @@ const ProductDetailPage: React.FC = () => {
     const handleColorSelect = async (color: PaintColor) => {
         if (product) {
             try {
+                if (!isAuthenticated) {
+                    alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+                    navigate('/login');
+                    return;
+                }
                 const colorString = `${color.name} (${color.code})`;
                 await addToCart(product.id, quantity, colorString);
                 alert(`Đã thêm ${quantity} hộp ${product.name} (Màu: ${color.name}) vào giỏ hàng!`);
             } catch (error) {
                 console.error('Lỗi khi thêm vào giỏ hàng:', error);
+                if ((error as any)?.message === 'AUTH_REQUIRED') {
+                    alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+                    navigate('/login');
+                    return;
+                }
                 alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
             } finally {
                 setIsColorModalOpen(false);

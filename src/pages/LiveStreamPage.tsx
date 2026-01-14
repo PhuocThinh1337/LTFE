@@ -71,11 +71,21 @@ const LiveStreamPage: React.FC = () => {
 
     // Handlers needed for interactions
     const requestAddToCart = (product: Product, quantity: number) => {
+        if (!user) {
+            alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+            navigate('/login');
+            return;
+        }
         setPendingAction({ product, quantity, type: 'add' });
         setIsColorModalOpen(true);
     };
 
     const requestBuyNow = (product: Product, quantity: number) => {
+        if (!user) {
+            alert('Vui lòng đăng nhập để mua ngay');
+            navigate('/login');
+            return;
+        }
         setPendingAction({ product, quantity, type: 'buy' });
         setIsColorModalOpen(true);
     };
@@ -115,6 +125,11 @@ const LiveStreamPage: React.FC = () => {
             }
         } catch (error) {
             console.error('Error handling color select:', error);
+            if ((error as any)?.message === 'AUTH_REQUIRED') {
+                alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+                navigate('/login');
+                return;
+            }
             alert('Có lỗi xảy ra.');
         } finally {
             setIsColorModalOpen(false);
