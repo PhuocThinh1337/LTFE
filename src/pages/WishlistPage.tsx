@@ -4,8 +4,11 @@ import Footer from '../components/layout/Footer';
 import { PRODUCTS } from '../data/products';
 import { Link } from 'react-router-dom';
 
+import { useAuth } from '../contexts/AuthContext';
+
 function WishlistPage(): React.JSX.Element {
     const [wishlistIds, setWishlistIds] = useState<number[]>([]);
+    const { isAuthenticated, loading } = useAuth();
 
     useEffect(() => {
         const stored = localStorage.getItem('wishlist');
@@ -22,6 +25,44 @@ function WishlistPage(): React.JSX.Element {
         setWishlistIds(newIds);
         localStorage.setItem('wishlist', JSON.stringify(newIds));
     };
+
+    if (loading) {
+        return (
+            <div className="np-app">
+                <Header />
+                <main className="np-main">
+                    <div style={{ textAlign: 'center', padding: '60px 0' }}>Đang tải...</div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <div className="np-app">
+                <Header />
+                <main className="np-main">
+                    <div style={{ textAlign: 'center', padding: '100px 20px' }}>
+                        <h2 style={{ marginBottom: '20px', color: '#333' }}>Vui lòng đăng nhập để xem danh sách yêu thích</h2>
+                        <p style={{ marginBottom: '30px', color: '#666' }}>Bạn cần đăng nhập tài khoản để lưu và xem lại các sản phẩm yêu thích.</p>
+                        <Link to="/login" className="np-btn-primary" style={{
+                            display: 'inline-block',
+                            padding: '12px 30px',
+                            textDecoration: 'none',
+                            background: '#e60012',
+                            color: '#fff',
+                            borderRadius: '4px',
+                            fontWeight: 'bold'
+                        }}>
+                            Đăng nhập ngay
+                        </Link>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
 
     return (
         <div className="np-app">

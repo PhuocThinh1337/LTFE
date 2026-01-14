@@ -8,19 +8,22 @@ import { useCart } from '../contexts/CartContext';
 import { useCompare } from '../contexts/CompareContext';
 import Toast from '../components/common/Toast';
 import '../components/layout/FilterBar.css';
+import ColorSelectionModal from '../components/common/ColorSelectionModal';
+import { PaintColor } from '../data/paintColors';
 
 interface ProductsPageProps {
   category?: string;
 }
 
-const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart }: {
+const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart, onRequestAddToCart }: {
   product: Product,
   wishlistIds: number[],
   toggleWishlist: (id: number) => void,
-  onAddToCart: (message: string, type?: 'success' | 'error') => void
+  onAddToCart: (message: string, type?: 'success' | 'error') => void,
+  onRequestAddToCart: (product: Product, quantity: number) => void
 }) => {
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
+  // const { addToCart } = useCart();
   const { addToCompare, removeFromCompare, isInCompare } = useCompare();
   const isCompared = isInCompare(product.id);
 
@@ -133,14 +136,8 @@ const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart }: {
               >+</button>
             </div>
             <button className="add-cart"
-              onClick={async () => {
-                try {
-                  await addToCart(product.id, quantity);
-                  onAddToCart(`Đã thêm ${quantity} ${product.name} vào giỏ hàng!`, 'success');
-                } catch (error) {
-                  console.error('Lỗi khi thêm vào giỏ hàng:', error);
-                  onAddToCart('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng', 'error');
-                }
+              onClick={() => {
+                onRequestAddToCart(product, quantity);
               }}
               style={{
                 background: '#e60012',
@@ -178,6 +175,7 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [featureFilter, setFeatureFilter] = useState<string>('all');
+  const [sortOrder, setSortOrder] = useState<string>('default');
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -188,6 +186,33 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
 
   // State for toast notifications
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  // Color Selection Modal State
+  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
+  const [pendingProduct, setPendingProduct] = useState<{ product: Product, quantity: number } | null>(null);
+  const { addToCart } = useCart();
+
+  const handleRequestAddToCart = (product: Product, quantity: number) => {
+    setPendingProduct({ product, quantity });
+    setIsColorModalOpen(true);
+  };
+
+  const handleColorSelect = async (color: PaintColor) => {
+    if (pendingProduct) {
+      try {
+        // Construct the color string, e.g., "Reticent White (NP OW 1083P)"
+        const colorString = `${color.name} (${color.code})`;
+        await addToCart(pendingProduct.product.id, pendingProduct.quantity, colorString);
+        showToast(`Đã thêm ${pendingProduct.quantity} ${pendingProduct.product.name} (Màu: ${color.name}) vào giỏ hàng!`, 'success');
+      } catch (error) {
+        console.error('Lỗi khi thêm vào giỏ hàng:', error);
+        showToast('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng', 'error');
+      } finally {
+        setIsColorModalOpen(false);
+        setPendingProduct(null);
+      }
+    }
+  };
 
   React.useEffect(() => {
     const stored = localStorage.getItem('wishlist');
@@ -281,13 +306,20 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
       });
     }
 
+    // 4. Sort by Price
+    if (sortOrder === 'price-asc') {
+      filtered = [...filtered].sort((a, b) => (a.price || 0) - (b.price || 0));
+    } else if (sortOrder === 'price-desc') {
+      filtered = [...filtered].sort((a, b) => (b.price || 0) - (a.price || 0));
+    }
+
     setDisplayedProducts(filtered);
     // Update title only if category changed via prop, otherwise keep it generic if manually filtering
     if (!category) setPageTitle('TẤT CẢ SẢN PHẨM');
     else setPageTitle(title);
 
     setCurrentPage(1);
-  }, [categoryFilter, typeFilter, featureFilter, category]);
+  }, [categoryFilter, typeFilter, featureFilter, sortOrder, category]);
 
   // Calculate pagination
   const totalPages = Math.ceil(displayedProducts.length / itemsPerPage);
@@ -323,15 +355,15 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
         {/* Filter Bar */}
         <div className="np-filter-bar-wrapper">
           <div className="np-container">
-            <div className="np-filter-bar" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'flex-end' }}>
+            <div className="np-filter-bar" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'flex-end', justifyContent: 'center' }}>
 
               {/* Filter 1: Product Category */}
               <div className="np-filter-group">
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px' }}>Dòng sản phẩm:</label>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '13px' }}>Dòng sản phẩm:</label>
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  style={{ minWidth: '180px', padding: '10px 15px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none' }}
+                  style={{ minWidth: '150px', padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none', fontSize: '14px' }}
                 >
                   <option value="all">Tất cả</option>
                   <option value="Sơn Nội Thất">Sơn Nội Thất</option>
@@ -343,11 +375,11 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
 
               {/* Filter 2: Function/Type */}
               <div className="np-filter-group">
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px' }}>Loại sơn:</label>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '13px' }}>Loại sơn:</label>
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  style={{ minWidth: '160px', padding: '10px 15px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none' }}
+                  style={{ minWidth: '130px', padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none', fontSize: '14px' }}
                 >
                   <option value="all">Tất cả</option>
                   <option value="topcoat">Sơn phủ (Hoàn thiện)</option>
@@ -359,11 +391,11 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
 
               {/* Filter 3: Features */}
               <div className="np-filter-group">
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '14px' }}>Tính năng:</label>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '13px' }}>Tính năng:</label>
                 <select
                   value={featureFilter}
                   onChange={(e) => setFeatureFilter(e.target.value)}
-                  style={{ minWidth: '160px', padding: '10px 15px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none' }}
+                  style={{ minWidth: '130px', padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none', fontSize: '14px' }}
                 >
                   <option value="all">Tất cả</option>
                   <option value="easy-wash">Dễ lau chùi / Sạch</option>
@@ -374,23 +406,40 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
                 </select>
               </div>
 
+              {/* Filter 4: Sort Price */}
+              <div className="np-filter-group">
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '13px' }}>Sắp xếp:</label>
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  style={{ minWidth: '130px', padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd', outline: 'none', fontSize: '14px' }}
+                >
+                  <option value="default">Mặc định</option>
+                  <option value="price-asc">Giá tăng dần</option>
+                  <option value="price-desc">Giá giảm dần</option>
+                </select>
+              </div>
+
               <button
                 className="np-btn-apply"
                 onClick={() => {
                   setCategoryFilter('all');
                   setTypeFilter('all');
                   setFeatureFilter('all');
+                  setSortOrder('default');
                 }}
                 style={{
-                  height: '42px',
-                  padding: '0 20px',
+                  height: '38px',
+                  padding: '0 15px',
                   backgroundColor: '#fff',
                   border: '1px solid #e60012',
                   color: '#e60012',
                   borderRadius: '4px',
                   fontWeight: '700',
                   cursor: 'pointer',
-                  transition: 'all 0.3s'
+                  transition: 'all 0.3s',
+                  fontSize: '13px',
+                  marginBottom: '1px' // Align visually
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e60012'; e.currentTarget.style.color = '#fff'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#fff'; e.currentTarget.style.color = '#e60012'; }}
@@ -428,6 +477,7 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
                     wishlistIds={wishlistIds}
                     toggleWishlist={toggleWishlist}
                     onAddToCart={showToast}
+                    onRequestAddToCart={handleRequestAddToCart}
                   />
                 ))
               ) : (
@@ -574,6 +624,13 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
           />
         )}
       </main>
+
+      <ColorSelectionModal
+        isOpen={isColorModalOpen}
+        onClose={() => setIsColorModalOpen(false)}
+        onSelect={handleColorSelect}
+        productName={pendingProduct?.product.name || ''}
+      />
 
       <Footer />
     </div>

@@ -640,10 +640,10 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.75);
     /* Dim background */
-    backdrop-filter: blur(8px);
-    /* Blur effect */
+    /* backdrop-filter: blur(8px); */
+    /* Blur effect REMOVED */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -803,11 +803,6 @@
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(230, 0, 18, 0);
     }
-
-    100% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(230, 0, 18, 0);
-    }
 }
 
 /* NEW: Shopping Bag Button */
@@ -913,4 +908,64 @@
     z-index: 150;
     backdrop-filter: blur(2px);
     cursor: pointer;
+}
+
+/* NEW: Cart Button */
+.cart-bag-btn {
+    position: absolute;
+    top: 70px;
+    /* Below shopping button */
+    right: 20px;
+    background: rgba(255, 71, 87, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    border-radius: 30px;
+    padding: 8px 16px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.cart-bag-btn:hover {
+    background: rgba(255, 71, 87, 0.3);
+    transform: translateY(-2px);
+}
+
+.cart-bag-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Drawer Tabs */
+.drawer-tabs {
+    display: flex;
+    border-bottom: 1px solid #333;
+    background: #222;
+}
+
+.drawer-tabs button {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #888;
+    padding: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s;
+    border-bottom: 2px solid transparent;
+}
+
+.drawer-tabs button:hover {
+    color: #ddd;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.drawer-tabs button.active {
+    color: white;
+    border-bottom: 2px solid #ff4757;
 }

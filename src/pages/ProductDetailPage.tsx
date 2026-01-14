@@ -12,7 +12,10 @@ import catalogTilac from '../img/nippon_catalogs/Sơn_Dầu_Cao_Cấp_Tilac.pdf'
 import catalogMatex from '../img/nippon_catalogs/Sơn_Matex_và_Supper_Matex.pdf';
 import catalogIndustrial from '../img/nippon_catalogs/Sơn_Phủ_Công_Nghiệp.pdf';
 import catalogVatex from '../img/nippon_catalogs/Sơn_Vatex.pdf';
+
 import catalogPremium from '../img/nippon_catalogs/Sản_Phẩm_Cao_Cấp_-_Cloned.pdf';
+import ColorSelectionModal from '../components/common/ColorSelectionModal';
+import { PaintColor } from '../data/paintColors';
 
 interface SuggestionCardProps {
     product: Product;
@@ -82,6 +85,28 @@ const ProductDetailPage: React.FC = () => {
     const [newComment, setNewComment] = useState("");
 
     // Catalog State & Data
+    const [isColorModalOpen, setIsColorModalOpen] = useState(false);
+
+    const handleAddToCart = () => {
+        if (product) {
+            setIsColorModalOpen(true);
+        }
+    };
+
+    const handleColorSelect = async (color: PaintColor) => {
+        if (product) {
+            try {
+                const colorString = `${color.name} (${color.code})`;
+                await addToCart(product.id, quantity, colorString);
+                alert(`Đã thêm ${quantity} hộp ${product.name} (Màu: ${color.name}) vào giỏ hàng!`);
+            } catch (error) {
+                console.error('Lỗi khi thêm vào giỏ hàng:', error);
+                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+            } finally {
+                setIsColorModalOpen(false);
+            }
+        }
+    };
     const [catalogIndex, setCatalogIndex] = useState(0);
 
     const catalogs = [
@@ -200,12 +225,7 @@ const ProductDetailPage: React.FC = () => {
         );
     }
 
-    const handleAddToCart = async () => {
-        if (product) {
-            await addToCart(product.id, quantity);
-            alert(`Đã thêm ${quantity} hộp ${product.name} vào giỏ hàng!`);
-        }
-    };
+
 
     return (
         <div className="np-app">
@@ -470,6 +490,13 @@ const ProductDetailPage: React.FC = () => {
                     </div>
                 </div>
             </main>
+
+            <ColorSelectionModal
+                isOpen={isColorModalOpen}
+                onClose={() => setIsColorModalOpen(false)}
+                onSelect={handleColorSelect}
+                productName={product?.name || ''}
+            />
 
             <Footer />
         </div>
