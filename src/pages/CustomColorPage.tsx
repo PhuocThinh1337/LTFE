@@ -12,7 +12,7 @@ import './CustomColorPage.css';
 
 function CustomColorPage(): React.JSX.Element {
   const navigate = useNavigate();
-  const { addToCart, state: cartState } = useCart();
+  const { addToCart } = useCart();
   const { user } = useAuth();
   
   const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
@@ -59,6 +59,13 @@ function CustomColorPage(): React.JSX.Element {
     }
 
     try {
+      // Option B: bắt buộc đăng nhập mới được thêm vào giỏ
+      if (!user) {
+        alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+        navigate('/login');
+        return;
+      }
+
       const product = customizableProducts.find(p => p.id === selectedProduct);
       if (!product) {
         alert('Không tìm thấy sản phẩm');
@@ -71,8 +78,7 @@ function CustomColorPage(): React.JSX.Element {
       
       await addToCart(selectedProduct, 1, resultColor);
       
-      const userId = user?.id?.toString();
-      const cartKey = userId ? `cart_${userId}` : 'guest_cart';
+      const cartKey = `cart_${user.id}`;
       
       setTimeout(() => {
         const cartItems: any[] = JSON.parse(localStorage.getItem(cartKey) || '[]');
