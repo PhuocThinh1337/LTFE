@@ -76,9 +76,6 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ active, onClose }) => {
                             >
                                 Sơn và chất phủ công nghiệp
                             </Link>
-
-
-
                         </div>
 
                         {/* Products Grid */}
@@ -97,8 +94,9 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ active, onClose }) => {
                                             <div className="np-mm-product-price">
                                                 {product.price?.toLocaleString('vi-VN')} ₫
                                             </div>
-                                            <Link to="/san-pham" className="np-mm-product-btn">
+                                            <Link to={`/san-pham`} className="np-mm-product-btn" onClick={onClose}>
                                                 XEM NGAY
+                                                <span className="np-btn-icon">→</span>
                                             </Link>
 
                                         </div>
