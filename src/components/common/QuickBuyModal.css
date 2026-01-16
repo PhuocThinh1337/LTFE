@@ -1,0 +1,256 @@
+.quick-buy-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.quick-buy-modal-content {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease;
+}
+
+/* Header */
+.qb-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.qb-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #999;
+    cursor: pointer;
+}
+
+/* Body */
+.qb-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.qb-product-summary {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.qb-product-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.qb-product-info h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.qb-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #e60012;
+    margin-bottom: 5px;
+}
+
+.qb-stock {
+    font-size: 13px;
+    color: #28a745;
+}
+
+.qb-stock.out {
+    color: #dc3545;
+}
+
+.qb-stock.low {
+    color: #ffc107;
+    text-shadow: 0 0 1px #000;
+}
+
+/* Selectors */
+.qb-selector-group {
+    margin-bottom: 15px;
+}
+
+.qb-selector-label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+    display: block;
+}
+
+.qb-options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.qb-option-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.qb-option-btn:hover {
+    border-color: #bbb;
+}
+
+.qb-option-btn.active {
+    border-color: #e60012;
+    background-color: #fff0f1;
+    color: #e60012;
+    font-weight: 600;
+}
+
+/* Custom Color Toggle */
+.qb-custom-color-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: #f8f9fa;
+    border: 1px dashed #ccc;
+    border-radius: 6px;
+    color: #666;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qb-custom-color-btn:hover {
+    background: #f1f2f3;
+}
+
+/* Custom Color Grid (Embedded) */
+.qb-color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.qb-color-item {
+    cursor: pointer;
+    text-align: center;
+}
+
+.qb-color-swatch {
+    width: 100%;
+    height: 40px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-bottom: 4px;
+}
+
+.qb-color-name {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #666;
+}
+
+/* Footer */
+.qb-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.qb-qty-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.qb-qty-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #f8f9fa;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.qb-qty-input {
+    width: 40px;
+    height: 32px;
+    border: none;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    text-align: center;
+    outline: none;
+}
+
+.qb-action-btn {
+    flex: 1;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+}
+
+.qb-btn-add {
+    background-color: #28a745;
+}
+
+.qb-btn-buy {
+    background-color: #e60012;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

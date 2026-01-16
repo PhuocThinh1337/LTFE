@@ -345,39 +345,76 @@ export interface Product {
         packing?: string;
     };
     benefits?: string[];
+    variants?: {
+        volume: string;
+        color: string;
+        price: number;
+        stock?: number;
+    }[];
+    stock?: number;
 }
 
 export const PRODUCTS: Product[] = [
     {
         id: 200,
         name: "Sơn Nippon 1100 Fast Drying Primer",
-        slug: "s-n-nippon-1100-fast-drying-primer",
+        slug: "son-nippon-1100-fast-drying-primer",
         category: "Sơn dân dụng",
         image: img0,
-        description: "Sản phẩm Sơn Nippon 1100 Fast Drying Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
-        price: 350000
+        description: "Sơn lót khô nhanh Nippon 1100 Fast Drying Primer là loại sơn lót chống rỉ gốc Alkyd.",
+        features: ["Khô rất nhanh", "Độ phủ cao", "Dễ thi công"],
+        price: 350000,
+        detailedDescription: "Sơn lót Nippon 1100 Fast Drying Primer được sử dụng làm lớp lót cho các bề mặt kim loại chứa sắt ở điều kiện ăn mòn nhẹ tới trung bình. Đặc điểm nổi bật là khô rất nhanh, giúp tiết kiệm thời gian thi công.",
+        technicalData: { "dryingTime": "10 phút (khô bề mặt)", "coats": 1, "coverage": "12 m2/lít", "packing": "5L, 20L" },
+        benefits: ["Tiết kiệm thời gian", "Bảo vệ bề mặt kim loại", "Tăng độ bám dính cho lớp phủ"],
+        variants: [
+            { volume: "5L", color: "Xám", price: 350000, stock: 40 },
+            { volume: "20L", color: "Xám", price: 1350000, stock: 5 },
+            { volume: "5L", color: "Đỏ Oxit", price: 350000, stock: 0 }
+        ]
     },
     {
         id: 201,
         name: "Sơn Nippon Bilac",
-        slug: "s-n-nippon-bilac",
+        slug: "son-nippon-bilac",
         category: "Sơn dân dụng",
         image: img1,
-        description: "Sản phẩm Sơn Nippon Bilac chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
-        price: 350000,
-        isBestSeller: true
+        description: "Sơn dầu cao cấp Nippon Bilac cho gỗ và kim loại.",
+        features: ["Độ bóng cao", "Bền màu", "Chống nấm mốc"],
+        price: 180000,
+        isBestSeller: true,
+        stock: 15,
+        detailedDescription: "Nippon Bilac là loại sơn dầu gốc Alkyd, một thành phần, có độ bền cao. Sản phẩm được sử dụng làm lớp sơn phủ cho các bề mặt gỗ và kim loại, nội và ngoại thất.",
+        technicalData: { "dryingTime": "30 phút", "coats": 2, "coverage": "12-14 m2/lít", "packing": "1L, 3L, 18L" },
+        benefits: ["Màng sơn bóng đẹp", "Bảo vệ tối ưu", "Dễ sử dụng"],
+        variants: [
+            { volume: "1L", color: "Trắng", price: 180000, stock: 50 },
+            // Specific palette color variants
+            { volume: "1L", color: "Reticent White", price: 180000, stock: 45 },
+            { volume: "1L", color: "Gray Dew", price: 189000, stock: 25 },
+            { volume: "1L", color: "Violet Whisper", price: 180000, stock: 15 },
+
+            { volume: "3L", color: "Trắng", price: 520000, stock: 20 },
+            { volume: "18L", color: "Trắng", price: 2800000, stock: 10 },
+            { volume: "1L", color: "Đỏ", price: 185000, stock: 15 },
+            { volume: "3L", color: "Đỏ", price: 535000, stock: 12 },
+            { volume: "18L", color: "Đỏ", price: 2900000, stock: 5 },
+            { volume: "1L", color: "Xanh Dương", price: 185000, stock: 30 },
+            { volume: "3L", color: "Xanh Dương", price: 535000, stock: 8 }
+        ]
     },
     {
         id: 202,
         name: "Sơn Nippon Bilac Aluminium Wood Primer",
-        slug: "s-n-nippon-bilac-aluminium-wood-primer",
+        slug: "son-nippon-bilac-aluminium-wood-primer",
         category: "Sơn dân dụng",
         image: img2,
-        description: "Sản phẩm Sơn Nippon Bilac Aluminium Wood Primer chất lượng cao từ Nippon Paint.",
-        features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
-        price: 350000
+        description: "Sơn lót nhôm cho gỗ, chống thấm nước và nhựa gỗ.",
+        features: ["Chống thấm nước", "Ngăn nhựa gỗ", "Tăng độ bám dính"],
+        price: 210000,
+        stock: 60,
+        detailedDescription: "Sơn lót Nippon Bilac Aluminium Wood Primer là loại sơn lót gốc Alkyd có chứa bột nhôm, đặc biệt thích hợp cho bề mặt gỗ, giúp ngăn chặn sự thấm nước và nhựa gỗ làm ố màu lớp sơn phủ.",
+        technicalData: { "dryingTime": "1 giờ", "coats": 1, "coverage": "10-12 m2/lít", "packing": "1L, 3L" }
     },
     {
         id: 203,
@@ -387,7 +424,8 @@ export const PRODUCTS: Product[] = [
         image: img3,
         description: "Sản phẩm Sơn Nippon Bilac Metal Red Oxide Primer chất lượng cao từ Nippon Paint.",
         features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
-        price: 350000
+        price: 350000,
+        stock: 80
     },
     {
         id: 204,
@@ -397,7 +435,8 @@ export const PRODUCTS: Product[] = [
         image: img4,
         description: "Sản phẩm Sơn Nippon Pylox Lazer chất lượng cao từ Nippon Paint.",
         features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
-        price: 350000
+        price: 350000,
+        stock: 80
     },
     {
         id: 205,
@@ -407,7 +446,8 @@ export const PRODUCTS: Product[] = [
         image: img5,
         description: "Sản phẩm Sơn Nippon Road Line chất lượng cao từ Nippon Paint.",
         features: ["Mịn màng", "Che phủ tốt", "Mùi nhẹ"],
-        price: 350000
+        price: 350000,
+        stock: 80
     },
     {
         id: 206,
@@ -702,9 +742,20 @@ export const PRODUCTS: Product[] = [
         price: 890000,
         isPremium: true,
         isBestSeller: true,
+        stock: 50,
         detailedDescription: "Nippon Paint Spot-less Plus là sản phẩm sơn nội thất cao cấp với khả năng chống bám bẩn vượt trội nhờ công nghệ 'Popping' và kháng khuẩn hiệu quả với công nghệ Ion Bạc. Các vết bẩn dạng lỏng như trà, cà phê, nước trái cây... sẽ tạo thành hạt nước trên bề mặt màng sơn và dễ dàng lau chùi mà không gây hư hại màng sơn.",
         technicalData: { "dryingTime": "30 - 60 phút", "coats": 2, "coverage": "12 m2/lít/lớp", "packing": "1L, 5L, 18L" },
-        benefits: ["Chống bám bẩn tuyệt vời", "Kháng khuẩn & Kháng nấm mốc", "Mùi rất nhẹ, gần như không mùi", "Dễ dàng lau chùi"]
+        benefits: ["Chống bám bẩn tuyệt vời", "Kháng khuẩn & Kháng nấm mốc", "Mùi rất nhẹ, gần như không mùi", "Dễ dàng lau chùi"],
+        variants: [
+            { volume: "1L", color: "Trắng", price: 350000, stock: 50 },
+            { volume: "5L", color: "Trắng", price: 890000, stock: 20 },
+            { volume: "18L", color: "Trắng", price: 2500000, stock: 10 },
+            { volume: "1L", color: "Xám Ghi", price: 370000, stock: 45 },
+            { volume: "5L", color: "Xám Ghi", price: 920000, stock: 15 },
+            { volume: "18L", color: "Xám Ghi", price: 2600000, stock: 5 },
+            { volume: "1L", color: "Kem", price: 360000, stock: 40 },
+            { volume: "5L", color: "Kem", price: 910000, stock: 25 },
+        ]
     },
     {
         id: 235,

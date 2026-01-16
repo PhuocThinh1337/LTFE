@@ -15,13 +15,19 @@ import catalogVatex from '../img/nippon_catalogs/Sơn_Vatex.pdf';
 
 import catalogPremium from '../img/nippon_catalogs/Sản_Phẩm_Cao_Cấp_-_Cloned.pdf';
 import ColorSelectionModal from '../components/common/ColorSelectionModal';
-import { PaintColor } from '../data/paintColors';
+import { PAINT_COLORS, PaintColor } from '../data/paintColors';
+
+// ... (rest of imports)
+
+// ...
+
 
 interface SuggestionCardProps {
     product: Product;
     onPrev: () => void;
     onNext: () => void;
 }
+
 
 const SuggestionCard: React.FC<SuggestionCardProps> = ({ product, onPrev, onNext }) => {
     const { addToCompare, removeFromCompare, isInCompare } = useCompare();
@@ -67,6 +73,7 @@ interface Review {
 }
 
 const ProductDetailPage: React.FC = () => {
+    // State
     const { slug } = useParams<{ slug: string }>();
     const [product, setProduct] = useState<Product | null>(null);
     const [quantity, setQuantity] = useState(1);
@@ -84,26 +91,121 @@ const ProductDetailPage: React.FC = () => {
     const [newRating, setNewRating] = useState(5);
     const [newComment, setNewComment] = useState("");
 
-    // Catalog State & Data
+    // Variant State
+    const [selectedVolume, setSelectedVolume] = useState<string>('');
+    const [selectedColorName, setSelectedColorName] = useState<string>('');
+    const [price, setPrice] = useState<number>(0);
+    const [stock, setStock] = useState<number>(0);
     const [isColorModalOpen, setIsColorModalOpen] = useState(false);
 
-    const handleAddToCart = () => {
-        if (product) {
-            setIsColorModalOpen(true);
+    // Derived lists for selectors
+    const availableVolumes = product?.variants
+        ? Array.from(new Set(product.variants.map(v => v.volume)))
+        : [];
+
+    const availableColors = product?.variants
+        ? Array.from(new Set(product.variants.filter(v => v.volume === selectedVolume).map(v => v.color)))
+        : [];
+
+    // Helper: Base price calculation for selected volume
+    const getBasePriceForVolume = (vol: string) => {
+        if (product && product.variants) {
+            // Try to find a standard color variant (e.g. "Trắng") for this volume
+            const standard = product.variants.find(v => v.volume === vol && v.color === 'Trắng');
+            if (standard) return standard.price;
+
+            // Or just find the first/min price for this volume
+            const variantsForVol = product.variants.filter(v => v.volume === vol);
+            if (variantsForVol.length > 0) {
+                return Math.min(...variantsForVol.map(v => v.price));
+            }
         }
+        return product ? product.price : 0;
     };
 
-    const handleColorSelect = async (color: PaintColor) => {
+    // Calculate base price for the Modal (to show correct estimated prices)
+    const currentVolumeBasePrice = getBasePriceForVolume(selectedVolume);
+
+    useEffect(() => {
+        if (product) {
+            if (product.variants && product.variants.length > 0) {
+                // Set defaults if not set, or reset if product changed
+                const first = product.variants[0];
+                setSelectedVolume(first.volume);
+                setSelectedColorName(first.color);
+                setPrice(first.price);
+                setStock(first.stock !== undefined ? first.stock : (product.stock || 0)); // Set initial stock
+            } else {
+                setPrice(product.price);
+                setStock(product.stock || 0); // Set initial stock for products without variants
+            }
+        }
+    }, [product]);
+
+    // Update Price & Stock Logic
+    useEffect(() => {
+        if (!product) return;
+
+        let currentPrice = 0;
+        let currentStock = 0;
+
+        // 1. Try to find exact variant match (Pre-defined variants in products.ts)
+        if (product.variants) {
+            const variant = product.variants.find(v => v.volume === selectedVolume && v.color === selectedColorName);
+            if (variant) {
+                currentPrice = variant.price;
+                currentStock = variant.stock !== undefined ? variant.stock : (product.stock || 0);
+            } else {
+                // 2. If no exact predefined match (Custom Color), calculate based on base price + factor
+                // For stock, we assume we use the 'Trắng' variant as the base for tinting
+                const baseVariant = product.variants.find(v => v.volume === selectedVolume && v.color === 'Trắng');
+                currentStock = baseVariant?.stock !== undefined ? baseVariant.stock : (product.stock || 0);
+
+                // Price logic for custom colors
+                const basePrice = getBasePriceForVolume(selectedVolume);
+                const customColor = PAINT_COLORS.find(c => c.name === selectedColorName);
+
+                if (customColor && customColor.priceFactor) {
+                    currentPrice = Math.round(basePrice * customColor.priceFactor / 1000) * 1000;
+                } else {
+                    currentPrice = basePrice;
+                }
+            }
+        } else {
+            // No variants defined for the product, use product's base price and stock
+            currentPrice = product.price;
+            currentStock = product.stock || 0;
+        }
+
+        setPrice(currentPrice);
+        setStock(currentStock);
+
+    }, [selectedVolume, selectedColorName, product]);
+
+    const handleColorSelect = (color: PaintColor) => {
+        setSelectedColorName(color.name);
+        setIsColorModalOpen(false);
+    };
+
+    const handleAddToCart = async () => {
+        if (stock === 0) {
+            alert('Sản phẩm này đang tạm hết hàng.');
+            return;
+        }
+        if (quantity > stock) {
+            alert(`Xin lỗi, chỉ còn ${stock} sản phẩm trong kho.`);
+            return;
+        }
+
         if (product) {
             try {
-                const colorString = `${color.name} (${color.code})`;
-                await addToCart(product.id, quantity, colorString);
-                alert(`Đã thêm ${quantity} hộp ${product.name} (Màu: ${color.name}) vào giỏ hàng!`);
+                // Determine effective price is already in 'price' state
+                const colorString = `${selectedColorName} (${selectedVolume})`;
+                await addToCart(product.id, quantity, colorString, price);
+                alert(`Đã thêm ${quantity} hộp ${product.name} (Màu: ${selectedColorName}, ${selectedVolume}) vào giỏ hàng!`);
             } catch (error) {
                 console.error('Lỗi khi thêm vào giỏ hàng:', error);
                 alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
-            } finally {
-                setIsColorModalOpen(false);
             }
         }
     };
@@ -168,12 +270,42 @@ const ProductDetailPage: React.FC = () => {
     useEffect(() => {
         if (slug) {
             const found = PRODUCTS.find(p => p.slug === slug);
-            setProduct(found || null);
 
-            // Get related products (same category, different id)
             if (found) {
+                // Determine if we need to generate default variants
+                // Assuming standard paint volumes: 1L, 5L (base), 18L
+                let productWithVariants = { ...found };
+
+                if (!found.variants || found.variants.length === 0) {
+                    const basePrice = found.price; // Assume price is for 5L
+
+                    // Simple logic to generate price variants
+                    const price1L = Math.round((basePrice / 5) * 1.2 / 1000) * 1000;
+                    const price18L = Math.round((basePrice / 5) * 18 * 0.9 / 1000) * 1000;
+
+                    productWithVariants.variants = [
+                        { volume: "1L", color: "Trắng", price: price1L },
+                        { volume: "5L", color: "Trắng", price: basePrice },
+                        { volume: "18L", color: "Trắng", price: price18L },
+
+                        // Add some common colors
+                        { volume: "1L", color: "Xám Ghi", price: price1L + 20000 },
+                        { volume: "5L", color: "Xám Ghi", price: basePrice + 50000 },
+                        { volume: "18L", color: "Xám Ghi", price: price18L + 150000 },
+
+                        { volume: "1L", color: "Kem", price: price1L + 10000 },
+                        { volume: "5L", color: "Kem", price: basePrice + 30000 },
+                        { volume: "18L", color: "Kem", price: price18L + 100000 },
+                    ];
+                }
+
+                setProduct(productWithVariants);
+
+                // Get related products (same category, different id)
                 const related = PRODUCTS.filter(p => p.category === found.category && p.id !== found.id);
                 setRelatedProducts(related);
+            } else {
+                setProduct(null);
             }
         }
         setSuggestionIndex(0);
@@ -257,10 +389,56 @@ const ProductDetailPage: React.FC = () => {
 
                                 <div className="np-pd-price-row">
                                     <div className="np-pd-price">
-                                        {product.price.toLocaleString('vi-VN')} ₫
+                                        {price.toLocaleString('vi-VN')} ₫
                                     </div>
-                                    <span className="np-pd-unit">/ Lon 5L</span>
+                                    <span className="np-pd-unit">/ {selectedVolume ? selectedVolume : 'Lon 5L'}</span>
                                 </div>
+                                <div className={`np-pd-stock ${stock > 0 ? 'in-stock' : 'out-of-stock'}`} style={{ marginTop: '10px', fontSize: '14px', fontWeight: '500', color: stock > 0 ? '#28a745' : '#dc3545' }}>
+                                    {stock > 0 ? `✓ Còn hàng (Tồn kho: ${stock})` : '✕ Tạm hết hàng'}
+                                </div>
+
+                                {/* Variant Selectors */}
+                                {product.variants && product.variants.length > 0 && (
+                                    <div className="np-variant-selector">
+                                        <div className="np-selector-group">
+                                            <label>Thể tích:</label>
+                                            <div className="np-volume-options">
+                                                {availableVolumes.map(vol => (
+                                                    <button
+                                                        key={vol}
+                                                        className={`np-volume-btn ${selectedVolume === vol ? 'active' : ''}`}
+                                                        onClick={() => setSelectedVolume(vol)}
+                                                    >
+                                                        {vol}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="np-selector-group">
+                                            <label>Màu sắc:</label>
+                                            <div className="np-color-options">
+                                                {availableColors.map(col => (
+                                                    <button
+                                                        key={col}
+                                                        className={`np-color-btn ${selectedColorName === col ? 'active' : ''}`}
+                                                        onClick={() => setSelectedColorName(col)}
+                                                    >
+                                                        {col}
+                                                    </button>
+                                                ))}
+                                                <button
+                                                    className={`np-color-btn ${!availableColors.includes(selectedColorName) ? 'active' : ''}`}
+                                                    onClick={() => setIsColorModalOpen(true)}
+                                                    style={{ borderStyle: 'dashed' }}
+                                                >
+                                                    <span style={{ marginRight: '5px' }}>🎨</span>
+                                                    {availableColors.includes(selectedColorName) ? 'Màu khác...' : selectedColorName}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div className="np-pd-actions">
                                     <div className="np-quantity-selector">
@@ -496,6 +674,7 @@ const ProductDetailPage: React.FC = () => {
                 onClose={() => setIsColorModalOpen(false)}
                 onSelect={handleColorSelect}
                 productName={product?.name || ''}
+                basePrice={currentVolumeBasePrice}
             />
 
             <Footer />

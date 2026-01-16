@@ -1,4 +1,4 @@
-/* ProductDetailPage.css */
+/* ProductDetailPage.css - Append new styles */
 
 .np-pd-top-section {
     display: flex;
@@ -102,6 +102,76 @@
     color: #666;
     font-size: 14px;
 }
+
+/* Variant Selector Styles */
+.np-variant-selector {
+    margin-bottom: 30px;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.np-selector-group {
+    margin-bottom: 20px;
+}
+
+.np-selector-group:last-child {
+    margin-bottom: 0;
+}
+
+.np-selector-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.np-volume-options,
+.np-color-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.np-volume-btn {
+    padding: 8px 16px;
+    border: 2px solid #e5e7eb;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.np-volume-btn.active {
+    border-color: #e60012;
+    background: #e60012;
+    color: #fff;
+}
+
+.np-color-btn {
+    padding: 8px 16px;
+    border: 2px solid #e5e7eb;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    min-width: 80px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.np-color-btn.active {
+    border-color: #e60012;
+    background: #fffafa;
+    color: #e60012;
+    font-weight: 700;
+}
+
 
 /* Actions */
 .np-pd-actions {
