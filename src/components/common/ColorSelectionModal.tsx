@@ -7,9 +7,10 @@ interface ColorSelectionModalProps {
     onClose: () => void;
     onSelect: (color: PaintColor) => void;
     productName: string;
+    basePrice: number;
 }
 
-const ColorSelectionModal: React.FC<ColorSelectionModalProps> = ({ isOpen, onClose, onSelect, productName }) => {
+const ColorSelectionModal: React.FC<ColorSelectionModalProps> = ({ isOpen, onClose, onSelect, productName, basePrice }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     if (!isOpen) return null;
@@ -45,15 +46,22 @@ const ColorSelectionModal: React.FC<ColorSelectionModalProps> = ({ isOpen, onClo
 
                 <div className="color-modal-body">
                     <div className="color-grid">
-                        {filteredColors.map(color => (
-                            <div key={color.id} className="color-item" onClick={() => onSelect(color)}>
-                                <div className="color-display" style={{ backgroundColor: color.hex }}></div>
-                                <div className="color-info">
-                                    <div className="color-name" title={color.name}>{color.name}</div>
-                                    <div className="color-code">{color.code}</div>
+                        {filteredColors.map(color => {
+                            const finalPrice = Math.round(basePrice * (color.priceFactor || 1) / 1000) * 1000;
+
+                            return (
+                                <div key={color.id} className="color-item" onClick={() => onSelect(color)}>
+                                    <div className="color-display" style={{ backgroundColor: color.hex }}></div>
+                                    <div className="color-info">
+                                        <div className="color-name" title={color.name}>{color.name}</div>
+                                        <div className="color-code">{color.code}</div>
+                                        <div className="color-price" style={{ color: '#e60012', fontWeight: 700, fontSize: '13px', marginTop: '4px' }}>
+                                            {finalPrice.toLocaleString('vi-VN')} ₫
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                     {filteredColors.length === 0 && (
                         <div style={{ textAlign: 'center', color: '#666', padding: '20px' }}>

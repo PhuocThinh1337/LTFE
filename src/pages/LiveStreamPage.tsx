@@ -7,8 +7,7 @@ import { useLiveSession } from '../hooks/useLiveSession';
 import { useLiveChat } from '../hooks/useLiveChat';
 import { PRODUCTS, Product } from '../data/products';
 import { updateFlashVoucher } from '../services/firebase';
-import { PaintColor } from '../data/paintColors';
-import ColorSelectionModal from '../components/common/ColorSelectionModal';
+import QuickBuyModal from '../components/common/QuickBuyModal';
 import VideoPlayer from '../components/Live/VideoPlayer';
 import ChatSidebar from '../components/Live/ChatSidebar';
 import ProductDrawer from '../components/Live/ProductDrawer';
@@ -28,7 +27,7 @@ const LiveStreamPage: React.FC = () => {
     const [adminTab, setAdminTab] = useState<'products' | 'vouchers'>('products');
     const [drawerTab, setDrawerTab] = useState<'products' | 'vouchers'>('products');
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [isColorModalOpen, setIsColorModalOpen] = useState(false);
+    const [isQuickBuyOpen, setIsQuickBuyOpen] = useState(false);
     const [pendingAction, setPendingAction] = useState<{ product: Product, quantity: number, type: 'add' | 'buy' } | null>(null);
 
     // Custom Hooks
@@ -71,42 +70,28 @@ const LiveStreamPage: React.FC = () => {
 
     // Handlers needed for interactions
     const requestAddToCart = (product: Product, quantity: number) => {
-        if (!user) {
-            alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-            navigate('/login');
-            return;
-        }
         setPendingAction({ product, quantity, type: 'add' });
-        setIsColorModalOpen(true);
+        setIsQuickBuyOpen(true);
     };
 
     const requestBuyNow = (product: Product, quantity: number) => {
-        if (!user) {
-            alert('Vui lòng đăng nhập để mua ngay');
-            navigate('/login');
-            return;
-        }
         setPendingAction({ product, quantity, type: 'buy' });
-        setIsColorModalOpen(true);
+        setIsQuickBuyOpen(true);
     };
 
-    const handleColorSelect = async (color: PaintColor) => {
-        if (!pendingAction) return;
-        const { product, quantity, type } = pendingAction;
-        const colorString = `${color.name} (${color.code})`;
-
+    const handleQuickBuyConfirm = async (product: Product, quantity: number, colorString: string, price: number, type: 'add' | 'buy') => {
         try {
-            await addToCart(product.id, quantity, colorString);
+            await addToCart(product.id, quantity, colorString, price);
 
             if (type === 'add') {
-                alert(`Đã thêm ${quantity} hộp ${product.name} (Màu: ${color.name}) vào giỏ hàng!`);
+                alert(`Đã thêm ${quantity} hộp ${product.name} (${colorString}) vào giỏ hàng!`);
             } else {
-                const itemTotal = product.price * quantity;
+                const itemTotal = price * quantity;
                 const shippingCost = itemTotal > 3000000 ? 0 : 100000;
                 const checkoutItem = {
                     id: product.id,
                     name: product.name,
-                    price: product.price,
+                    price: price,
                     image: product.image,
                     quantity: quantity,
                     color: colorString
@@ -124,15 +109,10 @@ const LiveStreamPage: React.FC = () => {
                 });
             }
         } catch (error) {
-            console.error('Error handling color select:', error);
-            if ((error as any)?.message === 'AUTH_REQUIRED') {
-                alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
-                navigate('/login');
-                return;
-            }
+            console.error('Error handling quick buy:', error);
             alert('Có lỗi xảy ra.');
         } finally {
-            setIsColorModalOpen(false);
+            setIsQuickBuyOpen(false);
             setPendingAction(null);
         }
     };
@@ -295,12 +275,14 @@ const LiveStreamPage: React.FC = () => {
                 onBuyNow={requestBuyNow}
             />
 
-            {/* Color Modal */}
-            <ColorSelectionModal
-                isOpen={isColorModalOpen}
-                onClose={() => setIsColorModalOpen(false)}
-                onSelect={handleColorSelect}
-                productName={pendingAction?.product.name || ''}
+            {/* Quick Buy Modal */}
+            <QuickBuyModal
+                isOpen={isQuickBuyOpen}
+                onClose={() => { setIsQuickBuyOpen(false); setPendingAction(null); }}
+                product={pendingAction?.product || null}
+                initialQuantity={pendingAction?.quantity || 1}
+                initialActionType={pendingAction?.type || 'add'}
+                onConfirm={handleQuickBuyConfirm}
             />
         </div>
     );

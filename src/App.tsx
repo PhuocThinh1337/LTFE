@@ -72,7 +72,11 @@ function App(): React.JSX.Element {
               <Route path="/ma-giam-gia" element={<VoucherPage />} />
               <Route path="/voucher-cua-toi" element={<MyVouchersPage />} />
               <Route path="/tim-dai-ly" element={<DealerLocatorPage />} />
-              <Route path="/ton-kho-san-pham" element={<InventoryPage />} />
+              <Route path="/ton-kho" element={
+                <ProtectedRoute roles={['admin']}>
+                  <InventoryPage />
+                </ProtectedRoute>
+              } />
             </Routes>
           </Router>
         </CompareProvider>

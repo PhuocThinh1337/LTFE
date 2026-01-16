@@ -658,6 +658,7 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
         onClose={() => setIsColorModalOpen(false)}
         onSelect={handleColorSelect}
         productName={pendingProduct?.product.name || ''}
+        basePrice={pendingProduct?.product.price || 0}
       />
 
       <Footer />

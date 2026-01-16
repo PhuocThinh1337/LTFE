@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode, useState } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { CartItem, api } from '../services/api';
 import { useAuth } from './AuthContext';
 import { Voucher, VOUCHERS } from '../data/vouchers';
@@ -97,7 +97,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
 interface CartContextType {
   state: CartState;
-  addToCart: (productId: number, quantity?: number, color?: string) => Promise<void>;
+  addToCart: (productId: number, quantity?: number, color?: string, customPrice?: number) => Promise<void>;
   updateQuantity: (itemId: number, quantity: number) => Promise<void>;
   removeItem: (itemId: number) => Promise<void>;
   removeItems: (itemIds: number[]) => Promise<void>;
@@ -141,6 +141,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return () => {
       window.removeEventListener('cartUpdated', handleCartUpdate);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Re-calculate discount when cart items change
@@ -155,6 +156,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         dispatch({ type: 'REMOVE_VOUCHER' });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.items]);
 
   const loadCart = async () => {
@@ -173,7 +175,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   };
 
-  const addToCart = async (productId: number, quantity: number = 1, color?: string) => {
+  const addToCart = async (productId: number, quantity: number = 1, color?: string, customPrice?: number) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       // Option B: bắt buộc đăng nhập mới được thêm vào giỏ
@@ -183,7 +185,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       }
       const product = await api.getProduct(productId);
       if (product) {
-        const updatedCart = await api.addToCart(product, quantity, color, user?.id?.toString());
+        const productToAdd = customPrice ? { ...product, price: customPrice } : product;
+        const updatedCart = await api.addToCart(productToAdd, quantity, color, user?.id?.toString());
         dispatch({ type: 'SET_ITEMS', payload: updatedCart });
       }
     } catch (error) {
@@ -405,4 +408,3 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     </CartContext.Provider>
   );
 };
-

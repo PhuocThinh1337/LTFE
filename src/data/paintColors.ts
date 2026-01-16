@@ -3,17 +3,18 @@ export interface PaintColor {
     name: string;
     code: string;
     hex: string;
+    priceFactor?: number; // 1.0 (Standard), 1.05 (Premium), 1.1 (Special)
 }
 
 export const PAINT_COLORS: PaintColor[] = [
-    { id: '61343', name: 'Reticent White', code: 'NP OW 1083P', hex: '#DCDAD2' },
-    { id: '61342', name: 'Gray Dew', code: 'NP OW 1086P', hex: '#DDDBD5' },
-    { id: '61341', name: 'Violet Whisper', code: 'NP OW 1085P', hex: '#E4E3DE' },
-    { id: '61340', name: 'White Concrete', code: 'NP OW 1084P', hex: '#DDDBD5' },
-    { id: '61339', name: 'Gray Drops', code: 'NP OW 1087P', hex: '#DBDCD9' },
-    { id: '61338', name: 'Morning Chill', code: 'NP OW 2279P', hex: '#DFDDDA' },
-    { id: '61337', name: "Winter's Morn", code: 'NP OW 2278P', hex: '#E3E2DE' },
-    { id: '61336', name: 'Cool Drift', code: 'NP OW 1064P', hex: '#D2D8D5' },
+    { id: '61343', name: 'Reticent White', code: 'NP OW 1083P', hex: '#DCDAD2', priceFactor: 1.0 },
+    { id: '61342', name: 'Gray Dew', code: 'NP OW 1086P', hex: '#DDDBD5', priceFactor: 1.05 },
+    { id: '61341', name: 'Violet Whisper', code: 'NP OW 1085P', hex: '#E4E3DE', priceFactor: 1.0 },
+    { id: '61340', name: 'White Concrete', code: 'NP OW 1084P', hex: '#DDDBD5', priceFactor: 1.0 },
+    { id: '61339', name: 'Gray Drops', code: 'NP OW 1087P', hex: '#DBDCD9', priceFactor: 1.05 },
+    { id: '61338', name: 'Morning Chill', code: 'NP OW 2279P', hex: '#DFDDDA', priceFactor: 1.1 },
+    { id: '61337', name: "Winter's Morn", code: 'NP OW 2278P', hex: '#E3E2DE', priceFactor: 1.0 },
+    { id: '61336', name: 'Cool Drift', code: 'NP OW 1064P', hex: '#D2D8D5', priceFactor: 1.0 },
     { id: '61335', name: 'Remembrance', code: 'NP OW 1053P', hex: '#DBE0DE' },
     { id: '61334', name: 'Peace of Mind', code: 'NP OW 2277P', hex: '#D9DFDF' },
     { id: '61333', name: 'Rest Day', code: 'NP OW 2276P', hex: '#E3E6E6' },
