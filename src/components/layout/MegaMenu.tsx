@@ -76,16 +76,6 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ active, onClose }) => {
                             >
                                 Sơn và chất phủ công nghiệp
                             </Link>
-
-                            <Link
-                                to="/vua-tron-san"
-                                className={`np-mega-menu-category ${activeCategory === 'Vữa trộn sẵn' ? 'active' : ''}`}
-                                onMouseEnter={() => setActiveCategory('Vữa trộn sẵn')}
-                                onClick={onClose}
-                            >
-                                Vữa trộn sẵn
-                            </Link>
-
                         </div>
 
                         {/* Products Grid */}
@@ -108,6 +98,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ active, onClose }) => {
                                                 XEM NGAY
                                                 <span className="np-btn-icon">→</span>
                                             </Link>
+
                                         </div>
                                     </div>
                                 ))}

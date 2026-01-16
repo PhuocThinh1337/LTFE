@@ -317,19 +317,20 @@ function Header(): React.JSX.Element {
                         </svg>
                         <span>Voucher của tôi</span>
                       </Link>
-                      
                       {user?.role === 'admin' && (
-                        <Link to="/ton-kho-san-pham" className="np-user-menu-item" onClick={() => setIsUserMenuOpen(false)}>
+                        <Link to="/ton-kho" className="np-user-menu-item" onClick={() => setIsUserMenuOpen(false)}>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                            <rect x="7" y="7" width="4" height="4"/>
-                            <rect x="13" y="7" width="4" height="4"/>
-                            <rect x="7" y="13" width="4" height="4"/>
-                            <rect x="13" y="13" width="4" height="4"/>
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <rect x="7" y="7" width="4" height="4" />
+                            <rect x="13" y="7" width="4" height="4" />
+                            <rect x="7" y="13" width="4" height="4" />
+                            <rect x="13" y="13" width="4" height="4" />
                           </svg>
                           <span>Tồn kho</span>
                         </Link>
                       )}
+
+
                       <button className="np-user-menu-item" onClick={handleLogout}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
