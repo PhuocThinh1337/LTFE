@@ -77,14 +77,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ active, onClose }) => {
                                 Sơn và chất phủ công nghiệp
                             </Link>
 
-                            <Link
-                                to="/vua-tron-san"
-                                className={`np-mega-menu-category ${activeCategory === 'Vữa trộn sẵn' ? 'active' : ''}`}
-                                onMouseEnter={() => setActiveCategory('Vữa trộn sẵn')}
-                                onClick={onClose}
-                            >
-                                Vữa trộn sẵn
-                            </Link>
+
 
                         </div>
 
@@ -104,10 +97,10 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ active, onClose }) => {
                                             <div className="np-mm-product-price">
                                                 {product.price?.toLocaleString('vi-VN')} ₫
                                             </div>
-                                            <Link to={`/san-pham`} className="np-mm-product-btn" onClick={onClose}>
+                                            <Link to="/san-pham" className="np-mm-product-btn">
                                                 XEM NGAY
-                                                <span className="np-btn-icon">→</span>
                                             </Link>
+
                                         </div>
                                     </div>
                                 ))}
