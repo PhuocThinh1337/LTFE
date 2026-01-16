@@ -8,14 +8,17 @@ import { useAuth } from '../contexts/AuthContext';
 
 function WishlistPage(): React.JSX.Element {
     const [wishlistIds, setWishlistIds] = useState<number[]>([]);
-    const { isAuthenticated, loading } = useAuth();
+    const { isAuthenticated, loading, user } = useAuth();
 
     useEffect(() => {
-        const stored = localStorage.getItem('wishlist');
-        if (stored) {
-            setWishlistIds(JSON.parse(stored));
+        if (!isAuthenticated || !user) {
+            setWishlistIds([]);
+            return;
         }
-    }, []);
+        const key = `wishlist_${user.id}`;
+        const stored = localStorage.getItem(key);
+        setWishlistIds(stored ? JSON.parse(stored) : []);
+    }, [isAuthenticated, user?.id]);
 
     const likedProducts = PRODUCTS.filter(p => wishlistIds.includes(p.id));
 
@@ -23,7 +26,9 @@ function WishlistPage(): React.JSX.Element {
     const toggleWishlist = (id: number) => {
         const newIds = wishlistIds.filter(wid => wid !== id);
         setWishlistIds(newIds);
-        localStorage.setItem('wishlist', JSON.stringify(newIds));
+        if (user) {
+            localStorage.setItem(`wishlist_${user.id}`, JSON.stringify(newIds));
+        }
     };
 
     if (loading) {

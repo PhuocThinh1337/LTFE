@@ -1,46 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, api, CartItem } from '../services/api';
-
-// Hàm helper để merge guest cart vào user cart
-const mergeGuestCartToUser = async (userId: string): Promise<void> => {
-  try {
-    // Lấy guest cart
-    const guestCartStr = localStorage.getItem('guest_cart');
-    if (!guestCartStr) return;
-    
-    const guestCart: CartItem[] = JSON.parse(guestCartStr);
-    if (guestCart.length === 0) return;
-    
-    // Lấy user cart hiện tại
-    const userCart: CartItem[] = await api.getCart(userId);
-    
-    // Merge logic: combine items with same productId and color
-    const mergedCart = [...userCart];
-    
-    guestCart.forEach(guestItem => {
-      const existingItem = mergedCart.find(item => 
-        item.productId === guestItem.productId && item.color === guestItem.color
-      );
-      
-      if (existingItem) {
-        // Nếu sản phẩm đã tồn tại, cộng dồn số lượng
-        existingItem.quantity += guestItem.quantity;
-      } else {
-        // Nếu chưa có, thêm vào cart
-        mergedCart.push(guestItem);
-      }
-    });
-    
-    // Lưu cart đã merge cho user
-    localStorage.setItem(`cart_${userId}`, JSON.stringify(mergedCart));
-    
-    // Xóa guest cart sau khi merge
-    localStorage.removeItem('guest_cart');
-    
-  } catch (error) {
-    console.error('Error merging guest cart to user:', error);
-  }
-};
+import { User, api } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -69,11 +28,18 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Load user from localStorage on mount
   useEffect(() => {
     loadUser();
   }, []);
+
+  
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000); // Tự động ẩn sau 5 giây
+  };
 
   const loadUser = async () => {
     try {
@@ -90,9 +56,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       const { user: loggedInUser } = await api.login(email, password);
-      
-      // Merge guest cart vào user cart nếu có
-      await mergeGuestCartToUser(loggedInUser.id.toString());
+
+      // Option B: không hỗ trợ guest cart, dọn tàn dư nếu có từ phiên cũ
+      localStorage.removeItem('guest_cart');
       
       setUser(loggedInUser);
     } catch (error) {
@@ -103,9 +69,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const loginWithGoogle = async (googleData: { email: string; name: string; picture?: string }) => {
     try {
       const { user: loggedInUser } = await api.loginWithGoogle(googleData);
-      
-      // Merge guest cart vào user cart nếu có
-      await mergeGuestCartToUser(loggedInUser.id.toString());
+
+      // Option B: không hỗ trợ guest cart, dọn tàn dư nếu có từ phiên cũ
+      localStorage.removeItem('guest_cart');
       
       setUser(loggedInUser);
     } catch (error) {

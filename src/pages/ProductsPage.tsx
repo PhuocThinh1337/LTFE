@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Breadcrumb from '../components/common/Breadcrumb';
 import { PRODUCTS, Product } from '../data/products';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useCompare } from '../contexts/CompareContext';
 import Toast from '../components/common/Toast';
 import '../components/layout/FilterBar.css';
@@ -167,6 +168,9 @@ const ProductCard = ({ product, wishlistIds, toggleWishlist, onAddToCart, onRequ
 };
 
 function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
+
   // State for filtering and display
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
   const [pageTitle, setPageTitle] = useState('Sản phẩm Nippon Paint');
@@ -193,6 +197,11 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   const { addToCart } = useCart();
 
   const handleRequestAddToCart = (product: Product, quantity: number) => {
+    if (!isAuthenticated) {
+      showToast('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng', 'error');
+      navigate('/login');
+      return;
+    }
     setPendingProduct({ product, quantity });
     setIsColorModalOpen(true);
   };
@@ -200,12 +209,22 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   const handleColorSelect = async (color: PaintColor) => {
     if (pendingProduct) {
       try {
+        if (!isAuthenticated) {
+          showToast('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng', 'error');
+          navigate('/login');
+          return;
+        }
         // Construct the color string, e.g., "Reticent White (NP OW 1083P)"
         const colorString = `${color.name} (${color.code})`;
         await addToCart(pendingProduct.product.id, pendingProduct.quantity, colorString);
         showToast(`Đã thêm ${pendingProduct.quantity} ${pendingProduct.product.name} (Màu: ${color.name}) vào giỏ hàng!`, 'success');
       } catch (error) {
         console.error('Lỗi khi thêm vào giỏ hàng:', error);
+        if ((error as any)?.message === 'AUTH_REQUIRED') {
+          showToast('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng', 'error');
+          navigate('/login');
+          return;
+        }
         showToast('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng', 'error');
       } finally {
         setIsColorModalOpen(false);
@@ -215,18 +234,27 @@ function ProductsPage({ category }: ProductsPageProps): React.JSX.Element {
   };
 
   React.useEffect(() => {
-    const stored = localStorage.getItem('wishlist');
-    if (stored) {
-      setWishlistIds(JSON.parse(stored));
+    if (!isAuthenticated || !user) {
+      setWishlistIds([]);
+      return;
     }
-  }, []);
+    const key = `wishlist_${user.id}`;
+    const stored = localStorage.getItem(key);
+    setWishlistIds(stored ? JSON.parse(stored) : []);
+  }, [isAuthenticated, user?.id]);
 
   const toggleWishlist = (id: number) => {
+    if (!isAuthenticated || !user) {
+      showToast('Vui lòng đăng nhập để sử dụng tính năng yêu thích', 'error');
+      navigate('/login');
+      return;
+    }
+
     const newWishlist = wishlistIds.includes(id)
       ? wishlistIds.filter(wId => wId !== id)
       : [...wishlistIds, id];
     setWishlistIds(newWishlist);
-    localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+    localStorage.setItem(`wishlist_${user.id}`, JSON.stringify(newWishlist));
   };
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
