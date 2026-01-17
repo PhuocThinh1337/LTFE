@@ -46,6 +46,8 @@ function CheckoutPage(): React.JSX.Element {
   // Lấy dữ liệu từ navigation state (từ cart page)
   const selectedItems = location.state?.selectedItems as CheckoutItem[] || [];
   const subtotal = location.state?.subtotal || 0;
+  const discount = location.state?.discount || 0;
+  const voucher = location.state?.voucher || null;
   
   // Shipping & Location State
   const [shipping, setShipping] = useState(location.state?.shipping || 0);
@@ -54,7 +56,7 @@ function CheckoutPage(): React.JSX.Element {
   const [wards, setWards] = useState<GHNWard[]>([]);
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
 
-  const total = subtotal + shipping;
+  const total = Math.max(0, subtotal + shipping - discount);
 
   // Form states 
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
@@ -477,8 +479,15 @@ function CheckoutPage(): React.JSX.Element {
                             ? 'Đang tính...' 
                             : (shipping === 0 ? 'Miễn phí' : formatPrice(shipping))
                           }
+                          
                         </span>
                       </div>
+                      {voucher && (
+                        <div className="np-checkout-total-row" style={{ color: '#28a745', fontWeight: 500 }}>
+                          <span>Giảm giá ({voucher.code}):</span>
+                          <span>-{formatPrice(discount)}</span>
+                        </div>
+                      )}
                       
                       <div className="np-checkout-total-divider"></div>
                       
@@ -488,6 +497,7 @@ function CheckoutPage(): React.JSX.Element {
                       </div>
                     </div>
                   </div>
+                  
 
                   {/* Phương thức thanh toán */}
                   <div className="np-checkout-payment">

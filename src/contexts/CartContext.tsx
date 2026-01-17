@@ -62,7 +62,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     case 'SET_ITEMS':
-      // Khi cart thay đổi, cần tính toán lại voucher (nếu có)
+      // Khi cart thay đổi, cần tính toán lại voucher 
       // Logic này phức tạp, nên để đơn giản ta sẽ remove voucher khi cart thay đổi để user apply lại
       // Hoặc làm tốt hơn là re-validate voucher. Ở đây ta tạm thời giữ voucher
       return { ...state, items: action.payload, loading: false, error: null };
